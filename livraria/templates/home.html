@@ -1,6 +1,63 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2 class="text-center">Lista de Livros</h2>
-<hr>
+
+    
+
+    {% if user.is_authenticated %}
+        <h2 class="text-center">Lista de Livros</h2>
+        <hr>
+        <table class="table table-striped table-bordered table-hover" >
+            <thead class="table-dark" >
+                <tr>
+                    <th>Id</th>
+                    <th>Título</th>
+                    <th>Gênero</th>
+                    <th>Ano</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if books %}
+                    {% for book in books %}
+                        <tr>
+                            {% comment %} <a href="{% url 'book' book.id %}" > {% endcomment %}
+                            <td><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.id }}</a></td>                            
+                            <td><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.title }}</a></td>
+                            <td><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.genre }}</a></td>
+                            <td><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.year }}</a></td>
+                            <td><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.value }}</a></a></td>
+                            {% comment %} </a> {% endcomment %}
+                        </tr>                        
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        {% comment %} {% if books %}
+            {% for book in books %}
+             {{ book }} <br>
+            {% endfor %}
+        {% endif %} {% endcomment %}
+    {% else %}
+
+        <h2 class="text-center">Login</h2>
+        <hr>
+
+        <form method="POST" action="{% url 'home' %}">
+        {% csrf_token %}
+
+            <div class='mb-3'>
+                <label class="form-label" >Usuário</label>
+                <input type="text" name="usuario" class="form-control" required >
+            </div>
+
+            <div class='mb-3'>
+                <label class="form-label" >Senha</label>
+                <input type="password" name="senha" class="form-control" required >
+            </div>
+
+        <button class="btn btn-primary" type="submit" >Login</button>
+
+        </form>
+    {% endif %}
 {% endblock %}
