@@ -47,41 +47,39 @@ def register_user(request):
     if request.method == "POST":
         form = SignUpForm(request.POST) # vai passar os dados da requisição via post para a variavel form
         if form.is_valid():
-            form.save()
+            form.save() # Registra o usuário no banco de dados, criando o novo usuário.
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
             
             # EXPLICAÇÃO DO METODO CLEANED_DATA:
             
-            # O cleaned_data contém um dicionário com os valores dos campos do formulário após a validação e a limpeza. 
-            # Esses dados podem ser usados para acessar valores de forma segura e confiável.
+            # Quando você chama form.is_valid(), o Django valida todos os campos do formulário e, caso estejam 
+            # corretos, os armazena em um dicionário chamado cleaned_data.
             
-            # form.cleaned_data['username']: Depois que o Django valida o campo username (verificando, por exemplo, se ele não está vazio, se não contém 
-            # caracteres inválidos, etc.), o valor desse campo é armazenado em cleaned_data para uso posterior. 
-            # Essa abordagem garante que os dados estejam corretos e seguros para uso.
-
-            # form.cleaned_data['password1']: O campo password1 (a primeira senha inserida) também passa por um processo de validação 
-            # (por exemplo, para verificar a força da senha, se ela tem pelo menos 8 caracteres, etc.), e o valor final e validado 
-            # fica disponível em cleaned_data.
-
+            # Após a validação, form.cleaned_data contém os valores finais e seguros que o usuário forneceu. Então, as linhas:
+                # username = form.cleaned_data['username']
+                # password = form.cleaned_data['password1']
+            # estão extraindo os valores validados para usá-los em outro contexto, como, neste caso, para autenticar o usuário.
+            
             user = authenticate(username=username, password=password)
             login(request, user)
             messages.success(request,"Você fez login com sucesso com o novo usuário!")
             return redirect('home')
+        
+    # O else é usado apenas para exibir o formulário vazio quando a página de registro é carregada pela primeira vez ou após um erro na validação do formulário.
     else:
         form = SignUpForm()
         return render (request,'register.html',{'form':form})
     return render (request,'register.html', {'form':form})
 
-# def sobre(request):
-#     return HttpResponse("Teste Sobre")
+
 
 
 # Só vai acessar os detalhes do livro se estiver autenticado
 def book_detail(request, id):
     if request.user.is_authenticated:
         book = Book.objects.get(id =id)
-        return render(request, 'book.html', {'book':book})
+        return render(request, 'book.html', {'book':book})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
         messages.error(request, 'Você precisa estar logado!')
         return redirect('home')
@@ -140,6 +138,20 @@ def book_update(request,id):
         return render(request,'update_book.html', {'form':form})
     else:
         messages.error(request, 'Voce deve estar autenticado para atualizar o livro!')
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+# def sobre(request):
+#     return HttpResponse("Teste Sobre")
     
     
     
