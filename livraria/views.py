@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib import messages
+from django.utils import timezone
 from .forms import SignUpForm, AddBookForm
 from .models import Book
 
@@ -98,7 +99,7 @@ def book_delete(request,id):
 
 
 def book_add(request):
-    form = AddBookForm(request.POST or None) # Se não tiver nenhuma requisição o valor de form vai ser none
+    form = AddBookForm(request.POST or None, request.FILES or None ) # Se não tiver nenhuma requisição o valor de form vai ser none
     if request.user.is_authenticated: # Se o usuario estiver autenticado
         if request.method == "POST": # se o metodo da requisição for igual a post
             if form.is_valid(): # se todos os dados do formulário forem validos
@@ -127,6 +128,8 @@ def book_add(request):
 def book_update(request,id):
     if request.user.is_authenticated:
         book = Book.objects.get(id=id)
+        # print(book)
+        book.last_update = timezone.now()
         form = AddBookForm(request.POST or None, instance=book) # (request.POST or None) Se não tiver nenhuma requisição o valor de form vai ser none
         # (Instance=book)  o formulário será pré-preenchido com os dados do livro clicado/escolhido
         

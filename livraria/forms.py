@@ -48,15 +48,30 @@ class SignUpForm(UserCreationForm):
 
 
 class AddBookForm(forms.ModelForm):
+    genre_choices = [
+        ('','Selecione o Gênero'),
+        ('autoajuda', 'Autoajuda'),
+        ('biografia', 'Biografia'),
+        ('desenvolvimento_pessoal', 'Desenvolvimento Pessoal'),
+        ('empreendedorismo', 'Empreendedorismo'),
+        ('ficcao', 'Ficção'),
+        ('financas', 'Finanças'),
+        ('gestao_lideranca', 'Gestão e Liderança'),
+        ('tecnologia', 'Tecnologia'),
+    ]
+    
     title = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Título Livro","class":"form-control"}), label = "")
     description = forms.CharField(required=True, widget = forms.widgets.Textarea(attrs={"placeholder":"Descrição Livro","class":"form-control"}), label = "")
     year = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
-    genre = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
+    # genre = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
+    genre = forms.ChoiceField(choices = genre_choices, required=True, widget = forms.widgets.Select(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
     value = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Valor Livro","class":"form-control"}), label = "")
+    stock = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Estoque","class":"form-control"}), label="")
+    image = forms.ImageField(widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem")
     
     class Meta:
         model = Book
-        fields = ('title', 'description', 'year', 'genre', 'value')
+        fields = ('title', 'description', 'year', 'genre', 'value','stock','image')
 
 
 

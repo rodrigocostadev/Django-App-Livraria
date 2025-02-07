@@ -8,17 +8,34 @@
             <div class="card-header text-center " >
                 {{book.title}}
             </div>
-            <div class="card-body text-center" >
-                <h5 class="card-title" >{{book.genre}}, Ano {{book.year}}</h5>
-                <p>{{book.description}}</p>
+            <div class="card-body text-center" >                
+                <h5 class="card-title" >{{book.genre}}, Ano: {{book.year}}</h5>
+                <img src="{{ book.image.url }} " class="w-50" alt="{{ book.title }}">
+                {% comment %} <p>Descrição:<p> {% endcomment %}
+                <p class="mt-3">Descrição: {{book.description}}</p>
                 <hr>
-                <span>R$ {{book.value}}</span>
+
+                <p class="fs-6" >Disponibilizado a venda: {{ book.created_at|date:"d/m/y - H:i"}}  </p>
+
+                {% if book.created_at|date:"d/m/y - H:i" == book.last_update|date:"d/m/y - H:i" %}
+                <p class="fs-6"  >Ultima atualização: -----    |     Qtde em Estoque: {{book.stock}}</p>
+                {% else %}
+                <p class="fs-6" style="font-size: 0.5rem;" >Ultima atualização: {{ book.last_update|date:"d/m/y - H:i"}}     |     Qtde em Estoque: {{book.stock}} </p>
+                {% endif %}
+
+                <span>Avaliação: </span><span> ★★★☆☆</span>
+                <hr>
+                <h4>R$ {{book.value|floatformat:2 }} </h4>
             </div>
         </div>
         <br><br>
         <a href="{% url 'home' %}" class="btn btn-secondary" >Voltar</a>
         <a href="{% url 'update_book' book.id %}" class="btn btn-primary" >Atualizar</a>
-        <a href="{% url 'delete_book' book.id %}" class="btn btn-danger" >Excluir</a>
+
+        {% comment %} Se o Usuario for ADM  {% endcomment %}
+        {% if user.is_authenticated and user.is_staff  %}
+            <a href="{% url 'delete_book' book.id %}" class="btn btn-danger" >Excluir</a>
+        {% endif %}
 
     </div>
     
