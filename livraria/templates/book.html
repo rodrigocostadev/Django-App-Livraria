@@ -28,14 +28,51 @@
                 <h4>R$ {{book.value|floatformat:2 }} </h4>
             </div>
         </div>
-        <br><br>
+        <br>
         <a href="{% url 'home' %}" class="btn btn-secondary" >Voltar</a>
-        <a href="{% url 'update_book' book.id %}" class="btn btn-primary" >Atualizar</a>
+        <a href="{% url 'update_book' book.id %}" class="btn btn-primary" >Atualizar</a>        
 
         {% comment %} Se o Usuario for ADM  {% endcomment %}
         {% if user.is_authenticated and user.is_staff  %}
             <a href="{% url 'delete_book' book.id %}" class="btn btn-danger" >Excluir</a>
         {% endif %}
+        <br><br>
+
+        <form class="d-flex flex-column" method="post" >
+            {% csrf_token %}
+            
+            {{ comment_form.as_p }}
+            <button class="rounded form-control btn btn-info " type="submit">Enviar Comentário</button>
+            <br>
+        </form>
+
+        <div class=" text-center ">
+            {% if book.comments %}
+                {% for comment in book.comments.all %}
+                    <div class="d-flex">
+                        <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;">( {{comment.user}} ) : {{comment.text}}</textarea>
+
+                        {% comment %} O usuario precisa ser adm ou precisa ser o mesmo usuarioque escreveu o comentário {% endcomment %}
+                        {% if user.is_authenticated and user.is_staff or user.is_authenticated and user == comment.user  %} 
+
+                            <form method="POST" action="{% url 'book' book.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_comment" value="{{comment.id}}" >
+                                <button type="submit" class="btn-close" aria-label="Close"></button>
+                            </form> 
+                        {% endif %}
+                    </div>
+                    
+                    <br>
+                    
+                {% empty %} {% comment %} se não tiver nada para iterar vai aparecer a seguinte mensagem: {% endcomment %}
+                    <p>Não há comentários ainda.</p>
+                {% endfor %}
+            {% else %}
+                <p>Não há comentários ainda.</p>
+            {% endif %}
+        </div>
+        
 
     </div>
     

@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib import messages
 from django.utils import timezone
-from .forms import SignUpForm, AddBookForm
-from .models import Book
+from .forms import SignUpForm, AddBookForm, CommentForm
+from .models import Book, Comment
 
 # Create your views here.
 def home(request):
@@ -76,11 +76,54 @@ def register_user(request):
 
 
 
+# # Só vai acessar os detalhes do livro se estiver autenticado
+# def book_detail(request, id):
+#     if request.user.is_authenticated:
+#         book = Book.objects.get(id =id)
+#         return render(request, 'book.html', {'book':book})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+#     else:
+#         messages.error(request, 'Você precisa estar logado!')
+#         return redirect('home')
+
+
 # Só vai acessar os detalhes do livro se estiver autenticado
 def book_detail(request, id):
+    book = Book.objects.get(id =id)
     if request.user.is_authenticated:
-        book = Book.objects.get(id =id)
-        return render(request, 'book.html', {'book':book})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+        if request.method == "POST":
+            
+            # DELETAR COMENTÁRIO:
+            delete_comment_id = request.POST.get('delete_comment')
+            if delete_comment_id:
+                comment = get_object_or_404(Comment, id = delete_comment_id) # se o objeto não for encontrado, ele automaticamente gera um erro 404, sem você precisar lidar com a exceção manualmente.
+
+                if request.user == comment.user or request.user.is_staff:
+                    comment.delete()
+                    messages.success(request, 'Comentário excluído com sucesso!')
+                else:
+                    messages.error(request,'Você não tem permissão para excluir o comentário!')
+            
+            
+            # ADICIONAR COMENTÁRIO:
+            comment_form = CommentForm(request.POST) # variavel comment_form recebe o valor do formulário de requisição
+            if comment_form.is_valid():
+                
+                # ( comment = comment_form.save(commit=False) ) "Salva" o formulário sem enviar ao banco de dados "sem fazer o commit", 
+                # o que permite adicionar as  informações extras (como o livro e o usuário) para depois salvar e enviar ao banco de dados. 
+                # (Estou criando um objeto comment que recebe as informações do formulario, vou poder adicionar mais informações para salvar e enviar ao banco de dados )
+                comment = comment_form.save(commit=False) 
+                
+                comment.book = book
+                comment.user = request.user
+                comment.save()
+                
+                messages.success(request, 'Comentário adicionado com sucesso!')
+                return render(request, 'book.html', {'book':book}) 
+            
+        else:
+            comment_form = CommentForm()               
+        
+        return render(request, 'book.html', {'book':book, 'comment_form':comment_form})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
         messages.error(request, 'Você precisa estar logado!')
         return redirect('home')
@@ -142,6 +185,23 @@ def book_update(request,id):
     else:
         messages.error(request, 'Voce deve estar autenticado para atualizar o livro!')
         
+        
+        
+def book_search(request):
+    if request.user.is_authenticated:
+        search_term = request.GET.get('search')
+        
+        if search_term:
+            books = Book.objects.filter(title__icontains = search_term) # Filtra os livros pelo título
+        else:
+            return redirect('home')
+            # books = Book.objects.all() # Se não houver termo de busca, mostra todos os livros
+    
+    else:
+        # books = [] # quando o usuário não está autenticado (else: books = []) vai garantir que nenhum livro será mostrado na página de busca.
+        return redirect('home')
+        
+    return render(request, 'search.html',{'books':books})
         
         
         

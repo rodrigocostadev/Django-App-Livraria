@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book
+from .models import Book, Comment
+import datetime
 
 
 class SignUpForm(UserCreationForm):
@@ -50,28 +51,55 @@ class SignUpForm(UserCreationForm):
 class AddBookForm(forms.ModelForm):
     genre_choices = [
         ('','Selecione o Gênero'),
-        ('autoajuda', 'Autoajuda'),
-        ('biografia', 'Biografia'),
-        ('desenvolvimento_pessoal', 'Desenvolvimento Pessoal'),
-        ('empreendedorismo', 'Empreendedorismo'),
-        ('ficcao', 'Ficção'),
-        ('financas', 'Finanças'),
-        ('gestao_lideranca', 'Gestão e Liderança'),
-        ('tecnologia', 'Tecnologia'),
+        ('Auto Ajuda', 'Auto ajuda'),
+        ('Biografia', 'Biografia'),
+        ('Desenvolvimento Pessoal', 'Desenvolvimento Pessoal'),
+        ('Empreendedorismo', 'Empreendedorismo'),
+        ('Estratégia', 'Estratégia'),
+        ('Ficção', 'Ficção'),
+        ('Finanças', 'Finanças'),
+        ('Gestao/Lideranca', 'Gestão e Liderança'),
+        ('Tecnologia', 'Tecnologia'),
     ]
+    
+    current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
+    year_choices = [('','Escolha o ano')]
+    for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
+        year_choices.append((year,year))
+        
     
     title = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Título Livro","class":"form-control"}), label = "")
     description = forms.CharField(required=True, widget = forms.widgets.Textarea(attrs={"placeholder":"Descrição Livro","class":"form-control"}), label = "")
-    year = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
+    year = forms.ChoiceField(choices=year_choices,required=True, widget = forms.widgets.Select(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
+    # year = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
     # genre = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
     genre = forms.ChoiceField(choices = genre_choices, required=True, widget = forms.widgets.Select(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
     value = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Valor Livro","class":"form-control"}), label = "")
     stock = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Estoque","class":"form-control"}), label="")
     image = forms.ImageField(widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem")
+    # comments = forms.CharField(required=False, widget = forms.widgets.Textarea(attrs={"placeholder":"Adicione um comentário","class":"form-control"}), label = "", initial="")
     
     class Meta:
         model = Book
         fields = ('title', 'description', 'year', 'genre', 'value','stock','image')
+        
+        
+        
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+    
+    # Campos preenchidos automaticamente:
+    book = forms.ModelChoiceField(queryset=Book.objects.all(),widget=forms.HiddenInput(), required=False)
+    user = forms.ModelChoiceField(queryset=User.objects.all(),widget=forms.HiddenInput(), required=False)
+
+    # Campo de comentário preenchido pelo usuário:
+    text = forms.CharField(
+        required=True, 
+        widget = forms.Textarea(attrs={"placeholder":"Adicione um comentário. (Limite de 300 caracteres)","class":"form-control"}), 
+        label = "", 
+        max_length=300) # Limita o numero de caracteres a serem digitados.
 
 
 

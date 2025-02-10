@@ -42,12 +42,14 @@
                             {% endif %} 
 
                             <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.stock }}</a></td>     
+                            <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >★★★☆☆</a></td>
 
                         </tr>                        
                     {% endfor %}
                 {% endif %}
             </tbody>
         </table>
+        <br>
         {% comment %} {% if books %}
             {% for book in books %}
              {{ book }} <br>
