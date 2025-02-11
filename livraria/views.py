@@ -3,15 +3,15 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib import messages
 from django.utils import timezone
-from .forms import SignUpForm, AddBookForm, CommentForm
+from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
 from .models import Book, Comment
 
 # Create your views here.
 def home(request):
     # return HttpResponse('Teste Home')
-    books = Book.objects.all()
+    books = Book.objects.all().order_by('title') # Ordena em ordem alfabetica pelo titulo
 
-    # Se eu fiz uma requisição do tipo post:
+    # Se eu fizer uma requisição do tipo post:
     if request.method == "POST":
         username = request.POST['usuario'] # Pega o usuario atraves do atributo name do input do html 
         password = request.POST['senha'] # Pega o usuario atraves do atributo name do input do html 
@@ -74,24 +74,15 @@ def register_user(request):
     return render (request,'register.html', {'form':form})
 
 
-
-
-# # Só vai acessar os detalhes do livro se estiver autenticado
-# def book_detail(request, id):
-#     if request.user.is_authenticated:
-#         book = Book.objects.get(id =id)
-#         return render(request, 'book.html', {'book':book})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
-#     else:
-#         messages.error(request, 'Você precisa estar logado!')
-#         return redirect('home')
-
-
 # Só vai acessar os detalhes do livro se estiver autenticado
 def book_detail(request, id):
     book = Book.objects.get(id =id)
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            
+    
+    if request.user.is_authenticated:        
+        comment_form = CommentForm()  # Inicializando os formulários fora do bloco POST pra não dar erro
+        rating_form = RatingForm() # Inicializando os formulários fora do bloco POST pra não dar erro
+        
+        if request.method == "POST":            
             # DELETAR COMENTÁRIO:
             delete_comment_id = request.POST.get('delete_comment')
             if delete_comment_id:
@@ -101,32 +92,50 @@ def book_detail(request, id):
                     comment.delete()
                     messages.success(request, 'Comentário excluído com sucesso!')
                 else:
-                    messages.error(request,'Você não tem permissão para excluir o comentário!')
-            
+                    messages.error(request,'Você não tem permissão para excluir o comentário!')            
             
             # ADICIONAR COMENTÁRIO:
-            comment_form = CommentForm(request.POST) # variavel comment_form recebe o valor do formulário de requisição
-            if comment_form.is_valid():
-                
-                # ( comment = comment_form.save(commit=False) ) "Salva" o formulário sem enviar ao banco de dados "sem fazer o commit", 
-                # o que permite adicionar as  informações extras (como o livro e o usuário) para depois salvar e enviar ao banco de dados. 
-                # (Estou criando um objeto comment que recebe as informações do formulario, vou poder adicionar mais informações para salvar e enviar ao banco de dados )
-                comment = comment_form.save(commit=False) 
-                
-                comment.book = book
-                comment.user = request.user
-                comment.save()
-                
-                messages.success(request, 'Comentário adicionado com sucesso!')
-                return render(request, 'book.html', {'book':book}) 
+            if 'comment_submit' in request.POST: # Nome do botão de envio do formulário = 'comment_submit'
+                comment_form = CommentForm(request.POST) # variavel comment_form recebe o valor do formulário de requisição
+                if comment_form.is_valid():
+                    
+                    # ( comment = comment_form.save(commit=False) ) "Salva" o formulário sem enviar ao banco de dados "sem fazer o commit", 
+                    # o que permite adicionar as  informações extras (como o livro e o usuário) para depois salvar e enviar ao banco de dados. 
+                    # (Estou criando um objeto comment que recebe as informações do formulario, vou poder adicionar mais informações para salvar e enviar ao banco de dados )
+                    comment = comment_form.save(commit=False) 
+                    
+                    comment.book = book
+                    comment.user = request.user
+                    comment.save()
+                    
+                    messages.success(request, 'Comentário adicionado com sucesso!')
+                    return render(request, 'book.html', {'book':book})             
             
-        else:
-            comment_form = CommentForm()               
-        
-        return render(request, 'book.html', {'book':book, 'comment_form':comment_form})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+            # ADICIONAR AVALIAÇÃO:
+            if 'rating_submit' in request.POST: # Nome do botão de envio do formulário = 'rating_submit'                    
+                
+                rating_value = request.POST.get('rating') # Pega o valor do input através do nome 'rating' do input
+                rating_value = int(rating_value) # Passa para int pra comparar no if abaixo
+                if rating_value and rating_value >= 1 and rating_value <= 5:
+                    rating_form = RatingForm(request.POST) 
+                    if rating_form.is_valid():
+                        rating = rating_form.save(commit=False)
+                        
+                        rating.book = book
+                        rating.user = request.user
+                        rating.value = int(rating_value)
+                        rating.n_review = 1                     # TEM QUE SALVAR
+                        rating.save()
+                        
+                        messages.success(request, 'Avaliação enviada com sucesso!')
+                        return render(request, 'book.html', {'book':book}) 
+                        # return redirect('book.html', id=book.id)                
+   
+        return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
         messages.error(request, 'Você precisa estar logado!')
         return redirect('home')
+
 
 
 # Só vai deletar o livro se estiver autenticado
@@ -139,6 +148,7 @@ def book_delete(request,id):
     else:
         messages.error(request,'Voce precisa estar logado!')
         return redirect('home')
+
 
 
 def book_add(request):
@@ -162,12 +172,10 @@ def book_add(request):
         
     else: # Se o usuário não estiver autenticado
         messages.error(request, 'Voce deve estar autenticado para adicionar livro!')
-        return redirect('home')
+        return redirect('home')   
     
     
-    
-    
-    
+
 def book_update(request,id):
     if request.user.is_authenticated:
         book = Book.objects.get(id=id)
@@ -212,13 +220,27 @@ def book_search(request):
         
         
         
+        
+        
+        
+        
+        
+        
 
 # def sobre(request):
 #     return HttpResponse("Teste Sobre")
     
     
     
-    
+## MODELO ANTIGO SEM OS COMENTÁRIOS:
+## Só vai acessar os detalhes do livro se estiver autenticado
+# def book_detail(request, id):
+#     if request.user.is_authenticated:
+#         book = Book.objects.get(id =id)
+#         return render(request, 'book.html', {'book':book})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+#     else:
+#         messages.error(request, 'Você precisa estar logado!')
+#         return redirect('home')
     
     
     

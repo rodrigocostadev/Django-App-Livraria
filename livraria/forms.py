@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book, Comment
+from .models import Book, Comment, RatinStar
 import datetime
 
 
@@ -103,7 +103,16 @@ class CommentForm(forms.ModelForm):
 
 
 
-
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = RatinStar
+        fields = ['rating']
+        
+    # Campos preenchidos automaticamente:
+    book = forms.ModelChoiceField(queryset=Book.objects.all(),widget=forms.HiddenInput(), required=False)
+    user = forms.ModelChoiceField(queryset=User.objects.all(),widget=forms.HiddenInput(), required=False)
+    
+    rating = forms.DecimalField(required=True,min_value=1,max_value=5,widget=forms.RadioSelect(choices=[(i,str(i)) for i in range(1,6)]))
 
 
 

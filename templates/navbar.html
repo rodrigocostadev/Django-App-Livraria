@@ -36,14 +36,17 @@
       {% comment %} <input class="rounded " type="text" name="search" placeholder="Pesquisar livro"> {% endcomment %}
 
       <div>
-        <form method="GET" action="{% url 'book_search'%}">
+        <form method="GET" class="d-flex align-items-center " action="{% url 'book_search'%}">
           <input class="rounded " type="text" name="search" placeholder="Buscar livro">
-          <button class="btn btn-light btn-sm" type="submit">Buscar</button>
+          <button class="btn btn-light btn-sm d-flex align-items-center" style="height:25px; margin-left:10px;" type="submit">Buscar</button>
         </form> 
       </div>
+
+      {% if user.is_authenticated %}
       <div>
-        <span class="text-white m-3" >{{user.username}}</span>
+        <span class="text-white m-3" >Olá {{user.username}}</span>
       </div>
+      {% endif %}
        
       
     </div>
