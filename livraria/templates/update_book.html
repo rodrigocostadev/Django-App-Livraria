@@ -6,11 +6,38 @@
     <hr>
     <form method="POST" >
         {% csrf_token %}
-        {{form.as_p}}
+        {% comment %} {{form.as_p}}    {% endcomment %}
+
+        {{ form.title }}
+        {{ form.description }}
+
+        <div class="form-group">
+            <label for="id_year">Ano do Livro</label>
+            <input type="text" list="year_choices" name="year" id="id_year" class="form-control">
+                <datalist id="year_choices">
+                    {% for year in year_choices %}
+                        <option value="{{ year }}"></option>
+                    {% endfor %}
+                </datalist>
+                
+        </div>
+        {{ form.genre }}
+        {{ form.value }}
+        {{ form.stock }}
+        {{ form.image }}
+
         <br/>
         <a href="{% url 'home'  %}" class="btn btn-secondary" >Voltar</a>
         <button type="submit" class="btn btn-success" >Atualizar</button>
     </form>
+
+    {% comment %} TESTE {% endcomment %}
+    {% comment %} <input type="text" list="year_choices" >
+        <datalist id="year_choices">
+            {% for year in year_choices %}
+              <option value={{year}} ></option>
+            {% endfor %}
+        </datalist> {% endcomment %}
 </div>
 
 {% endblock %}

@@ -13,7 +13,7 @@ class Book(models.Model):
     value = models.FloatField()
     stock = models.IntegerField(default=0)
     image = models.ImageField(upload_to="images")
-    # rating = models.ForeignKey(Rating, on_delete=models.CASCADE,null=True,blank=True)
+    media_rating = models.DecimalField(default=0, max_digits=3, decimal_places=1, )
     
     def __str__(self):
         return(f'{self.title}-{self.value}')
@@ -33,7 +33,9 @@ class Comment(models.Model):
 class RatinStar(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # rating = models.IntegerField()
+    n_review = models.IntegerField(default=0)
+    # media_rating = models.DecimalField(default=0,max_digits=3,decimal_places=1,)     COLOCAR MEDIA DE RATING
+    # rating = models.IntegerField()    
     
     rating = models.DecimalField(
         max_digits=3,    # Número total de dígitos (antes e depois do ponto decimal)  "numero ponto numero"
@@ -41,7 +43,7 @@ class RatinStar(models.Model):
         )
     
     def __str__(self):
-        return f"Avaliação de {self.user} para o livro: {self.book.title}"
+        return f"Avaliação de {self.user} para o livro {self.book.title}, nota: {self.rating} / numero de avaliações: {self.n_review}"
     
     
     

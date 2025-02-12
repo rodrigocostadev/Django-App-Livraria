@@ -62,15 +62,17 @@ class AddBookForm(forms.ModelForm):
         ('Tecnologia', 'Tecnologia'),
     ]
     
-    current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
-    year_choices = [('','Escolha o ano')]
-    for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
-        year_choices.append((year,year))
-        
+    # current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
+    # year_choices = [('','Escolha o ano')]
+    # for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
+    #     year_choices.append((year,year))        
     
     title = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Título Livro","class":"form-control"}), label = "")
     description = forms.CharField(required=True, widget = forms.widgets.Textarea(attrs={"placeholder":"Descrição Livro","class":"form-control"}), label = "")
-    year = forms.ChoiceField(choices=year_choices,required=True, widget = forms.widgets.Select(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
+    year = forms.CharField(required=True, label="")
+    # year = forms.IntegerField(required=True, label="")
+    # year = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Ano Livro","class":"form-control", "list":"year_choices"}), label = "")
+    # year = forms.ChoiceField(choices=year_choices,required=True, widget = forms.widgets.Select(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
     # year = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
     # genre = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
     genre = forms.ChoiceField(choices = genre_choices, required=True, widget = forms.widgets.Select(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
@@ -112,6 +114,7 @@ class RatingForm(forms.ModelForm):
     book = forms.ModelChoiceField(queryset=Book.objects.all(),widget=forms.HiddenInput(), required=False)
     user = forms.ModelChoiceField(queryset=User.objects.all(),widget=forms.HiddenInput(), required=False)
     
+    # Campo de avaliação "Estrelas" preenchido pelo usuário:
     rating = forms.DecimalField(required=True,min_value=1,max_value=5,widget=forms.RadioSelect(choices=[(i,str(i)) for i in range(1,6)]))
 
 

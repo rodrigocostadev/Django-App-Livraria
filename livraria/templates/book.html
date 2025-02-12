@@ -11,30 +11,32 @@
             <div class="card-body text-center" >                
                 <h5 class="card-title" >{{book.genre}}, Ano: {{book.year}}</h5>
                 <div class="d-flex align-items-center justify-content-center" style="height:20px;">
+
+                    {% comment %} <div> Teste de Nota: {{ media_rating }} </div> {% endcomment %}
+                    
                     <style>                                   
                         .wrap {
                             width: 150px;
                             height: 50px;
                         }
-                        .stars {
+                        .stars1 {
                             width: fit-content;
                             margin: 0 auto;
                             cursor: pointer;
                             font-size:20px;
                         }
-                        .star {
+                        .star1 {
                             color:rgb(230, 178, 11) !important;
                             font-size:15px;
                         }
-                        .rate {
+                        .rate1 {
                             height: 50px;
                             margin-left: -5px;
                             padding: 2px;
                             font-size: 25px;
                             position: relative;
-                            cursor: pointer;
                         }
-                        .rate input[type="radio"] {
+                        .rate1 input[type="radio"] {
                             opacity: 0;
                             position: absolute;
                             top: 50%;
@@ -42,7 +44,7 @@
                             transform: translate(-50%,0%);
                             pointer-events: none;
                         }
-                        .star-over::after {
+                        .star-over1::after {
                             font-family: 'Font Awesome 5 Free';
                             font-weight: 900;
                             font-size: 12px;
@@ -54,87 +56,38 @@
                             top: 19px;
                             left: 4px;
                         }
-                    </style>
+                    </style>                    
 
                     <div class="wrap">
                         <div class="stars">
-                            <label class="rate">
-                                <input type="radio" name="radio1" id="star1" value="s1">
+                            <label class="rate1">
+                                <input type="radio" name="radio1" id="star1" value="1"  >
                                 <div class="face"></div>
-                                <i class="far fa-star star one-star"></i>
+                                <i class="far fa-star star1 one-star {% if 1 <= media_rating  %} fas rate-active {% endif %}"></i>
                             </label>
-                            <label class="rate">
-                                <input type="radio" name="radio1" id="star2" value="2">
+                            <label class="rate1">
+                                <input type="radio" name="radio1" id="star2" value="2" class="">
                                 <div class="face"></div>
-                                <i class="far fa-star star two-star"></i>
+                                <i class="far fa-star star1 two-star {% if 2 <= media_rating  %} fas rate-active {% endif %}"></i>
                             </label>
-                            <label class="rate">
-                                <input type="radio" name="radio1" id="star3" value="3">
+                            <label class="rate1">
+                                <input type="radio" name="radio1" id="star3" value="3" class="">
                                 <div class="face"></div>
-                                <i class="far fa-star star three-star"></i>
+                                <i class="far fa-star star1 three-star {% if 3 <= media_rating  %} fas rate-active {% endif %}"></i>
                             </label>
-                            <label class="rate">
-                                <input type="radio" name="radio1" id="star4" value="4">
+                            <label class="rate1">
+                                <input type="radio" name="radio1" id="star4" value="4" class="">
                                 <div class="face"></div>
-                                <i class="far fa-star star four-star"></i>
+                                <i class="far fa-star star1 four-star {% if 4 <= media_rating  %} fas rate-active {% endif %}"></i>
                             </label>
-                            <label class="rate">
-                                <input type="radio" name="radio1" id="star5" value="5">
+                            <label class="rate1">
+                                <input type="radio" name="radio1" id="star5" value="5" class="">
                                 <div class="face"></div>
-                                <i class="far fa-star star five-star"></i>
+                                <i class="far fa-star star1 five-star {% if media_rating >= 4.3 %} fas rate-active {% endif %}"></i>
                             </label>
                         </div>
                     </div>
 
-                    <script>
-
-                        (function() {
-
-                            // Evento de mouseover e mouseleave para as estrelas
-                            document.querySelectorAll('.rate').forEach(function(starLabel) {
-                                starLabel.addEventListener('mouseover', function() {
-                                    let stars = this.querySelectorAll('.far');
-                                    stars.forEach(function(star) {
-                                        star.classList.add('star-over');
-                                    });
-                                    let prevStars = this.previousElementSibling;
-                                    while (prevStars) {
-                                        prevStars.querySelector('.far').classList.add('star-over');
-                                        prevStars = prevStars.previousElementSibling;
-                                    }
-                                });
-                
-                                starLabel.addEventListener('mouseleave', function() {
-                                    let stars = this.querySelectorAll('.far');
-                                    stars.forEach(function(star) {
-                                        star.classList.remove('star-over');
-                                    });
-                                    let prevStars = this.previousElementSibling;
-                                    while (prevStars) {
-                                        prevStars.querySelector('.far').classList.remove('star-over');
-                                        prevStars = prevStars.previousElementSibling;
-                                    }
-                                });
-                
-                                // Evento de clique para as estrelas
-                                starLabel.addEventListener('click', function() {
-                                    let allStars = this.parentElement.querySelectorAll('.rate .star');
-                                    allStars.forEach(function(star) {
-                                        star.classList.remove('fas', 'rate-active'); // Remove as classes de estrela preenchida
-                                        star.classList.add('far'); // Marca as estrelas como vazias
-                                    });
-                                    let currentStar = this.querySelector('.star');
-                                    currentStar.classList.add('fas', 'rate-active'); // Marca a estrela clicada como preenchida
-                                    let prevStars = this.previousElementSibling;
-                                    while (prevStars) {
-                                        prevStars.querySelector('.star').classList.add('fas'); // Preenche todas as estrelas anteriores
-                                        prevStars = prevStars.previousElementSibling;
-                                    }
-                                });
-                            });
-                
-                        })();
-                    </script>
                 </div>
                 <img src="{{ book.image.url }} " class="w-50" alt="{{ book.title }}">
 

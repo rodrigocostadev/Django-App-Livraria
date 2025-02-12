@@ -4,12 +4,39 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.utils import timezone
 from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
-from .models import Book, Comment
+from .models import Book, Comment, RatinStar
+import datetime
 
-# Create your views here.
+
+# Função para calcular a avaliação geral por estrelas
+def calculate_media_rating(book):
+    overall_rating = RatinStar.objects.filter(book=book) # pega as avaliações por livro (Query set)
+    total_n_rating = 0 
+    total_rating = 0 
+    for item in overall_rating:
+        total_rating += item.rating
+        total_n_rating += item.n_review            
+    # print(f"Esse é o total N rating {total_n_rating}")
+    # print(f"Esse é o total rating {total_rating}")
+    
+    if overall_rating:
+        media_rating = total_rating / total_n_rating
+        media_rating = round(media_rating,1)
+        # print(f"Esse é o media rating {media_rating}")
+    else:
+        media_rating = 0
+    return media_rating
+
+
+
 def home(request):
     # return HttpResponse('Teste Home')
     books = Book.objects.all().order_by('title') # Ordena em ordem alfabetica pelo titulo
+    # book_id = Book.objects.get(id =id)
+    # media_rating = calculate_media_rating(book_id)
+    
+    # for book in books:
+    #     media_rating = calculate_media_rating(book)
 
     # Se eu fizer uma requisição do tipo post:
     if request.method == "POST":
@@ -74,15 +101,22 @@ def register_user(request):
     return render (request,'register.html', {'form':form})
 
 
+
 # Só vai acessar os detalhes do livro se estiver autenticado
 def book_detail(request, id):
     book = Book.objects.get(id =id)
     
     if request.user.is_authenticated:        
-        comment_form = CommentForm()  # Inicializando os formulários fora do bloco POST pra não dar erro
-        rating_form = RatingForm() # Inicializando os formulários fora do bloco POST pra não dar erro
+        comment_form = CommentForm()  # Inicializando os formulários fora do bloco POST pra não dar erro nos comentarios e no ratingStar
+        rating_form = RatingForm() # Inicializando os formulários fora do bloco POST pra não dar erro nos comentarios e no ratingStar
+        
+        # ///////////////////////////////////////////////////////////////////////////
+        # AVALIAÇÃO GERAL DO LIVRO POR ESTRELAS:                
+        media_rating = calculate_media_rating(book)
         
         if request.method == "POST":            
+            
+            # ///////////////////////////////////////////////////////////////////////////
             # DELETAR COMENTÁRIO:
             delete_comment_id = request.POST.get('delete_comment')
             if delete_comment_id:
@@ -94,6 +128,8 @@ def book_detail(request, id):
                 else:
                     messages.error(request,'Você não tem permissão para excluir o comentário!')            
             
+            
+            # ///////////////////////////////////////////////////////////////////////////
             # ADICIONAR COMENTÁRIO:
             if 'comment_submit' in request.POST: # Nome do botão de envio do formulário = 'comment_submit'
                 comment_form = CommentForm(request.POST) # variavel comment_form recebe o valor do formulário de requisição
@@ -111,10 +147,12 @@ def book_detail(request, id):
                     messages.success(request, 'Comentário adicionado com sucesso!')
                     return render(request, 'book.html', {'book':book})             
             
+            
+            # ///////////////////////////////////////////////////////////////////////////
             # ADICIONAR AVALIAÇÃO:
             if 'rating_submit' in request.POST: # Nome do botão de envio do formulário = 'rating_submit'                    
                 
-                rating_value = request.POST.get('rating') # Pega o valor do input através do nome 'rating' do input
+                rating_value = request.POST.get('rating') # Pega o valor do input através do name 'rating' do input
                 rating_value = int(rating_value) # Passa para int pra comparar no if abaixo
                 if rating_value and rating_value >= 1 and rating_value <= 5:
                     rating_form = RatingForm(request.POST) 
@@ -124,14 +162,20 @@ def book_detail(request, id):
                         rating.book = book
                         rating.user = request.user
                         rating.value = int(rating_value)
-                        rating.n_review = 1                     # TEM QUE SALVAR
+                        rating.n_review = 1               # SALVA o numero de avaliadores
                         rating.save()
-                        
+                        media_rating = calculate_media_rating(book) # Atualiza a avaliação geral do livro ao enviar a nota de avaliação
+                        # print(f"Esse é o media rating: {media_rating}")
+                        # print(f"Antes de salvar: media_rating = {media_rating}, book.media_rating = {book.media_rating}")
+
+                        book.media_rating = media_rating # Salva a media da avaliação geral do livro no modelo do livro
+                        book.save()
+                        print(f"Depois de salvar: media_rating = {media_rating}, book.media_rating = {book.media_rating}")
                         messages.success(request, 'Avaliação enviada com sucesso!')
-                        return render(request, 'book.html', {'book':book}) 
+                        return render(request, 'book.html', {'book':book, 'media_rating': media_rating}) 
                         # return redirect('book.html', id=book.id)                
    
-        return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+        return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
         messages.error(request, 'Você precisa estar logado!')
         return redirect('home')
@@ -153,13 +197,25 @@ def book_delete(request,id):
 
 def book_add(request):
     form = AddBookForm(request.POST or None, request.FILES or None ) # Se não tiver nenhuma requisição o valor de form vai ser none
+    
+    # current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
+    # year_choices = [('','Escolha o ano')]
+    # for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
+    #     year_choices.append((year,year))  
+    
+    current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
+    year_choices = ['Escolha o ano']
+    for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
+        year_choices.append(str(year))    
+    # print(f"esse é o yearchoices {year_choices}")
+    
     if request.user.is_authenticated: # Se o usuario estiver autenticado
         if request.method == "POST": # se o metodo da requisição for igual a post
             if form.is_valid(): # se todos os dados do formulário forem validos
                 form.save() # salva o formulário
                 messages.success(request, "Livro adicionado com sucesso")
                 return redirect('home') # redireciona para a home            
-        return render(request, 'add_book.html', {'form':form})
+        return render(request, 'add_book.html', {'form':form, 'year_choices': year_choices,})
     
     # EXPLICAÇÃO:
     # render(request, 'add_book.html'): Acontece quando:
@@ -171,7 +227,7 @@ def book_add(request):
     #     O código redireciona o usuário para a página inicial (home).
         
     else: # Se o usuário não estiver autenticado
-        messages.error(request, 'Voce deve estar autenticado para adicionar livro!')
+        messages.error(request, 'Voce deve estar autenticado para adicionar o livro!')
         return redirect('home')   
     
     
