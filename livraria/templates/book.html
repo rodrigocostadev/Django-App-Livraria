@@ -244,11 +244,11 @@
         </div>
         <br>
         <a href="{% url 'home' %}" class="btn btn-secondary" >Voltar</a>
-        <a href="{% url 'update_book' book.id %}" class="btn btn-primary" >Atualizar</a>        
 
         {% comment %} Se o Usuario for ADM  {% endcomment %}
         {% if user.is_authenticated and user.is_staff  %}
-            <a href="{% url 'delete_book' book.id %}" class="btn btn-danger" >Excluir</a>
+            <a href="{% url 'update_book' book.id %}" class="btn btn-primary" >Atualizar Inf. Livro</a>      
+            <a href="{% url 'delete_book' book.id %}" class="btn btn-danger" >Excluir Livro</a>
         {% endif %}
         <br><br>
 
@@ -263,8 +263,37 @@
         <div class=" text-center ">
             {% if book.comments %}
                 {% for comment in book.comments.all %}
-                    <div class="d-flex">
-                        <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;">( {{comment.user}} ) : {{comment.text}}</textarea>
+                    <div class="d-flex gap-3">
+
+                        {% comment %} <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;"> 
+                            {% if comment.user.userprofile and comment.user.userprofile.user_image %}
+                                <img src="{{ comment.user.userprofile.user_image.url }}" alt="Imagem de perfil">
+                            {% else %}
+                                <img src="path/to/default-image.jpg" alt="Imagem padrão">
+                            {% endif %}
+                            : {{ comment.text }}
+                        </textarea> {% endcomment %}
+
+                        {% if comment.user.userprofile and comment.user.userprofile.user_image %}
+                            <div class="d-flex flex-column ">
+                                <img src="{{comment.user.userprofile.user_image.url}}" style="width:50px; height:50px; border-radius: 50%;" alt="teste"> 
+                                <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"d/m/y"}}</p>
+                                <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"H:i"}}</p>
+                            </div>
+                        {% else %}
+                            <div class="d-flex flex-column ">
+                                <img src="{{"../../media/users/default.jpg"}}" style="width:50px; height:50px; border-radius: 50%;" alt="s/ foto"> 
+                                <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"d/m/y"}}</p>
+                                <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"H:i"}}</p>
+                                {% comment %} <p style="font-size:10px; padding:0; margin:0;">13/06/1994</p>
+                                <p style="font-size:10px; padding:0; margin:0;">11:23</p> {% endcomment %}
+
+                            </div>
+
+                        {% endif %}
+                        
+
+                        <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;">{{comment.text}}</textarea> 
 
                         {% comment %} O usuario precisa ser adm ou precisa ser o mesmo usuarioque escreveu o comentário {% endcomment %}
                         {% if user.is_authenticated and user.is_staff or user.is_authenticated and user == comment.user  %} 

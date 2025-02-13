@@ -7,7 +7,7 @@
     {% comment %} <h2 class="text-center" >Cadastro de Usuário</h2>
     <hr> {% endcomment %}
     <div class="d-flex mt-5">
-        <form method="POST" class="mx-auto" action="{% url 'register' %}" style="width:40%;" >
+        <form method="POST" class="mx-auto" action="{% url 'register' %}" style="width:40%;" enctype="multipart/form-data" >
             {% csrf_token %}
             {% if form.errors %}
                 <div class="alert alert-warning alert-dismissible fade show" role="alert" >

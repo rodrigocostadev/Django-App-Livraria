@@ -4,8 +4,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.utils import timezone
 from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
-from .models import Book, Comment, RatinStar
-import datetime
+from .models import Book, Comment, RatinStar, UserProfile
+
 
 
 # Função para calcular a avaliação geral por estrelas
@@ -73,11 +73,23 @@ def logout_user(request):
 # Função para cadastrar um novo usuario, após cadastrar o usuario ja é logado automaticamente
 def register_user(request):
     if request.method == "POST":
-        form = SignUpForm(request.POST) # vai passar os dados da requisição via post para a variavel form
+        form = SignUpForm(request.POST, request.FILES) # vai passar os dados da requisição via post para a variavel form
         if form.is_valid():
-            form.save() # Registra o usuário no banco de dados, criando o novo usuário.
+            
+            # form.save() # Registra o usuário no banco de dados, criando o novo usuário.
+            user = form.save()             # VER PORQUE NÃO FUNCIONA SEM O USER
+            user_image = form.cleaned_data['user_image']
+            cpf = form.cleaned_data['cpf']
+            
+            if user_image:
+                user_profile = UserProfile.objects.create(user = user, user_image = user_image, cpf = cpf)
+            else:
+                user_profile = UserProfile.objects.create(user = user, cpf = cpf)
+                
+            user_profile.save()            
+            
             username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
+            password = form.cleaned_data['password1']                       
             
             # EXPLICAÇÃO DO METODO CLEANED_DATA:
             
@@ -90,9 +102,14 @@ def register_user(request):
             # estão extraindo os valores validados para usá-los em outro contexto, como, neste caso, para autenticar o usuário.
             
             user = authenticate(username=username, password=password)
-            login(request, user)
-            messages.success(request,"Você fez login com sucesso com o novo usuário!")
-            return redirect('home')
+            
+            if user is not None:
+                login(request, user)
+                messages.success(request, "Você fez login com sucesso com o novo usuário!")
+                return redirect('home')
+            else:
+                messages.error(request, "Erro na autenticação. Tente novamente.")
+                return redirect('register')
         
     # O else é usado apenas para exibir o formulário vazio quando a página de registro é carregada pela primeira vez ou após um erro na validação do formulário.
     else:
@@ -105,6 +122,7 @@ def register_user(request):
 # Só vai acessar os detalhes do livro se estiver autenticado
 def book_detail(request, id):
     book = Book.objects.get(id =id)
+    # user_image_profile = UserProfile.objects.get(id = id)
     
     if request.user.is_authenticated:        
         comment_form = CommentForm()  # Inicializando os formulários fora do bloco POST pra não dar erro nos comentarios e no ratingStar
@@ -175,7 +193,7 @@ def book_detail(request, id):
                         return render(request, 'book.html', {'book':book, 'media_rating': media_rating}) 
                         # return redirect('book.html', id=book.id)                
    
-        return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+        return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
         messages.error(request, 'Você precisa estar logado!')
         return redirect('home')
@@ -203,11 +221,11 @@ def book_add(request):
     # for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
     #     year_choices.append((year,year))  
     
-    current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
-    year_choices = ['Escolha o ano']
-    for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
-        year_choices.append(str(year))    
-    # print(f"esse é o yearchoices {year_choices}")
+    # current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
+    # # # year_choices = ['Escolha o ano']
+    # year_choices = []
+    # for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
+    #     year_choices.append(str(year))    
     
     if request.user.is_authenticated: # Se o usuario estiver autenticado
         if request.method == "POST": # se o metodo da requisição for igual a post
@@ -215,7 +233,8 @@ def book_add(request):
                 form.save() # salva o formulário
                 messages.success(request, "Livro adicionado com sucesso")
                 return redirect('home') # redireciona para a home            
-        return render(request, 'add_book.html', {'form':form, 'year_choices': year_choices,})
+        # return render(request, 'add_book.html', {'form':form, 'year_choices': year_choices,})
+        return render(request, 'add_book.html', {'form':form,})
     
     # EXPLICAÇÃO:
     # render(request, 'add_book.html'): Acontece quando:

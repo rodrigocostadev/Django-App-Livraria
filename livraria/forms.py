@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Book, Comment, RatinStar
 import datetime
 
@@ -9,10 +10,24 @@ class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'E-mail'}))
     first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
     last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
+    user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil:")
+    cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cpf'}),label = "")
+    
+    def validation_cpf(self):
+        cpf = self.cleaned_data.get('cpf')
+        
+        if not cpf.isdigit():
+            raise ValidationError("CPF deve conter apenas números")
+        if  len(cpf) != 11:
+            raise ValidationError("CPF deve conter 11 dígitos")
+        
+        return cpf
     
     class Meta:
         model = User
-        fields = ('username','first_name','last_name','email','password1','password2')
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image')
+        
+    
         
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
@@ -62,28 +77,31 @@ class AddBookForm(forms.ModelForm):
         ('Tecnologia', 'Tecnologia'),
     ]
     
-    # current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
-    # year_choices = [('','Escolha o ano')]
-    # for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
-    #     year_choices.append((year,year))        
+    current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
+    year_choices = [('','Escolha o ano')]
+    for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
+        year_choices.append((year,year))       
     
     title = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Título Livro","class":"form-control"}), label = "")
     description = forms.CharField(required=True, widget = forms.widgets.Textarea(attrs={"placeholder":"Descrição Livro","class":"form-control"}), label = "")
-    year = forms.CharField(required=True, label="")
-    # year = forms.IntegerField(required=True, label="")
-    # year = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Ano Livro","class":"form-control", "list":"year_choices"}), label = "")
-    # year = forms.ChoiceField(choices=year_choices,required=True, widget = forms.widgets.Select(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
-    # year = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Ano Livro","class":"form-control"}), label = "")
+    # year = forms.ChoiceField(choices=year_choices,required=True, widget = forms.widgets.Select(attrs={"placeholder":"Ano Livro","class":"form-control", "id":"field_year"}), label = "")
+
+    year = forms.ChoiceField(choices=year_choices,required=True, widget=forms.widgets.Select(attrs={"placeholder": "Ano Livro", "class": "form-control js-example-tokenizer", "id": "field_year"}), label = "")
+    
     # genre = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
     genre = forms.ChoiceField(choices = genre_choices, required=True, widget = forms.widgets.Select(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
-    value = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Valor Livro","class":"form-control"}), label = "")
-    stock = forms.IntegerField(required=True, widget = forms.widgets.NumberInput(attrs={"placeholder":"Estoque","class":"form-control"}), label="")
+    value = forms.IntegerField(required=True, min_value=0, widget = forms.widgets.NumberInput(attrs={"placeholder":"Valor Livro","class":"form-control"}), label = "")
+    stock = forms.IntegerField(required=True, min_value=0, widget = forms.widgets.NumberInput(attrs={"placeholder":"Estoque","class":"form-control"}), label="")
     image = forms.ImageField(widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem")
-    # comments = forms.CharField(required=False, widget = forms.widgets.Textarea(attrs={"placeholder":"Adicione um comentário","class":"form-control"}), label = "", initial="")
     
     class Meta:
         model = Book
         fields = ('title', 'description', 'year', 'genre', 'value','stock','image')
+        
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Passa uma lista de opções (datalist) para o campo year que tem Auto complete
+        self.fields['year'].widget.attrs['list'] = 'year_choices'
         
         
         

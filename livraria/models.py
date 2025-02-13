@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
-# from star_ratings.models import Rating
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user_image = models.ImageField(upload_to="users", blank=True, null=True)
+    cpf = models.IntegerField(unique=True, null=False)
 
 
 class Book(models.Model):
@@ -24,6 +29,7 @@ class Comment(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField(max_length=300) # Limita o numero de caracteres a serem armazenados no banco de dados
+    date = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"Comentário de {self.user.username} para {self.book.title}"

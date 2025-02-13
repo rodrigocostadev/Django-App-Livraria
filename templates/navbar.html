@@ -44,7 +44,12 @@
 
       {% if user.is_authenticated %}
       <div>
-        <span class="text-white m-3" >Olá {{user.username}}</span>
+        {% comment %} <span class="text-white m-3" >Olá {{user.username}}</span> {% endcomment %}
+        {% if user.userprofile.user_image.url %}
+          <img src="{{user.userprofile.user_image.url}}" style="width:45px; height:45px; border-radius: 50%; margin-left:10px" alt="teste"> 
+        {% else %}
+          <img src="{{"../../media/users/default.jpg"}}" style="width:45px; height:45px; border-radius: 50%; margin-left:10px" alt="s/ foto"> 
+        {% endif %}
       </div>
       {% endif %}
        

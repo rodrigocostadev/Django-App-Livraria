@@ -2,15 +2,61 @@
 
 {% block content %}
 
+{% comment %} <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> {% endcomment %}
+
 <div class="col-md-6 offset-md-3" >
     <h2 class="text-center" >Adicionar Livro</h2>
     <hr>
     <form method="POST" action="{% url 'add_book' %}" enctype="multipart/form-data" >
+
         {% csrf_token %}
+
         {{form.as_p}}
+
+        {% comment %} <datalist id="year_choices" name="list-autocomplete"   >
+            {% for year in year_choices %}
+                <option class="form-control" value="{{ year }}"></option>
+            {% endfor %}
+        </datalist> {% endcomment %}
+
+        {% comment %} <select id="year_choices" name="list-autocomplete"   >
+            {% for year in year_choices %}
+                <option class="form-control" value="{{ year }}"></option>
+            {% endfor %}
+        </select> {% endcomment %}
+
+        
+       
         <br/>
         <button type="submit" class="btn btn-success" >Adicionar</button>
     </form>
+
+    
+
 </div>
 
 {% endblock %}
+
+
+
+{% block scripts%}
+
+    {% comment %} Script do select 2 para autocomplete {% endcomment %}
+    <script>
+        $("#field_year").select2({
+            tags: true,
+            tokenSeparators: [',', ' ']
+        })
+    </script>
+    
+{% endblock %}
+
+
+
+
+{% comment %} <datalist id="year_choices">
+    {% for value, display in form.year.field.choices %}
+        <option value="{{ value }}">{{ display }}</option>
+    {% endfor %}
+</datalist> {% endcomment %}

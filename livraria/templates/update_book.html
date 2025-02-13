@@ -6,30 +6,61 @@
     <hr>
     <form method="POST" >
         {% csrf_token %}
-        {% comment %} {{form.as_p}}    {% endcomment %}
 
-        {{ form.title }}
+        {{form.as_p}}   
+
+        {% comment %} {{ form.title }}
         {{ form.description }}
 
-        <div class="form-group">
-            <label for="id_year">Ano do Livro</label>
-            <input type="text" list="year_choices" name="year" id="id_year" class="form-control">
-                <datalist id="year_choices">
-                    {% for year in year_choices %}
-                        <option value="{{ year }}"></option>
-                    {% endfor %}
-                </datalist>
-                
-        </div>
+        <datalist id="year_choices">
+            {% for year in year_choices %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </datalist>
+
         {{ form.genre }}
         {{ form.value }}
         {{ form.stock }}
-        {{ form.image }}
+        {{ form.image }} {% endcomment %}
+
 
         <br/>
         <a href="{% url 'home'  %}" class="btn btn-secondary" >Voltar</a>
         <button type="submit" class="btn btn-success" >Atualizar</button>
     </form>
+
+
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+        {% comment %} {{ form.title }}
+        {{ form.description }}
+
+        <p class="form-group">
+            <label for="id_year">Ano do Livro</label>
+            <input type="text" list="year_choices" name="year" id="id_year" class="form-control" placeholder="teste" >
+                <datalist id="year_choices">
+                    {% for year in year_choices %}
+                        <option value="{{ year }}"></option>
+                    {% endfor %}
+                </datalist>                
+        </p>
+
+        {{ form.genre }}
+        {{ form.value }}
+        {{ form.stock }}
+        {{ form.image }} {% endcomment %}
+
+
 
     {% comment %} TESTE {% endcomment %}
     {% comment %} <input type="text" list="year_choices" >
@@ -38,6 +69,3 @@
               <option value={{year}} ></option>
             {% endfor %}
         </datalist> {% endcomment %}
-</div>
-
-{% endblock %}
