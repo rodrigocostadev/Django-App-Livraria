@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_image = models.ImageField(upload_to="users", blank=True, null=True)
-    cpf = models.IntegerField(unique=True, null=False)
+    # cpf = models.IntegerField(unique=True, null=False)
+    cpf = models.IntegerField(null=False)
 
 
 class Book(models.Model):

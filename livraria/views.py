@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout 
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
 from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
+# from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm
 from .models import Book, Comment, RatinStar, UserProfile
 
 
@@ -51,7 +53,7 @@ def home(request):
         
         if user is not None:
             login(request,user)
-            messages.success(request,'Login realizado com sucesso')
+            messages.success(request, f'Olá {user.username}, Seja Bem Vindo! ')
             return redirect('home')
         else:
             messages.error(request,"Erro na autenticação. Tente novamente!")
@@ -77,14 +79,15 @@ def register_user(request):
         if form.is_valid():
             
             # form.save() # Registra o usuário no banco de dados, criando o novo usuário.
-            user = form.save()             # VER PORQUE NÃO FUNCIONA SEM O USER
+            user = form.save() # Salvando o objeto usuario na variavel user para utilizar na variavel user user_profile
             user_image = form.cleaned_data['user_image']
             cpf = form.cleaned_data['cpf']
             
             if user_image:
                 user_profile = UserProfile.objects.create(user = user, user_image = user_image, cpf = cpf)
             else:
-                user_profile = UserProfile.objects.create(user = user, cpf = cpf)
+                # user_profile = UserProfile.objects.create(user = user,  user_image = "../../media/users/default.jpg" , cpf = cpf)
+                user_profile = UserProfile.objects.create(user = user,  user_image = "users/default.jpg" , cpf = cpf)
                 
             user_profile.save()            
             
@@ -117,6 +120,62 @@ def register_user(request):
         return render (request,'register.html',{'form':form})
     return render (request,'register.html', {'form':form})
 
+
+def profile_user_view(request, id):
+    # user_id = UserProfile.objects.get(user=user)
+    if request.user.is_authenticated:
+        # Se o id do usuario da requisição (usuario logado) for igual ao id da url
+        if request.user.id == id:
+            user = request.user
+            # user_id = user.id
+            # user_profile = UserProfile.objects.filter(user=user).first()
+            form = SignUpForm(request.POST or None, instance=user)
+            return render(request, 'profile_view.html', {'form':form, 'user': user, })
+            # return render(request, 'profile_view.html', {'form':form, 'user':user})
+            
+        else:
+            user = User.objects.get(id=id)
+            form = SignUpForm(request.POST or None, instance = user)
+            return render(request, 'profile_view.html', {'form':form, 'user': user, })
+            # return redirect('home')
+    else:
+        return redirect('home')
+    
+    
+def profile_user_edit(request):
+    return redirect(request, 'profile_view')
+    # if request.user.is_authenticated:
+    #     user = request.user
+    #     user_profile = UserProfile.objects.filter(user=user).first() # apenas o primeiro registro encontrado vai ser retornado
+    #     form = ProfileForm(request.POST or None, request.FILES or None, instance=user)
+        
+    #     if user_profile:
+    #         form.fields['cpf'].initial = user_profile.cpf
+    #         form.fields['user_image'].initial = user_profile.user_image
+            
+    #     if request.method == 'POST':
+    #         if form.is_valid():
+    #             form.save()
+                
+    #             user_profile.cpf = form.cleaned_data['cpf']
+    #             user_profile.user_image = form.cleaned_data['user_image']
+    #             user_profile.save()  # Salva as alterações no perfil
+                
+    #             # # Atualiza o perfil do usuário com o campo cpf
+    #             # if user_profile:
+    #             #     user_profile.cpf = form.cleaned_data['cpf']
+    #             #     user_profile.save()
+                    
+    #             messages.success(request, "Perfil Atualizado!")
+    #             return redirect('profile_view')
+    #         else:
+    #             messages.error(request,'Erro ao atualizar o perfil. Tente novamente.')
+
+    #     # No caso de GET ou falha no formulário, renderiza o formulário
+    #     return render(request, 'profile_edit.html', {'form': form})
+    
+    # else:
+    #     return redirect('home')
 
 
 # Só vai acessar os detalhes do livro se estiver autenticado
@@ -215,17 +274,6 @@ def book_delete(request,id):
 
 def book_add(request):
     form = AddBookForm(request.POST or None, request.FILES or None ) # Se não tiver nenhuma requisição o valor de form vai ser none
-    
-    # current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
-    # year_choices = [('','Escolha o ano')]
-    # for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
-    #     year_choices.append((year,year))  
-    
-    # current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
-    # # # year_choices = ['Escolha o ano']
-    # year_choices = []
-    # for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
-    #     year_choices.append(str(year))    
     
     if request.user.is_authenticated: # Se o usuario estiver autenticado
         if request.method == "POST": # se o metodo da requisição for igual a post

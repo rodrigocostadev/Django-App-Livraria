@@ -276,24 +276,28 @@
 
                         {% if comment.user.userprofile and comment.user.userprofile.user_image %}
                             <div class="d-flex flex-column ">
-                                <img src="{{comment.user.userprofile.user_image.url}}" style="width:50px; height:50px; border-radius: 50%;" alt="teste"> 
+                                <a href="{% url 'profile_view' id=comment.user.id %}">
+                                    <img src="{{comment.user.userprofile.user_image.url}}" style="width:50px; height:50px; border-radius: 50%;" alt="img user">
+                                </a>   
+                                {% comment %} <img src="{{comment.user.userprofile.user_image.url}}" style="width:50px; height:50px   ; border-radius: 50%;" alt="img user">                                 {% endcomment %}
+                                {% comment %} <p>{{ comment.user.id }}</p> {% endcomment %}
                                 <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"d/m/y"}}</p>
                                 <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"H:i"}}</p>
                             </div>
                         {% else %}
                             <div class="d-flex flex-column ">
-                                <img src="{{"../../media/users/default.jpg"}}" style="width:50px; height:50px; border-radius: 50%;" alt="s/ foto"> 
+                                <a href="{% url 'profile_view' id=comment.user.id  %}">
+                                    <img src="{{"../../media/users/default.jpg"}}" style="width:50px; height:50px; border-radius: 50%;" alt="s/ foto"> 
+                                </a> 
                                 <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"d/m/y"}}</p>
                                 <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"H:i"}}</p>
-                                {% comment %} <p style="font-size:10px; padding:0; margin:0;">13/06/1994</p>
-                                <p style="font-size:10px; padding:0; margin:0;">11:23</p> {% endcomment %}
 
                             </div>
 
                         {% endif %}
                         
 
-                        <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;">{{comment.text}}</textarea> 
+                        <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;">{{comment.user}} ({{comment.user.id}}): {{comment.text}}</textarea> 
 
                         {% comment %} O usuario precisa ser adm ou precisa ser o mesmo usuarioque escreveu o comentário {% endcomment %}
                         {% if user.is_authenticated and user.is_staff or user.is_authenticated and user == comment.user  %} 

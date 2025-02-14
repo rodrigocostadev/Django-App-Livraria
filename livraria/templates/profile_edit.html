@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-md-6 offset-md-3" >
+    <h2 class="text-center" >Editar Perfil</h2>
+    <hr>
+    <br>
+
+
+
+
+
+
+ <form method="POST" class="mx-auto" action="{% url 'register' %}" style="width:100%;" enctype="multipart/form-data" >
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" >
+                Seu Formulário Possui Erros
+            </div>
+        {% endif %}
+        {% comment %} {{ form.as_p }} {% endcomment %}
+
+        <p><label>Usuario:</label>{{ form.username }}</p>        
+        <p><label>Nome:</label>{{ form.first_name }}</p>        
+        <p><label>Sobrenome:</label>{{ form.last_name }}</p>        
+        <p><label>CPF:</label>{{ form.cpf }}</p>        
+        <p><label>Email:</label>{{ form.email }}</p>        
+        <p><label>Nova Senha:</label>{{ form.password1 }}</p>        
+        <p><label>Confirmação de Senha:</label>{{ form.password2 }}</p>        
+        <p><label>Imagem:</label>{{ form.user_image }}</p>
+
+
+        <br>
+        <div class="d-flex justify-content-center ">
+            <button type="submit" class="btn btn-primary btn-lg" >Atualizar Perfil</button>
+        </div> 
+        
+    </form> 
+
+
+</div>
+
+{% endblock %}
