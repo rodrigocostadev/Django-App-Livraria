@@ -122,22 +122,17 @@ def register_user(request):
 
 
 def profile_user_view(request, id):
-    # user_id = UserProfile.objects.get(user=user)
     if request.user.is_authenticated:
-        # Se o id do usuario da requisição (usuario logado) for igual ao id da url
-        if request.user.id == id:
-            user = request.user
-            # user_id = user.id
-            # user_profile = UserProfile.objects.filter(user=user).first()
-            form = SignUpForm(request.POST or None, instance=user)
-            return render(request, 'profile_view.html', {'form':form, 'user': user, })
-            # return render(request, 'profile_view.html', {'form':form, 'user':user})
-            
-        else:
-            user = User.objects.get(id=id)
-            form = SignUpForm(request.POST or None, instance = user)
-            return render(request, 'profile_view.html', {'form':form, 'user': user, })
-            # return redirect('home')
+
+        user_logged = request.user  # Usuário logado
+        user_profile = get_object_or_404(User, id=id)  # Usuário visitado
+        form = SignUpForm(request.POST or None, instance=user_profile)
+
+        return render(request, 'profile_view.html', {
+            'user_logged': user_logged,  # Sempre mantém o usuário logado separado
+            'user_profile': user_profile,  # Usuário cujo perfil está sendo visitado
+            'form': form
+        })
     else:
         return redirect('home')
     

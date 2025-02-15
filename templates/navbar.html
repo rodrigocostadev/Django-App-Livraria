@@ -45,6 +45,7 @@
       {% if user.is_authenticated %}
       <a></a>
       <div>
+        <!-- <span class="text-white m-3" >Olá {{user.username}}</span>  -->
         {% comment %} <span class="text-white m-3" >Olá {{user.username}}</span> {% endcomment %}
         {% if user.userprofile.user_image.url %}      
           {% comment %} <a href="{% url 'profile_view' id=request.user.id %}" > {% endcomment %}
