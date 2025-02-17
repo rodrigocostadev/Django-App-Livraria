@@ -297,7 +297,7 @@
                         {% endif %}
                         
 
-                        <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;">{{comment.user}} ({{comment.user.id}}): {{comment.text}}</textarea> 
+                        <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;">( {{comment.user}} ): {{comment.text}}</textarea> 
 
                         {% comment %} O usuario precisa ser adm ou precisa ser o mesmo usuarioque escreveu o comentário {% endcomment %}
                         {% if user.is_authenticated and user.is_staff or user.is_authenticated and user == comment.user  %} 

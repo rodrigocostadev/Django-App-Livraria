@@ -6,7 +6,8 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_image = models.ImageField(upload_to="users", blank=True, null=True)
     # cpf = models.IntegerField(unique=True, null=False)
-    cpf = models.IntegerField(null=False)
+    # cpf = models.IntegerField(null=False)
+    cpf = models.CharField(max_length=11,null=False)
 
 
 class Book(models.Model):
@@ -41,6 +42,7 @@ class RatinStar(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     n_review = models.IntegerField(default=0)
+    genre = models.CharField(max_length=100)
     # media_rating = models.DecimalField(default=0,max_digits=3,decimal_places=1,)     COLOCAR MEDIA DE RATING
     # rating = models.IntegerField()    
     
@@ -50,7 +52,7 @@ class RatinStar(models.Model):
         )
     
     def __str__(self):
-        return f"Avaliação de {self.user} para o livro {self.book.title}, nota: {self.rating} / numero de avaliações: {self.n_review}"
+        return f"Avaliação de {self.user} para o livro {self.book.title} ({self.book.genre}), nota: {self.rating} / numero de avaliações: {self.n_review}"
     
     
     

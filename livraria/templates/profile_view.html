@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
 <div class="col-md-6 offset-md-3" >
     <h2 class="text-center" >Perfil</h2>
@@ -10,40 +12,117 @@
         <div class="d-flex flex-column gap-3">
             
             <div class="text-center">
-                <img style="border-radius:50%;max-width:200px;" src="{{user_profile.userprofile.user_image.url}}">
+                {% if user.userprofile.user_image %}
+                    <img style="border-radius:50%;max-width:200px;" src="{{user_profile.userprofile.user_image.url}}">                
+                {% endif %}
+                {% if not user.userprofile.user_image.url %}
+                    <p>teste</p>
+                    <img src="{% static 'default.jpg' %}" style="width:205px; height:205px; border-radius: 50%; margin-left:10px" alt="s/ foto">
+                {% endif %}
+                <h6>{{ user_profile.username }}</h6>
+            </div> 
+
+            <br>
+
+            <div class="text-center" >
+
+                <h5>Gêneros Preferidos:</h5>
+
+                <div class="d-flex justify-content-center gap-2" >
+                        {% for rating in unique_genres %}
+                            <div class="card p-1" style="display: inline-block; margin-left:10px">{{ rating}}</div>
+                        {% empty %}
+                            <p >Este usuário ainda não fez avaliações.</p>
+                    
+                        {% endfor %}
+                </div>
+                <br><br>
+
+                <h5>Livros Preferidos:</h5>
+                <br>
+
+                <div class="d-flex justify-content-center" >
+                    {% comment %} {% with counter=1 %} {% endcomment %}
+                        {% for rating in ratings %}
+                            {% for book in books %}
+                                {% if rating.book.title == book.title %}
+                                    <div>
+                                        {% comment %} <img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"> {% endcomment %}
+                                        <a href="{% url 'book' book.id %}">
+                                            <img src="{{ book.image.url }}" style="width: 10rem;" alt="{{ book.title }}">
+                                        </a>
+                                        
+                                        {% comment %} <p>{{ forloop.counter }}º</p> {% endcomment %}
+                                        {% comment %} <p class="small">{{rating.book.title}}</p> {% endcomment %}
+                                    </div>
+                                    {% comment %} {% with counter=counter|add:1 %}
+                                    {% endwith %} {% endcomment %}
+                                
+                                {% endif %} 
+                            {% endfor %}
+
+                        {% empty %}
+                            <p>Este usuário ainda não fez avaliações.</p>
+                    
+                        {% endfor %}
+                    {% comment %} {% endwith %} {% endcomment %}
+                </div>
+                <br><br>
+
+
+                {% comment %} <h5>Gêneros Preferidos:</h5>
+
+                <div class="d-flex justify-content-center gap-2" >
+                        {% for rating in unique_genres %}
+                            <div class="card p-1" style="display: inline-block; margin-left:10px">{{ rating}}</div>
+                        {% empty %}
+                            <p >Este usuário ainda não fez avaliações.</p>
+                    
+                        {% endfor %}
+                </div> {% endcomment %}
+                
             </div>
-            <div>
-                <label>Usuário:</label>
-                <input type="text" class="form-control" value="{{user_profile.username}}" readonly>
-            </div>
-            <div>
-                <label>Nome:</label>
-                <input type="text" class="form-control" value="{{user_profile.first_name}}" readonly>
-            </div>
+            <br>
 
             {% if user_profile == user_logged %}
+            <hr>
+            <h4>Dados Pessoais:</h4>
             <div>
-                <label>Sobrenome:</label>
-                <input type="text" class="form-control" value="{{user_profile.last_name}}" readonly>
+                {% comment %} <label>Usuário:</label> {% endcomment %}
+                <input type="text" class="form-control" value="Usuário: {{user_profile.username}}" readonly>
             </div>
             <div>
-                <label>Email:</label>
-                <input type="text" class="form-control" value="{{user_profile.email}}" readonly>
+                {% comment %} <label>Nome:</label> {% endcomment %}
+                <input type="text" class="form-control" value="Nome: {{user_profile.first_name}}" readonly>
             </div>
             <div>
-                <label>Cpf:</label>
-                <input type="text" class="form-control" value="{{user_profile.userprofile.cpf}}" readonly>
+                {% comment %} <label>Sobrenome:</label> {% endcomment %}
+                <input type="text" class="form-control" value="Sobrenome: {{user_profile.last_name}}" readonly>
+            </div>
+            <div>
+                {% comment %} <label>Email:</label> {% endcomment %}
+                <input type="text" class="form-control" value=" Email: {{user_profile.email}}" readonly>
+            </div>
+            <div>
+                {% comment %} <label>Cpf:</label> {% endcomment %}
+                <input type="text" class="form-control" value="Cpf: {{user_profile.userprofile.cpf}}" readonly>
+            </div>
+            <div>
+                <input type="text" class="form-control" value="Imagem: {{user_profile.userprofile.user_image}}" readonly>
             </div>
             <div class="d-flex justify-content-center ">
                 <a href="{% url 'profile_edit' %}">
                     <button type="button" class="btn btn-primary btn-lg" >Editar Perfil</button>
                 </a>                
             </div> 
+
             {% endif %}
         </div>
+
     {% endif %}
 
 </div>
+<br>
 
 {% endblock %}
 

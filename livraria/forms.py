@@ -11,11 +11,11 @@ class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'E-mail'}))
     first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
     last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
-    user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil:")
-    cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cpf'}),label = "")
+    user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil ( Opcional ):")
+    cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Cpf'}),label = "")
    
     
-    def validation_cpf(self):
+    def clean_cpf(self):
         cpf = self.cleaned_data.get('cpf')        
         if not cpf.isdigit():
             raise ValidationError("CPF deve conter apenas números")

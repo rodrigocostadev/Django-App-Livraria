@@ -123,15 +123,37 @@ def register_user(request):
 
 def profile_user_view(request, id):
     if request.user.is_authenticated:
+        books = Book.objects.all()
 
         user_logged = request.user  # Usuário logado
         user_profile = get_object_or_404(User, id=id)  # Usuário visitado
+        ratings = RatinStar.objects.filter(user=user_profile).order_by('-rating')        
+        
+        # Remover avaliações duplicadas por livro ( Não da pra fazer com set pois se não vai ser perdido as propriedades de busca )
+        unique_ratings = []
+        seen_books = set()
+        for rating in ratings:
+            if rating.book not in seen_books: # Se o livro não existe em seen_books (livros vistos)
+                unique_ratings.append(rating)
+                seen_books.add(rating.book) # adiciona a livros vistos impedindo que ocorra repetições de itens
+            if len(unique_ratings) == 5:
+                break
+            
+        # Remover generos repetidos
+        unique_genres = set()
+        for rating in ratings:
+            unique_genres.add(rating.genre)           
+             
         form = SignUpForm(request.POST or None, instance=user_profile)
 
         return render(request, 'profile_view.html', {
             'user_logged': user_logged,  # Sempre mantém o usuário logado separado
             'user_profile': user_profile,  # Usuário cujo perfil está sendo visitado
-            'form': form
+            'form': form,
+            "ratings": unique_ratings,
+            "books": books,
+            "unique_genres": unique_genres,
+            # "unique_ratings_index": unique_ratings_index,
         })
     else:
         return redirect('home')
@@ -235,6 +257,7 @@ def book_detail(request, id):
                         rating.user = request.user
                         rating.value = int(rating_value)
                         rating.n_review = 1               # SALVA o numero de avaliadores
+                        rating.genre = book.genre
                         rating.save()
                         media_rating = calculate_media_rating(book) # Atualiza a avaliação geral do livro ao enviar a nota de avaliação
                         # print(f"Esse é o media rating: {media_rating}")
@@ -332,6 +355,28 @@ def book_search(request):
         
         
         
+        
+        
+        
+        
+        
+        
+        
+
+
+
+        
+        # Remover avaliações duplicadas por livro ( Não da pra fazer com set pois se não vai ser perdido as propriedades de busca )
+        # unique_ratings = []
+        # unique_ratings_index = []   
+        # seen_books = set()
+        # for i,rating in enumerate(ratings):
+        #     if rating.book not in seen_books: # Se o livro não existe em seen_books (livros vistos)
+        #         unique_ratings.append(rating)
+        #         seen_books.add(rating.book) # adiciona a livros vistos impedindo que ocorra repetições de itens
+        #         unique_ratings_index.append(i)
+        #     if len(unique_ratings) == 5:
+        #         break
         
         
         
