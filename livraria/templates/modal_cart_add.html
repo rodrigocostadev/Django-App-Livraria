@@ -1,0 +1,38 @@
+
+
+
+ <!-- Modal add prod -->
+ <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+        <div class="modal-header">
+            {% comment %} <i class="bi bi-cart"></i> {% endcomment %}
+            <h4 class="modal-title ml-5" id="myModalLabel"><i class="bi bi-cart"></i> Status do seu Carrinho</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            
+        </div>
+        <div class="modal-body">
+            <h6>Itens no seu carrinho: 3</h6>
+                <div>
+                    <div class="d-flex gap-5">
+                        {% comment %} <img style="width:30px;" scr="./media/images/codigo_limpo.webp"> {% endcomment %}
+                        <p>Imagem</p>
+                        <p>Wyckoff 2.0</p>
+                        <span>Excluir</span>
+                        <span>-</span>
+                        <span>1</span>
+                        <span>+</span>
+                    </div>
+                </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Limpar</button>
+            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Finalizar Compra</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add ao Carrinho</button>            
+        </div>
+        </div>
+    </div>
+    </div>
+
+
+

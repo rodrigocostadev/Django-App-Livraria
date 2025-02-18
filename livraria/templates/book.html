@@ -244,10 +244,11 @@
         </div>
         <br>
         <a href="{% url 'home' %}" class="btn btn-secondary" >Voltar</a>
+        <a href="{% url 'home' %}" class="btn btn-primary" >Add ao Carrinho</a>
 
         {% comment %} Se o Usuario for ADM  {% endcomment %}
         {% if user.is_authenticated and user.is_staff  %}
-            <a href="{% url 'update_book' book.id %}" class="btn btn-primary" >Atualizar Inf. Livro</a>      
+            <a href="{% url 'update_book' book.id %}" class="btn btn-warning" >Atualizar Inf. Livro</a>      
             <a href="{% url 'delete_book' book.id %}" class="btn btn-danger" >Excluir Livro</a>
         {% endif %}
         <br><br>

@@ -12,11 +12,11 @@
         <div class="d-flex flex-column gap-3">
             
             <div class="text-center">
+                
                 {% if user.userprofile.user_image %}
                     <img style="border-radius:50%;max-width:200px;" src="{{user_profile.userprofile.user_image.url}}">                
                 {% endif %}
                 {% if not user.userprofile.user_image.url %}
-                    <p>teste</p>
                     <img src="{% static 'default.jpg' %}" style="width:205px; height:205px; border-radius: 50%; margin-left:10px" alt="s/ foto">
                 {% endif %}
                 <h6>{{ user_profile.username }}</h6>

@@ -145,11 +145,11 @@
         {% comment %} <button type="button" class="btn btn-info btn-lg" data-bs-toggle="modal" data-bs-target="#myModal">Open Modal</button> {% endcomment %}
 
         <!-- Modal -->
-        <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+        {% comment %} <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel">Modal Header</h4>
+                <h4 class="modal-title" id="myModalLabel">Status do seu Carrinho</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 
             </div>
@@ -157,13 +157,13 @@
                 <p>Some text in the modal.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Limpar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Adicionar ao Carrinho</button>
-                <button type="button" class="btn btn-primary">Finalizar Compra</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Limpar</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Adicionar ao Carrinho</button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Finalizar Compra</button>
             </div>
             </div>
         </div>
-        </div>
+        </div> {% endcomment %}
 
 
     {% else %}

@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
 # from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm
-from .models import Book, Comment, RatinStar, UserProfile
+from .models import Book, Comment, RatinStar, UserProfile, Cart, CartItem
 
 
 
@@ -351,6 +351,26 @@ def book_search(request):
         return redirect('home')
         
     return render(request, 'search.html',{'books':books})
+
+
+
+def add_cart(request,book_id):
+    book = Book.objects.get(id=book_id)
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    
+    # Verifica se ja existe o item no carrinho:
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, book=book)
+    
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    return redirect('cart')
+
+
+def view_cart(request):
+    cart_user = Cart.objects.get(user=request.user)
+    return render(request, 'cart.html',{'cart_user': cart_user})
         
         
         
