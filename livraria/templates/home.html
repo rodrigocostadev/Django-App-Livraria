@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
 
     
@@ -20,7 +22,7 @@
                     <th class="text-center" >Data disp. venda</th>
                     <th class="text-center" >Ultima Atualização</th>
                     <th class="text-center" >Estoque</th>
-                    <th class="text-center" >Avaliação</th>
+                    <th class="text-center" >Avaliação Geral</th>
                     {% comment %} <th>Teste de nota<th> {% endcomment %}
                     <th class="text-center" >Adicionar ao Carrinho</th>
 
@@ -45,7 +47,7 @@
                                 <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.last_update|date:"d/m/y - H:i" }}</a></td>
                             {% endif %} 
 
-                            <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.stock }}</a></td>  
+                            <td class="text-center"  ><a value="{{book}}" class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.stock }}</a></td>  
 
                             <td href="{% url 'book' book.id %}">
                                 
@@ -131,7 +133,17 @@
                             
                             {% comment %} <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >★★★☆☆</a></td> {% endcomment %}
 
-                            <td class="text-center"  ><a class="text-decoration-none text-dark" ><i value{{ book.value|floatformat:2 }} class="bi bi-cart fs-3 cursor-pointer" data-bs-toggle="modal" data-bs-target="#myModal" style="cursor:pointer;"></i></a></td>
+                            <td class="text-center"  >
+                                <a href="#myModal" onclick="calculateCart()" class=" btnIconCarts text-decoration-none text-dark" 
+                                {% comment %} <a href="#myModal" onclick="renderCart(this)" class=" btnIconCarts text-decoration-none text-dark"  {% endcomment %}
+                                data-book-title="{{ book.title }}"
+                                data-book-image="{{ book.image.url }}"
+                                data-book-value="{{ book.value }}">
+                                    <i class="bi bi-cart fs-3 cursor-pointer" data-bs-toggle="modal" data-bs-target="#myModal" style="cursor:pointer;"></i>
+                                </a>
+                            </td>        
+                            
+                            {% comment %} <script src="modalCart.js"></script> {% endcomment %}
 
                         </tr>                        
                     {% endfor %}
@@ -139,6 +151,8 @@
             </tbody>
         </table>
         <br>
+        
+
         
 
         <!-- Botão para abrir o modal -->
@@ -201,12 +215,12 @@
         
 
     {% endif %}
+    {% comment %} <script src="modalCart.js"></script> {% endcomment %}
+    <script src="{% static 'scripts/modalAddCart.js' %}"></script>
 {% endblock %}
 
 
-{% if user.is_authenticated %}
-<a href="{% url 'delete_book' book.id %}" class="btn btn-danger" >Excluir</a>
-{% endif %}
+
 
 
 

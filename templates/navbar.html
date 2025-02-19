@@ -1,4 +1,4 @@
-
+{% load static %}
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top ">
     <div class="container-fluid">
@@ -59,7 +59,8 @@
             {% else %}
               {% comment %} <a href="{% url 'profile_view' id=request.user.id  %}"  > {% endcomment %}
               <a href="{% url 'profile_view' id=request.user.id %}" >
-                <img src="{{"../../media/users/default.jpg"}}" style="width:45px; height:45px; border-radius: 50%; margin-left:10px" alt="s/ foto">
+                {% comment %} <img src="{{"../../media/users/default.jpg"}}" style="width:45px; height:45px; border-radius: 50%; margin-left:10px" alt="s/ foto"> {% endcomment %}
+                <img src="{% static 'images/default.jpg' %}"  style="width:45px; height:45px; border-radius: 50%; margin-left:10px" alt="s/ foto">
               </a>           
             {% endif %}
           </div>
@@ -77,3 +78,5 @@
       
     </div>
   </nav>
+
+  

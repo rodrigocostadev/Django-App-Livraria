@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
     <h2 class="text-center" >Livro - {{ book.title }}</h2>
     <hr>
@@ -243,15 +245,18 @@
             </div>
         </div>
         <br>
-        <a href="{% url 'home' %}" class="btn btn-secondary" >Voltar</a>
-        <a href="{% url 'home' %}" class="btn btn-primary" >Add ao Carrinho</a>
+
+        <div class="d-flex gap-2 justify-content-end">
+            <a href="{% url 'home' %}" class="btn btn-secondary" >Voltar</a>
+            <a href="{% url 'home' %}" class="btn btn-primary" >Add ao Carrinho</a>
 
         {% comment %} Se o Usuario for ADM  {% endcomment %}
         {% if user.is_authenticated and user.is_staff  %}
             <a href="{% url 'update_book' book.id %}" class="btn btn-warning" >Atualizar Inf. Livro</a>      
             <a href="{% url 'delete_book' book.id %}" class="btn btn-danger" >Excluir Livro</a>
         {% endif %}
-        <br><br>
+        </div>
+        <br>
 
         <form class="d-flex flex-column" method="post" >
             {% csrf_token %}
@@ -288,7 +293,9 @@
                         {% else %}
                             <div class="d-flex flex-column ">
                                 <a href="{% url 'profile_view' id=comment.user.id  %}">
-                                    <img src="{{"../../media/users/default.jpg"}}" style="width:50px; height:50px; border-radius: 50%;" alt="s/ foto"> 
+                                    {% comment %} <img src="{{"../../media/users/default.jpg"}}" style="width:50px; height:50px; border-radius: 50%;" alt="s/ foto">  {% endcomment %}
+                                    <img src="{% static 'images/default.jpg' %}" style="width:50px; height:50px; border-radius: 50%;" alt="s/ foto">
+                                                                        
                                 </a> 
                                 <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"d/m/y"}}</p>
                                 <p style="font-size:10px; padding:0; margin:0;">{{comment.date|date:"H:i"}}</p>

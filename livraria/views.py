@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -7,6 +7,7 @@ from django.utils import timezone
 from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
 # from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm
 from .models import Book, Comment, RatinStar, UserProfile, Cart, CartItem
+from django.template.loader import render_to_string
 
 
 
@@ -354,10 +355,24 @@ def book_search(request):
 
 
 
+
+def get_cart_context(request):
+    cart_user = Cart.objects.get(user=request.user)
+    cart_items = CartItem.objects.filter(cart= cart_user)
+    return{'cart_user':cart_user, 'cart_items':cart_items}
+
+
+
 def add_cart(request,book_id):
-    book = Book.objects.get(id=book_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    # book = Book.objects.get(id=book_id)
+    # cart, created = Cart.objects.get_or_create(user=request.user)
     
+    # Pega o livro que foi clicado
+    book = get_object_or_404(Book, id=book_id)
+    
+    # Recupera ou cria o carrinho para o usuário
+    cart, created = Cart.objects.get_or_create(user=request.user)
+        
     # Verifica se ja existe o item no carrinho:
     cart_item, created = CartItem.objects.get_or_create(cart=cart, book=book)
     
@@ -365,12 +380,20 @@ def add_cart(request,book_id):
         cart_item.quantity += 1
         cart_item.save()
 
-    return redirect('cart')
+    context_cart = get_cart_context(request)
+    
+    # modal_html = render_to_string("modal_cart_add.html",context_cart)
+    # return JsonResponse({'modal_html':modal_html})
+
+    return render(request,'modal_cart_add.html', context_cart)
+    # return {'context_cart': context_cart}
+
 
 
 def view_cart(request):
-    cart_user = Cart.objects.get(user=request.user)
-    return render(request, 'cart.html',{'cart_user': cart_user})
+    # cart_user = Cart.objects.get(user=request.user)
+    context_cart = get_cart_context(request)
+    return render(request, 'modal_cart_nav.html',{'context_cart': context_cart})
         
         
         
