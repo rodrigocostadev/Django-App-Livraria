@@ -53,7 +53,7 @@ let fieldTitle = document.getElementById("titleCartModal")
 let fieldImg = document.getElementById("imgCartModal") 
 let fieldValue = document.getElementById("valueCartModal") 
 
-// let fieldQuantityBook = document.getElementById('quantityBookCartModal')
+let fieldQuantityBook = document.getElementById('quantityBookCartModal')
 let fieldValueBook = document.getElementById('valueCartModal')
 let quantityBook = 1
 let currentBookValue = 0
@@ -99,6 +99,22 @@ function renderCart(element){
             console.log(quantityBook)
         }        
     })
+
+    // function add(){
+    //     quantityBook += 1
+    //     fieldQuantityBook.textContent = quantityBook
+    //     console.log(quantityBook)
+    //     updateQuantBook(bookValue)
+    // }
+
+    // function decrease(){
+    //     if(quantityBook > 1){
+    //         quantityBook -= 1
+    //         fieldQuantityBook.textContent = quantityBook
+    //         updateQuantBook(bookValue)
+
+    //         console.log(quantityBook)
+    // }
 
     function updateQuantBook(bookValue){
         let bookValueValid = parseFloat(bookValue.replace(',','.'))
