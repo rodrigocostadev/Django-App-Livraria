@@ -2,126 +2,173 @@
 
 
 
-
-
-
+////////////////////////////////////////////////////////////////////////////
+////////////////////////        REMOVE URL         ////////////////////////
 document.addEventListener('DOMContentLoaded', function () {
 
-    let loadTitleBookLS = localStorage.getItem('titleBook')
-    // let titleBook = JSON.parse(loadTitleBookLS)
-    let titleBook = loadTitleBookLS
+    // let modal = new bootstrap.Modal(document.getElementById('myModal'))
+    let modalElement = document.getElementById('myModal')
 
-    let loadImageBookLS = localStorage.getItem('imageBook')
-    // let imageBook = JSON.parse(loadImageBookLS)
-    let imageBook = loadImageBookLS
-
-    let loadValueBookLS = localStorage.getItem('valueBook')
-    // let valueBook = JSON.parse(loadValueBookLS)
-    // let valueBookValid = parse(valueBook)
-    // let valueBook = loadValueBookLS
-    let valueBook = parseFloat(loadValueBookLS.replace(",","."))
-    console.log(valueBook)
-
-    let fieldTitle = document.getElementById("titleCartModal")
-    let fieldImg = document.getElementById("imgCartModal") 
-    let fieldValue = document.getElementById("valueCartModal") 
-
-    console.log(imageBook)
-    console.log(titleBook)
-
-    function calculateCart(imageBook,titleBook){
-        fieldImg.src = imageBook
-        fieldTitle.textContent = titleBook
-        fieldValue.textContent = `R$ ${valueBook}`
-
-        console.log(imageBook)
-        console.log(titleBook)
-        // console.log(55)
-        // console.log("55")
-        // console.log(parseFloat(valueBook))
-    }
-
-     // Chama a função ao abrir o modal
-    const modal = document.getElementById('myModal');
-    modal.addEventListener('show.bs.modal', function () {
-        calculateCart();
-    });
-
-    calculateCart(imageBook, titleBook)
-
+    // Remove o caminho "myModal" da url quando o modal é aberto
+    modalElement.addEventListener('hidden.bs.modal', function(){
+        history.pushState('', document.title, window.location.pathname)
+    })  
 });
 
- 
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////    QUANTIDADE DE LIVROS    ////////////////////////
+// let spanQuantityBook = document.getElementById('quantityBookCartModal')
+// let fieldValueBook = document.getElementById('valueCartModal')
+// let quantityBook = 1
+
+// function plus(){
+//     quantityBook += 1
+//     spanQuantityBook.textContent = quantityBook
+//     let btnIconCarts = document.querySelector(".btnIconCarts")
+//     const bookValue = btnIconCarts.getAttribute('data-book-value')
+//     updateQuantBook(bookValue)
+// }
+// function minus(){
+//     if(quantityBook > 1){
+//         quantityBook -= 1
+//         spanQuantityBook.textContent = quantityBook
+//         let btnIconCarts = document.querySelector(".btnIconCarts")
+//         const bookValue = btnIconCarts.getAttribute('data-book-value')
+//         updateQuantBook(bookValue)
+//     }
+    
+// }
+// function updateQuantBook(bookValue){
+//     result = parseFloat(bookValue) * parseInt(spanQuantityBook.textContent)
+//     fieldValueBook.textContent = result
+//     // return result
+// }
 
 
-function clearLocalStorage(){
-    localStorage.removeItem('titleBook')
-    localStorage.removeItem('imageBook')
-    localStorage.removeItem('valueBook')
 
+////////////////////////////////////////////////////////////////////////////
+////////////////////////    RENDERIZA O CARRINHO    ////////////////////////
+let fieldTitle = document.getElementById("titleCartModal")
+let fieldImg = document.getElementById("imgCartModal") 
+let fieldValue = document.getElementById("valueCartModal") 
+
+// let fieldQuantityBook = document.getElementById('quantityBookCartModal')
+let fieldValueBook = document.getElementById('valueCartModal')
+let quantityBook = 1
+let currentBookValue = 0
+
+
+function renderCart(element){
+
+    console.log("Ok")
+
+    let fieldQuantityBook = document.getElementById('quantityBookCartModal')
+
+    quantityBook = 1
+    fieldQuantityBook.textContent = quantityBook
+
+    const bookTitle = element.getAttribute('data-book-title')
+    const bookImage = element.getAttribute('data-book-image')
+    const bookValue = element.getAttribute('data-book-value')
+    // console.log(bookValue)
+
+    currentBookValue = parseFloat(bookValue.replace(',','.'))
+
+    fieldImg.src = bookImage
+    fieldTitle.textContent = bookTitle    
+    fieldValue.textContent = `R$ ${bookValue}` // Valor inicial
+
+    updateQuantBook(bookValue)
+
+    let add = document.getElementById('add')
+    add.addEventListener('click', function(){        
+        quantityBook += 1
+        fieldQuantityBook.textContent = quantityBook
+        console.log(quantityBook)
+        updateQuantBook(bookValue)
+    })
+
+    let decrease = document.getElementById('decrease')
+    decrease.addEventListener('click', function(){
+        if(quantityBook > 1){
+            quantityBook -= 1
+            fieldQuantityBook.textContent = quantityBook
+            updateQuantBook(bookValue)
+
+            console.log(quantityBook)
+        }        
+    })
+
+    function updateQuantBook(bookValue){
+        let bookValueValid = parseFloat(bookValue.replace(',','.'))
+        // let result = bookValueValid * parseInt(fieldQuantityBook.textContent)
+        let result = bookValueValid * quantityBook
+        fieldValueBook.textContent = `R$ ${result.toFixed(2).replace('.',',')}`
+    }
+
+}
+
+function closeModal(){
+    quantityBook = 1
+    fieldQuantityBook.textContent = quantityBook
+    updateQuantBook(bookValue)
 }
 
 
 
 
+// function updateValueBook(bookValue){
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// let loadTitleBookLS = localStorage.getItem('titleBook')
-// // let titleBook = JSON.parse(loadTitleBookLS)
-// let titleBook = loadTitleBookLS
-
-// let loadImageBookLS = localStorage.getItem('imageBook')
-// // let imageBook = JSON.parse(loadImageBookLS)
-// let imageBook = loadImageBookLS
-
-// let loadValueBookLS = localStorage.getItem('valueBook')
-// // let valueBook = JSON.parse(loadValueBookLS)
-// // let valueBookValid = parse(valueBook)
-// let valueBook = parseFloat(loadValueBookLS)
-// // console.log(valueBook)
-
-// let fieldTitle = document.getElementById("titleCartModal")
-// let fieldImg = document.getElementById("imgCartModal") 
-// // let fieldValue = document.getElementById("") 
-
-// console.log(imageBook)
-//     console.log(titleBook)
-
-// function calculateCart(imageBook,titleBook){
-//     fieldImg.src = imageBook
-//     fieldTitle.textContent = titleBook
-
-//     console.log(imageBook)
-//     console.log(titleBook)
-//     // console.log(55)
-//     // console.log("55")
-//     // console.log(parseFloat(valueBook))
 // }
 
 
 
-// calculateCart()
+
+
+
+
+
+
+
+
+
+
+
+
+// function clearLocalStorage(){
+//     localStorage.removeItem('titleBook')
+//     localStorage.removeItem('imageBook')
+//     localStorage.removeItem('valueBook')
+
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

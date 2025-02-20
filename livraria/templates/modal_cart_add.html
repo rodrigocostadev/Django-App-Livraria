@@ -7,7 +7,7 @@
         <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title ml-5" id="myModalLabel"><i class="bi bi-cart"></i> Status do Carrinho</h4>
-            <button onclick="clearLocalStorage()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button onclick="closeModal()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             
         </div>
         <div class="modal-body">
@@ -18,13 +18,19 @@
                         <h6 class="mb-4" id="titleCartModal"></h6>
                         <div class="d-flex align-items-center justify-content-center gap-4">
                             <button class="btn btn-danger small-btn">Excluir</button>
-                            <a id="decrease" href="#">
-                                <i class="fa-solid fa-minus"></i>
-                            </a>                            
-                            <span>1</span>
-                            <a id="add" style="margin-left:5px;" href="#">
+                            {% comment %} <a id="decrease" href="#">
+                                <i   class="fa-solid fa-minus"></i>
+                            </a>                             {% endcomment %}
+                            <button id="decrease" >
+                                <i   class="fa-solid fa-minus"></i>
+                            </button>  
+                            <span id="quantityBookCartModal" ></span>
+                            {% comment %} <a id="add" style="margin-left:5px;" href="#">
                                 <i class="fa-solid fa-plus"></i>
-                            </a>
+                            </a> {% endcomment %}
+                            <button id="add" style="margin-left:5px;">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
                             <span id="valueCartModal" style="margin-left:30px;"></span>
                         </div>                        
                     </div>                  

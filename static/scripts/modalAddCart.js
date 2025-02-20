@@ -7,42 +7,72 @@
 
 
 
-document.addEventListener('DOMContentLoaded', function () {
+// document.addEventListener('DOMContentLoaded', function () {
 
-    let btnIconCarts = document.querySelectorAll(".btnIconCarts")
+//     // let modal = new bootstrap.Modal(document.getElementById('myModal'))
+//     let modalElement = document.getElementById('myModal')
 
-    btnIconCarts.forEach((btn) => {
-        btn.addEventListener('click', function(){
-            renderCart(this)
-        })
-    })
+//     // Remove o caminho "myModal" da url quando o modal é aberto
+//     modalElement.addEventListener('hidden.bs.modal', function(){
+//         history.pushState('', document.title, window.location.pathname)
+//     })  
+// });
 
-
-
-    function renderCart(btnIconCarts){
-        const bookTitle = btnIconCarts.getAttribute('data-book-title')
-        const bookImage = btnIconCarts.getAttribute('data-book-image')
-        const bookValue = btnIconCarts.getAttribute('data-book-value')
-
-        // let titleBook = JSON.stringify(bookTitle)
-        // localStorage.setItem('titleBook',titleBook)
-        localStorage.setItem('titleBook',bookTitle)
+   
 
 
-        // let imageBook = JSON.stringify(bookImage)
-        // localStorage.setItem('imageBook',imageBook)
-        localStorage.setItem('imageBook',bookImage)
-        
+    // let btnIconCarts = document.querySelectorAll(".btnIconCarts")
 
-        // let valueBook = JSON.stringify(bookValue)
-        // localStorage.setItem('valueBook',valueBook)
-        localStorage.setItem('valueBook',bookValue)
+    // btnIconCarts.forEach((btn) => {
+    //     btn.addEventListener('click', function(){
+    //         renderCart(this)
+    //     })
+    // })
 
-        console.log("OK") 
-        console.log(bookTitle)   
-        console.log(bookImage)     
-        console.log(bookValue)   
-    }
+    // function renderCart(btnIconCarts){
+    //     const bookTitle = btnIconCarts.getAttribute('data-book-title')
+    //     const bookImage = btnIconCarts.getAttribute('data-book-image')
+    //     const bookValue = btnIconCarts.getAttribute('data-book-value')
+
+    //     // let titleBook = JSON.stringify(bookTitle)
+    //     // localStorage.setItem('titleBook',titleBook)
+    //     localStorage.setItem('titleBook',bookTitle)
+
+    //     // let imageBook = JSON.stringify(bookImage)
+    //     // localStorage.setItem('imageBook',imageBook)
+    //     localStorage.setItem('imageBook',bookImage)        
+
+    //     // let valueBook = JSON.stringify(bookValue)
+    //     // localStorage.setItem('valueBook',valueBook)
+    //     localStorage.setItem('valueBook',bookValue)
+
+    //     console.log("OK") 
+    //     console.log(bookTitle)   
+    //     console.log(bookImage)     
+    //     console.log(bookValue)   
+    // }
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // let btnIconCarts = document.querySelectorAll(".btnIconCarts");
@@ -68,18 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //     console.log(bookImage);
     //     console.log(bookValue);
     // }
-});
-
-
-
-
-
-
-
-
-
-
-
 
 
 

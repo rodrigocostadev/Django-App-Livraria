@@ -134,11 +134,11 @@
                             {% comment %} <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >★★★☆☆</a></td> {% endcomment %}
 
                             <td class="text-center"  >
-                                <a href="#myModal" onclick="calculateCart()" class=" btnIconCarts text-decoration-none text-dark" 
-                                {% comment %} <a href="#myModal" onclick="renderCart(this)" class=" btnIconCarts text-decoration-none text-dark"  {% endcomment %}
+                                <a href="#myModal" onclick="renderCart(this, {{ book.id }})" class=" btnIconCarts text-decoration-none text-dark" 
                                 data-book-title="{{ book.title }}"
                                 data-book-image="{{ book.image.url }}"
-                                data-book-value="{{ book.value }}">
+                                data-book-value="{{ book.value }}"
+                                data-book-id="{{ book.id }}">
                                     <i class="bi bi-cart fs-3 cursor-pointer" data-bs-toggle="modal" data-bs-target="#myModal" style="cursor:pointer;"></i>
                                 </a>
                             </td>        
@@ -216,7 +216,7 @@
 
     {% endif %}
     {% comment %} <script src="modalCart.js"></script> {% endcomment %}
-    <script src="{% static 'scripts/modalAddCart.js' %}"></script>
+    {% comment %} <script src="{% static 'scripts/modalAddCart.js' %}"></script> {% endcomment %}
 {% endblock %}
 
 
