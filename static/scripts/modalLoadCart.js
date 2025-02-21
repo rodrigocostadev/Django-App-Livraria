@@ -4,6 +4,7 @@
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////        REMOVE URL         ////////////////////////
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // let modal = new bootstrap.Modal(document.getElementById('myModal'))
@@ -16,20 +17,32 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+
+
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////    QUANTIDADE DE LIVROS    ////////////////////////
-// let spanQuantityBook = document.getElementById('quantityBookCartModal')
-// let fieldValueBook = document.getElementById('valueCartModal')
-// let quantityBook = 1
 
-// function plus(){
+// let quantityBook = 1
+// let currentValue = 0
+// console.log("teste",currentValue)
+
+// function teste(){
+//     console.log("Esse é o teste ",currentValue)
+// }
+
+
+// function add(currentValue){
+//     let spanQuantityBook = document.getElementById('quantityBookCartModal')
 //     quantityBook += 1
 //     spanQuantityBook.textContent = quantityBook
 //     let btnIconCarts = document.querySelector(".btnIconCarts")
 //     const bookValue = btnIconCarts.getAttribute('data-book-value')
 //     updateQuantBook(bookValue)
 // }
-// function minus(){
+
+// function decrease(currentValue){
+//     let spanQuantityBook = document.getElementById('quantityBookCartModal')
 //     if(quantityBook > 1){
 //         quantityBook -= 1
 //         spanQuantityBook.textContent = quantityBook
@@ -37,93 +50,106 @@ document.addEventListener('DOMContentLoaded', function () {
 //         const bookValue = btnIconCarts.getAttribute('data-book-value')
 //         updateQuantBook(bookValue)
 //     }
-    
 // }
-// function updateQuantBook(bookValue){
-//     result = parseFloat(bookValue) * parseInt(spanQuantityBook.textContent)
-//     fieldValueBook.textContent = result
-//     // return result
-// }
+
+
+
+let quantityBook = 1
+
+function add(){
+    let spanQuantityBook = document.getElementById('quantityBookCartModal')
+    quantityBook += 1
+    spanQuantityBook.textContent = quantityBook
+    let btnIconCarts = document.querySelector(".btnIconCarts")
+    const bookValue = btnIconCarts.getAttribute('data-book-value')
+    updateQuantBook(bookValue)
+}
+
+function decrease(){
+    let spanQuantityBook = document.getElementById('quantityBookCartModal')
+    if(quantityBook > 1){
+        quantityBook -= 1
+        spanQuantityBook.textContent = quantityBook
+        let btnIconCarts = document.querySelector(".btnIconCarts")
+        const bookValue = btnIconCarts.getAttribute('data-book-value')
+        updateQuantBook(bookValue)
+    }
+}
+
+function updateQuantBook(bookValue){
+    let bookValueValid = parseFloat(bookValue.replace(',','.'))
+
+    currentValue = bookValueValid
+    console.log(bookValueValid)
+
+    // let result = bookValueValid * parseInt(fieldQuantityBook.textContent)
+    let result = bookValueValid * quantityBook
+    fieldValueBook.textContent = `R$ ${result.toFixed(2).replace('.',',')}`
+    console.log(result)
+
+    teste()
+}
+
 
 
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////    RENDERIZA O CARRINHO    ////////////////////////
+
 let fieldTitle = document.getElementById("titleCartModal")
 let fieldImg = document.getElementById("imgCartModal") 
 let fieldValue = document.getElementById("valueCartModal") 
 
 let fieldQuantityBook = document.getElementById('quantityBookCartModal')
 let fieldValueBook = document.getElementById('valueCartModal')
-let quantityBook = 1
-let currentBookValue = 0
+
 
 
 function renderCart(element){
 
-    console.log("Ok")
+    console.log("Ok rendercart")
 
     let fieldQuantityBook = document.getElementById('quantityBookCartModal')
 
-    quantityBook = 1
-    fieldQuantityBook.textContent = quantityBook
+    // Atribuindo valor ao campo de quantidade ( que sempre inicia vazio )
+    if (fieldQuantityBook.textContent == ""){
+        fieldQuantityBook.textContent = 1
+    }
+
+    let quantityBook = fieldQuantityBook.textContent
+    console.log(quantityBook)    
 
     const bookTitle = element.getAttribute('data-book-title')
     const bookImage = element.getAttribute('data-book-image')
     const bookValue = element.getAttribute('data-book-value')
-    // console.log(bookValue)
 
-    currentBookValue = parseFloat(bookValue.replace(',','.'))
+    // currentValue = bookValue
+
+    console.log(bookValue)
 
     fieldImg.src = bookImage
     fieldTitle.textContent = bookTitle    
     fieldValue.textContent = `R$ ${bookValue}` // Valor inicial
 
-    updateQuantBook(bookValue)
+    // TESTE
+    // updateQuantBook(currentValue)
+    updateQuantBook(bookValue)    
 
-    let add = document.getElementById('add')
-    add.addEventListener('click', function(){        
-        quantityBook += 1
-        fieldQuantityBook.textContent = quantityBook
-        console.log(quantityBook)
-        updateQuantBook(bookValue)
-    })
+    let modal = document.getElementById('myModal')
 
-    let decrease = document.getElementById('decrease')
-    decrease.addEventListener('click', function(){
-        if(quantityBook > 1){
-            quantityBook -= 1
-            fieldQuantityBook.textContent = quantityBook
-            updateQuantBook(bookValue)
-
-            console.log(quantityBook)
-        }        
-    })
-
-    // function add(){
-    //     quantityBook += 1
-    //     fieldQuantityBook.textContent = quantityBook
-    //     console.log(quantityBook)
-    //     updateQuantBook(bookValue)
-    // }
-
-    // function decrease(){
-    //     if(quantityBook > 1){
-    //         quantityBook -= 1
-    //         fieldQuantityBook.textContent = quantityBook
-    //         updateQuantBook(bookValue)
-
-    //         console.log(quantityBook)
-    // }
-
-    function updateQuantBook(bookValue){
-        let bookValueValid = parseFloat(bookValue.replace(',','.'))
-        // let result = bookValueValid * parseInt(fieldQuantityBook.textContent)
-        let result = bookValueValid * quantityBook
-        fieldValueBook.textContent = `R$ ${result.toFixed(2).replace('.',',')}`
+    // Zera o contador ao abrir o modal
+    if( !modal.classList.contains('show') ){     
+        closeModal()
     }
-
 }
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////    FECHA O CARRINHO    ////////////////////////
 
 function closeModal(){
     quantityBook = 1
@@ -134,9 +160,6 @@ function closeModal(){
 
 
 
-// function updateValueBook(bookValue){
-
-// }
 
 
 
@@ -148,6 +171,44 @@ function closeModal(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // let add = document.getElementById('add')
+    // add.addEventListener('click', function(){        
+    //     quantityBook += 1
+    //     fieldQuantityBook.textContent = quantityBook
+    //     console.log(quantityBook)
+    //     updateQuantBook(bookValue)
+    // })
+
+    // let decrease = document.getElementById('decrease')
+    // decrease.addEventListener('click', function(){
+    //     if(quantityBook > 1){
+    //         quantityBook -= 1
+    //         fieldQuantityBook.textContent = quantityBook
+    //         updateQuantBook(bookValue)
+
+    //         console.log(quantityBook)
+    //     }        
+    // })
 
 
 
