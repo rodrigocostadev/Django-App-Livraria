@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////    QUANTIDADE DE LIVROS    ////////////////////////
 
-// let quantityBook = 1
-// let currentValue = 0
+let quantityBook = 1
+let currentValue = 0
 // console.log("teste",currentValue)
 
 // function teste(){
@@ -32,7 +32,31 @@ document.addEventListener('DOMContentLoaded', function () {
 // }
 
 
-// function add(currentValue){
+function add(){
+    let spanQuantityBook = document.getElementById('quantityBookCartModal')
+    quantityBook += 1
+    spanQuantityBook.textContent = quantityBook
+    // let btnIconCarts = document.querySelector(".btnIconCarts")
+    // const bookValue = btnIconCarts.getAttribute('data-book-value')
+    updateQuantBook(currentValue)
+}
+
+function decrease(){
+    let spanQuantityBook = document.getElementById('quantityBookCartModal')
+    if(quantityBook > 1){
+        quantityBook -= 1
+        spanQuantityBook.textContent = quantityBook
+        // let btnIconCarts = document.querySelector(".btnIconCarts")
+        // const bookValue = btnIconCarts.getAttribute('data-book-value')
+        updateQuantBook(currentValue)
+    }
+}
+
+
+
+// let quantityBook = 1
+
+// function add(){
 //     let spanQuantityBook = document.getElementById('quantityBookCartModal')
 //     quantityBook += 1
 //     spanQuantityBook.textContent = quantityBook
@@ -41,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
 //     updateQuantBook(bookValue)
 // }
 
-// function decrease(currentValue){
+// function decrease(){
 //     let spanQuantityBook = document.getElementById('quantityBookCartModal')
 //     if(quantityBook > 1){
 //         quantityBook -= 1
@@ -52,34 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
 //     }
 // }
 
-
-
-let quantityBook = 1
-
-function add(){
-    let spanQuantityBook = document.getElementById('quantityBookCartModal')
-    quantityBook += 1
-    spanQuantityBook.textContent = quantityBook
-    let btnIconCarts = document.querySelector(".btnIconCarts")
-    const bookValue = btnIconCarts.getAttribute('data-book-value')
-    updateQuantBook(bookValue)
-}
-
-function decrease(){
-    let spanQuantityBook = document.getElementById('quantityBookCartModal')
-    if(quantityBook > 1){
-        quantityBook -= 1
-        spanQuantityBook.textContent = quantityBook
-        let btnIconCarts = document.querySelector(".btnIconCarts")
-        const bookValue = btnIconCarts.getAttribute('data-book-value')
-        updateQuantBook(bookValue)
-    }
-}
-
 function updateQuantBook(bookValue){
     let bookValueValid = parseFloat(bookValue.replace(',','.'))
 
-    currentValue = bookValueValid
     console.log(bookValueValid)
 
     // let result = bookValueValid * parseInt(fieldQuantityBook.textContent)
@@ -87,7 +86,6 @@ function updateQuantBook(bookValue){
     fieldValueBook.textContent = `R$ ${result.toFixed(2).replace('.',',')}`
     console.log(result)
 
-    teste()
 }
 
 
@@ -123,7 +121,7 @@ function renderCart(element){
     const bookImage = element.getAttribute('data-book-image')
     const bookValue = element.getAttribute('data-book-value')
 
-    // currentValue = bookValue
+    currentValue = bookValue
 
     console.log(bookValue)
 
@@ -139,6 +137,7 @@ function renderCart(element){
 
     // Zera o contador ao abrir o modal
     if( !modal.classList.contains('show') ){     
+        // console.log("teste close if")
         closeModal()
     }
 }
@@ -155,6 +154,7 @@ function closeModal(){
     quantityBook = 1
     fieldQuantityBook.textContent = quantityBook
     updateQuantBook(bookValue)
+    // console.log("teste F close modal")
 }
 
 
