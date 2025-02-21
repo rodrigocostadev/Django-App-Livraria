@@ -17,15 +17,15 @@
                     <div class="text-center" style="width:100%;">
                         <h6 class="mb-4" id="titleCartModal"></h6>
                         <div class="d-flex align-items-center justify-content-center gap-4">
-                            <button class="btn btn-danger small-btn">Excluir</button>
-                            <a onclick="decrease()" id="decrease" href="#">
+                            <button class="btn btn-danger small-btn" data-bs-dismiss="modal">Excluir</button>
+                            <a class="p-2" onclick="decrease()" id="decrease" href="#">
                                 <i   class="fa-solid fa-minus"></i>
                             </a>                            
                             {% comment %} <button onclick="decrease()" id="decrease" >
                                 <i   class="fa-solid fa-minus"></i>
                             </button>   {% endcomment %}
                             <span id="quantityBookCartModal" ></span>
-                            <a onclick="add()" id="add" style="margin-left:5px;" href="#">
+                            <a class="p-2" onclick="add()" id="add" style="margin-left:5px;" href="#">
                                 <i class="fa-solid fa-plus"></i>
                             </a>
                             {% comment %} <button onclick="add()" id="add" style="margin-left:5px;">
@@ -37,15 +37,15 @@
                 </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Limpar</button>
+            <button onclick="clearCart()" type="button" class="btn btn-danger" data-bs-dismiss="modal">Limpar</button>
             <button type="button" class="btn btn-success" data-bs-dismiss="modal">Finalizar Compra</button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add ao Carrinho</button>            
+            <button onclick="addBookCart()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Add ao Carrinho</button>            
         </div>
         </div>
     </div>
     </div>
 
-    <script src="{% static 'scripts/modalLoadCart.js' %}"></script>
+    <script src="{% static 'scripts/modalAddCart.js' %}"></script>
 
 
 
