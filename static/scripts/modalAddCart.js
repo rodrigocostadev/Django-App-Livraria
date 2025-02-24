@@ -29,9 +29,11 @@ let result
 
 
 function add(){
+    let h6QuantityBookTitle = document.getElementById('quantityBookCartModalTitle')
     let spanQuantityBook = document.getElementById('quantityBookCartModal')
     quantityBook += 1
     spanQuantityBook.textContent = quantityBook
+    h6QuantityBookTitle.textContent = quantityBook
     updateQuantBook(currentValue)
 
     if( !modal.classList.contains('show') ){     
@@ -42,10 +44,12 @@ function add(){
 }
 
 function decrease(){
+    let h6QuantityBookTitle = document.getElementById('quantityBookCartModalTitle')
     let spanQuantityBook = document.getElementById('quantityBookCartModal')
     if(quantityBook > 1){
         quantityBook -= 1
         spanQuantityBook.textContent = quantityBook
+        h6QuantityBookTitle.textContent = quantityBook
         updateQuantBook(currentValue)
     }
 
@@ -77,22 +81,26 @@ function updateQuantBook(bookValue){
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////    RENDERIZA O CARRINHO    ////////////////////////
 
+
 let fieldTitle = document.getElementById("titleCartModal")
 let fieldImg = document.getElementById("imgCartModal") 
 let fieldValue = document.getElementById("valueCartModal") 
 
+let h6QuantityBookTitle = document.getElementById('quantityBookCartModalTitle')
 let fieldQuantityBook = document.getElementById('quantityBookCartModal')
 let fieldValueBook = document.getElementById('valueCartModal')
-
 
 
 function renderCart(element){
 
     let fieldQuantityBook = document.getElementById('quantityBookCartModal')
+    let h6QuantityBookTitle = document.getElementById('quantityBookCartModalTitle')
 
     // Atribuindo valor ao campo de quantidade ( que sempre inicia vazio )
     if (fieldQuantityBook.textContent == ""){
         fieldQuantityBook.textContent = 1
+        h6QuantityBookTitle.textContent = 1
+        console.log("teste AAA")
     }
 
     let quantityBook = fieldQuantityBook.textContent
@@ -131,19 +139,14 @@ let numberCart = document.getElementById("numberCart")
 let iconCart = document.getElementById("iconCart")
 
 function addBookCart(){
-    console.log(fieldTitle.textContent)
-    console.log(fieldImg.src)
-    console.log(fieldValue.textContent)
+    // console.log(fieldTitle.textContent)
+    // console.log(fieldImg.src)
+    // console.log(fieldValue.textContent)    
+    // console.log(currentValue) // valor unitario em string    
+    // console.log(parseFloat(currentValue.replace(',','.'))) // valor unitario em numero    
+    // console.log(result) // valor total em numero
 
-    // valor unitario em string
-    console.log(currentValue)
-
-    // valor unitario em numero
-    console.log(parseFloat(currentValue.replace(',','.')))
-
-    // valor total em numero
-    console.log(result)
-
+    // Numero de itens do carrinho
     let totalItems = Math.round(result / parseFloat(currentValue.replace(',','.')))
     console.log(totalItems)
 
@@ -155,33 +158,128 @@ function addBookCart(){
         valueUnitBook: parseFloat(currentValue),
         totalValue: result,
     })
-
-    console.log(itemShoppingCart)
+    // console.log(itemShoppingCart)
 
     numberCart.classList.remove("d-none")
     numberCart.classList.add("d-flex")
-    // numberCart.textContent = totalItems
-    renderIconCart()
+    renderStatusCart()
     
     iconCart.style = ""
 }
 
 
-function renderIconCart(){
-    let totalItems = 0
-    for( item of itemShoppingCart){
-        totalItems += item.quantity
+
+//////////////////////////////////////////////////////////////////////////////////////
+////////////////////////    RENDERIZA O STATUS DO CARRINHO    ////////////////////////
+
+function renderStatusCart(){   
+
+    console.log(itemShoppingCart)
+
+    let modalNavTitleh6 = document.getElementById("quantityBookCartModalNavTitle")
+    let statusModalContent = document.getElementById("status-modal-content")
+    let totalValueStatusCart = document.getElementById("totalValueStatusCart")
+
+    let totalItemsCart = 0
+    let totalValueCart = 0
+    statusModalContent.innerHTML = ""
+
+    let reversedItems = itemShoppingCart.reverse()
+
+    // Se não tiver itens o valor é 0
+    if(itemShoppingCart.length === 0){
+        totalValueStatusCart.textContent = "R$ 0,00"
+        numberCart.classList.add("d-none")
+        numberCart.classList.remove("d-flex")
+        iconCart.style = "margin-right:10px"    
     }
-    numberCart.textContent = totalItems
+
+    for( item of reversedItems){
+        totalItemsCart += item.quantity
+        totalValueCart += item.totalValue
+
+        console.log("esse é o VALOR TOTAL:", totalValueCart.toFixed(2).replace('.',','))
+
+
+        totalValueStatusCart.textContent = " R$ "+ totalValueCart.toFixed(2).replace('.',',')
+        statusModalContent.innerHTML += `<div class="d-flex align-items-center" style="height:140px;">
+                                            <img src="${item.img}" class="w-25 img-fluid" style="object-fit:contain; height:100%; width:auto;" >
+                                            <div class="text-center" style="width:100%;">
+                                                <h6 id="title-book-status" class="mb-4" >${item.title}</h6>
+                                                <div class="d-flex align-items-center justify-content-center gap-4">
+                                                    <button onclick="removeItem('${item.title}')" class="btn btn-danger small-btn" >Excluir</button>
+                                                    <a class="p-2" onclick="decreaseStatus('${item.title}')" href="#">
+                                                        <i   class="fa-solid fa-minus"></i>
+                                                    </a>                            
+                                                    <span id="quantityStatusCart" >${item.quantity}</span>
+                                                    <a class="p-2" onclick="addStatus('${item.title}')" style="margin-left:5px;" href="#">
+                                                        <i class="fa-solid fa-plus"></i>
+                                                    </a>
+                                                    <span style="margin-left:30px;">R$ ${item.totalValue.toFixed(2).replace('.',',')}</span>
+                                                </div>                        
+                                            </div>                  
+                                        </div>
+                                        <hr>`
+    }
+    numberCart.textContent = totalItemsCart  // Numero de itens no icone da navbar
+
+    modalNavTitleh6.textContent = totalItemsCart
+    console.log("esse é o totalValue: ", totalValueCart)
 }
 
 
+function addStatus(title){
+    let reversedItems = itemShoppingCart.reverse()
+    for (item of reversedItems){
+        if(item.title == title){
+            item.quantity += 1
+            item.totalValue = item.quantity * item.valueUnitBook
+            break
+        }
+    }
+    renderStatusCart()
+}
+
+function decreaseStatus(title){
+    let reversedItems = itemShoppingCart.reverse()
+    for (item of reversedItems){
+        if(item.title == title){
+            if(item.quantity > 1){
+                item.quantity -= 1
+                item.totalValue = item.quantity * item.valueUnitBook
+            }            
+            break
+        }
+    }
+    renderStatusCart()
+}
+
+
+function removeItem(title){
+    let reversedItems = itemShoppingCart.reverse()
+
+    // Retorna o item encontrado com o título igual ao valor da variável title. Nesse caso, o findIndex() retorna o índice do item encontrado no array.
+    let indexToRemove = reversedItems.findIndex(item => item.title === title) 
+
+    if(indexToRemove !== -1){ // Se o item for encontrado (ou seja, se indexToRemove for diferente de -1)
+        reversedItems.splice(indexToRemove,1)
+    }
+
+    renderStatusCart()
+}
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////////////////////    LIMPA O CARRINHO    ////////////////////////
+
 function clearCart(){
     itemShoppingCart = []
-    renderIconCart()
+    renderStatusCart()
     numberCart.classList.remove("d-flex")
     numberCart.classList.add("d-none")
     iconCart.style = "margin-right:10px"    
+    totalValueStatusCart.textContent = "R$ 0,00"
 }
 
 
@@ -214,6 +312,7 @@ observer.observe(modal, {
 function closeModal(){
     quantityBook = 1
     fieldQuantityBook.textContent = quantityBook
+    h6QuantityBookTitle.textContent = quantityBook
     updateQuantBook(quantityBook)
     console.log("Teste Função close modal")
 }

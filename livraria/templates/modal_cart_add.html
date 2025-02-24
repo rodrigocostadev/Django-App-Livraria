@@ -6,12 +6,15 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
         <div class="modal-header">
-            <h4 class="modal-title ml-5" id="myModalLabel"><i class="bi bi-cart"></i> Status do Carrinho</h4>
+            <h4 class="modal-title ml-5" id="myModalLabel"><i class="bi bi-cart"></i> Adicionar ao Carrinho</h4>
             <button onclick="closeModal()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             
         </div>
         <div class="modal-body">
-            <h6>Itens Selecionados: NUMERO</h6>
+            <div>
+                <h6 style="display:inline-block" >Itens Selecionados: </h6><span></span> <h6 id="quantityBookCartModalTitle" style="display:inline-block" ></h6>
+            </div>
+            
                 <div class="d-flex ">
                     <img id="imgCartModal" class="w-25">
                     <div class="text-center" style="width:100%;">
@@ -21,16 +24,10 @@
                             <a class="p-2" onclick="decrease()" id="decrease" href="#">
                                 <i   class="fa-solid fa-minus"></i>
                             </a>                            
-                            {% comment %} <button onclick="decrease()" id="decrease" >
-                                <i   class="fa-solid fa-minus"></i>
-                            </button>   {% endcomment %}
                             <span id="quantityBookCartModal" ></span>
                             <a class="p-2" onclick="add()" id="add" style="margin-left:5px;" href="#">
                                 <i class="fa-solid fa-plus"></i>
                             </a>
-                            {% comment %} <button onclick="add()" id="add" style="margin-left:5px;">
-                                <i class="fa-solid fa-plus"></i>
-                            </button> {% endcomment %}
                             <span id="valueCartModal" style="margin-left:30px;"></span>
                         </div>                        
                     </div>                  
@@ -39,7 +36,7 @@
         <div class="modal-footer">
             <button onclick="clearCart()" type="button" class="btn btn-danger" data-bs-dismiss="modal">Limpar</button>
             <button type="button" class="btn btn-success" data-bs-dismiss="modal">Finalizar Compra</button>
-            <button onclick="addBookCart()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Add ao Carrinho</button>            
+            <button onclick="addBookCart()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Adicionar</button>            
         </div>
         </div>
     </div>
