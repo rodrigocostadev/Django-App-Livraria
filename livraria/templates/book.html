@@ -160,27 +160,27 @@
                             <label class="rate">
                                 <input type="radio" name="rating" id="star1" value="1">
                                 <div class="face"></div>
-                                <i class="far fa-star star one-star"></i>
+                                <i class="far fa-star star one-star {% if user_rating and 1 <= user_rating.rating  %} fas rate-active {% endif %}"></i>
                             </label>
                             <label class="rate">
                                 <input type="radio" name="rating" id="star2" value="2">
                                 <div class="face"></div>
-                                <i class="far fa-star star two-star"></i>
+                                <i class="far fa-star star two-star {% if user_rating and 2 <= user_rating.rating  %} fas rate-active {% endif %}"></i>
                             </label>
                             <label class="rate">
                                 <input type="radio" name="rating" id="star3" value="3">
                                 <div class="face"></div>
-                                <i class="far fa-star star three-star"></i>
+                                <i class="far fa-star star three-star {% if user_rating and 3 <= user_rating.rating  %} fas rate-active {% endif %}"></i>
                             </label>
                             <label class="rate">
                                 <input type="radio" name="rating" id="star4" value="4">
                                 <div class="face"></div>
-                                <i class="far fa-star star four-star"></i>
+                                <i class="far fa-star star four-star {% if user_rating and 4 <= user_rating.rating  %} fas rate-active {% endif %}"></i>
                             </label>
                             <label class="rate">
                                 <input type="radio" name="rating" id="star5" value="5">
                                 <div class="face"></div>
-                                <i class="far fa-star star five-star"></i>
+                                <i class="far fa-star star five-star {% if user_rating and user_rating.rating >= 4.3  %} fas rate-active {% endif %}"></i>
                             </label>                            
                         </div>
                         <button class="btn btn-info d-flex align-items-center btn-sm" name="rating_submit" style="height:30px;" type="submit">Enviar Avaliação</button>
@@ -266,9 +266,11 @@
             <br>
         </form>
 
-        <div class=" text-center ">
-            {% if book.comments %}
-                {% for comment in book.comments.all %}
+        <div class=" text-center ">            
+            {% if comments %}
+                {% for comment in comments %} 
+                {% comment %} {% if book.comments %}
+                    {% for comment in book.comments.all %}  {% endcomment %}
                     <div class="d-flex gap-3">
 
                         {% comment %} <textarea class="form-control" readonly style="resize: none; height:100px; overflow:hidden;"> 

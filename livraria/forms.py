@@ -13,6 +13,7 @@ class SignUpForm(UserCreationForm):
     last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
     user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil ( Opcional ):")
     cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'CPF (Digite Apenas Números)'}),label = "")
+    bio = forms.CharField(required=False, max_length=500, widget=forms.widgets.Textarea(attrs={"placeholder":"Bio ( Opcional )", "class":"form-control"}), label="")
    
     
     def clean_cpf(self):
@@ -26,7 +27,7 @@ class SignUpForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image')        
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2','bio','user_image')        
     
         
     def __init__(self, *args, **kwargs):

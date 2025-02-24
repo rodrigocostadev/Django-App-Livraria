@@ -22,7 +22,10 @@
                 <h6>{{ user_profile.username }}</h6>
             </div> 
 
-            <br>
+            {% comment %} <br> {% endcomment %}
+
+            <h6>Bio:</h6>
+            <textarea class="form-control" style="height: 160px;" readonly> {{ user_profile_instance.bio }}</textarea>
 
             <div class="text-center" >
 
@@ -36,7 +39,7 @@
                     
                         {% endfor %}
                 </div>
-                <br><br>
+                <br>
 
                 <h5>Livros Preferidos:</h5>
                 <br>

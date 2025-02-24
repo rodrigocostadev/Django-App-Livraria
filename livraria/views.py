@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
 # from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm
-from .models import Book, Comment, RatinStar, UserProfile, Cart, CartItem
+from .models import Book, Comment, RatinStar, UserProfile
 from django.template.loader import render_to_string
 
 
@@ -34,7 +34,7 @@ def calculate_media_rating(book):
 
 def home(request):
     # return HttpResponse('Teste Home')
-    books = Book.objects.all().order_by('title') # Ordena em ordem alfabetica pelo titulo
+    books = Book.objects.all().order_by('-media_rating') # Ordena em ordem alfabetica pelo titulo
     # book_id = Book.objects.get(id =id)
     # media_rating = calculate_media_rating(book_id)
     
@@ -83,12 +83,13 @@ def register_user(request):
             user = form.save() # Salvando o objeto usuario na variavel user para utilizar na variavel user user_profile
             user_image = form.cleaned_data['user_image']
             cpf = form.cleaned_data['cpf']
+            bio = form.cleaned_data['bio']
             
             if user_image:
-                user_profile = UserProfile.objects.create(user = user, user_image = user_image, cpf = cpf)
+                user_profile = UserProfile.objects.create(user = user, user_image = user_image, cpf = cpf, bio = bio)
             else:
                 # user_profile = UserProfile.objects.create(user = user,  user_image = "../../media/users/default.jpg" , cpf = cpf)
-                user_profile = UserProfile.objects.create(user = user,  user_image = "users/default.jpg" , cpf = cpf)
+                user_profile = UserProfile.objects.create(user = user,  user_image = "users/default.jpg" , cpf = cpf, bio=bio)
                 
             user_profile.save()            
             
@@ -128,7 +129,8 @@ def profile_user_view(request, id):
 
         user_logged = request.user  # Usuário logado
         user_profile = get_object_or_404(User, id=id)  # Usuário visitado
-        ratings = RatinStar.objects.filter(user=user_profile).order_by('-rating')        
+        user_profile_instance = get_object_or_404(UserProfile, user=user_profile)  # Usuário visitado
+        ratings = RatinStar.objects.filter(user=user_profile, rating__gte=4.0).order_by('-rating') # rating__gt=4 filtra os ratings que são maiores que 4. O __gt é um lookup do Django que significa "maior que" (greater than).
         
         # Remover avaliações duplicadas por livro ( Não da pra fazer com set pois se não vai ser perdido as propriedades de busca )
         unique_ratings = []
@@ -150,6 +152,7 @@ def profile_user_view(request, id):
         return render(request, 'profile_view.html', {
             'user_logged': user_logged,  # Sempre mantém o usuário logado separado
             'user_profile': user_profile,  # Usuário cujo perfil está sendo visitado
+            'user_profile_instance':user_profile_instance,
             'form': form,
             "ratings": unique_ratings,
             "books": books,
@@ -204,6 +207,16 @@ def book_detail(request, id):
     if request.user.is_authenticated:        
         comment_form = CommentForm()  # Inicializando os formulários fora do bloco POST pra não dar erro nos comentarios e no ratingStar
         rating_form = RatingForm() # Inicializando os formulários fora do bloco POST pra não dar erro nos comentarios e no ratingStar
+        comments = book.comments.all().order_by('-date') # Ordena os comentário mais recentes no topo
+        
+        ratings = RatinStar.objects.filter(user = request.user, book = book)
+        # if ratings:
+            # user_rating = ratings.last() if ratings.exists() else None # Pega a última avaliação do usuário
+        user_rating = ratings.last() if ratings.exists() else None # Pega a última avaliação do usuário
+        # print("TESTEEE")
+        # print(ratings)
+        # print(user_rating)
+        # print(user_rating.rating)
         
         # ///////////////////////////////////////////////////////////////////////////
         # AVALIAÇÃO GERAL DO LIVRO POR ESTRELAS:                
@@ -240,12 +253,17 @@ def book_detail(request, id):
                     comment.save()
                     
                     messages.success(request, 'Comentário adicionado com sucesso!')
-                    return render(request, 'book.html', {'book':book})             
+                    comment_form = CommentForm() # Limpa os dados do campo de comentários após o envio (Cria uma nova instancia do formulário)
+                    
+                    
+                    return render(request, 'book.html', {'book':book, 'comments': comments, 'comment_form':comment_form,})             
             
             
             # ///////////////////////////////////////////////////////////////////////////
             # ADICIONAR AVALIAÇÃO:
-            if 'rating_submit' in request.POST: # Nome do botão de envio do formulário = 'rating_submit'                    
+            if 'rating_submit' in request.POST: # Nome do botão de envio do formulário = 'rating_submit'             
+                
+                
                 
                 rating_value = request.POST.get('rating') # Pega o valor do input através do name 'rating' do input
                 rating_value = int(rating_value) # Passa para int pra comparar no if abaixo
@@ -268,10 +286,12 @@ def book_detail(request, id):
                         book.save()
                         print(f"Depois de salvar: media_rating = {media_rating}, book.media_rating = {book.media_rating}")
                         messages.success(request, 'Avaliação enviada com sucesso!')
-                        return render(request, 'book.html', {'book':book, 'media_rating': media_rating}) 
+                        # return render(request, 'book.html', {'book':book, 'media_rating': media_rating, }) 
+                        return render(request, 'book.html', {'book':book, 'media_rating': media_rating, 'user_rating': user_rating if user_rating else None }) 
                         # return redirect('book.html', id=book.id)                
    
-        return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,})  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+        # return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments,  })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+        return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments, 'user_rating': user_rating if user_rating else None })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
         messages.error(request, 'Você precisa estar logado!')
         return redirect('home')
@@ -356,44 +376,73 @@ def book_search(request):
 
 
 
-def get_cart_context(request):
-    cart_user = Cart.objects.get(user=request.user)
-    cart_items = CartItem.objects.filter(cart= cart_user)
-    return{'cart_user':cart_user, 'cart_items':cart_items}
+# def get_cart_context(request):
+#     cart_user = Cart.objects.get(user=request.user)
+#     cart_items = CartItem.objects.filter(cart= cart_user)
+#     return{'cart_user':cart_user, 'cart_items':cart_items}
 
 
 
-def add_cart(request,book_id):
-    # book = Book.objects.get(id=book_id)
-    # cart, created = Cart.objects.get_or_create(user=request.user)
+# def add_cart(request,book_id):
+#     # book = Book.objects.get(id=book_id)
+#     # cart, created = Cart.objects.get_or_create(user=request.user)
     
-    # Pega o livro que foi clicado
-    book = get_object_or_404(Book, id=book_id)
+#     # Pega o livro que foi clicado
+#     book = get_object_or_404(Book, id=book_id)
     
-    # Recupera ou cria o carrinho para o usuário
-    cart, created = Cart.objects.get_or_create(user=request.user)
+#     # Recupera ou cria o carrinho para o usuário
+#     cart, created = Cart.objects.get_or_create(user=request.user)
         
-    # Verifica se ja existe o item no carrinho:
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, book=book)
+#     # Verifica se ja existe o item no carrinho:
+#     cart_item, created = CartItem.objects.get_or_create(cart=cart, book=book)
     
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
+#     if not created:
+#         cart_item.quantity += 1
+#         cart_item.save()
 
-    context_cart = get_cart_context(request)
+#     context_cart = get_cart_context(request)
     
-    # modal_html = render_to_string("modal_cart_add.html",context_cart)
-    # return JsonResponse({'modal_html':modal_html})
+#     # modal_html = render_to_string("modal_cart_add.html",context_cart)
+#     # return JsonResponse({'modal_html':modal_html})
 
-    return render(request,'modal_cart_add.html', context_cart)
-    # return {'context_cart': context_cart}
+#     return render(request,'modal_cart_add.html', context_cart)
+#     # return {'context_cart': context_cart}
 
 
 
-def view_cart(request):
-    # cart_user = Cart.objects.get(user=request.user)
-    context_cart = get_cart_context(request)
-    return render(request, 'modal_cart_nav.html',{'context_cart': context_cart})
+# def view_cart(request):
+#     # cart_user = Cart.objects.get(user=request.user)
+#     context_cart = get_cart_context(request)
+#     return render(request, 'modal_cart_nav.html',{'context_cart': context_cart})
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class Cart(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+#     def __str__(self):
+#         return f"Carrinho de {self.user.username}"
+    
+# class CartItem(models.Model):
+#     cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
+#     book = models.ForeignKey(Book, related_name='cart_items', on_delete=models.CASCADE)
+#     quantity = models.PositiveIntegerField(default=1)
+    
+#     def __str__(self):
+#         return f"{self.quantity} x {self.book.title}"
+    
+#     def total_price(self):
+#         return self.book.value * self.quantity
         
         
         
