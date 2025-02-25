@@ -4,10 +4,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
-from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
-# from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm
+# from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
+from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm
 from .models import Book, Comment, RatinStar, UserProfile
 from django.template.loader import render_to_string
+
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import sys
 
 
 
@@ -73,6 +78,54 @@ def logout_user(request):
 
 
 
+def resize_profile_image(image, offset_top=10):
+    img = Image.open(image)
+    
+    original_width, original_height = img.size # index 0 é a largura, index 1 é a altura         
+    shortest_side = min(original_width, original_height)
+    
+    # Definição dos tamanhos para centralizar o corte da imagem (Para não ficar com as laterais pretas)
+    left = (original_width - shortest_side) // 2
+    top = (original_height - shortest_side) // 2 - offset_top
+    top = max(top,0) # garante que o valor de top nunca seja negativo, evitando que o corte vá para fora da parte superior da imagem.
+    right = left + shortest_side
+    bottom = top + shortest_side
+    
+    img = img.crop((left,top,right,bottom)) # Corte da imagem
+
+    img_io = BytesIO()  # cria um arquivo simulado na memória (em vez de um arquivo físico) para ser manipulado sem precisar gravá-lo em disco
+    img.save(img_io, format="JPEG") # salva no formato jpeg
+    img_io.seek(0)  # seek(0) basicamente "prepara" o fluxo de bytes para ser lido a partir do início após salvar a imagem
+
+    # Cria um arquivo simulado (objeto) em memória (usando o InMemoryUploadedFile) a partir do objeto img_io que pode ser tratado como um arquivo real, mas sem ser armazenado no disco.
+    image_file = InMemoryUploadedFile(img_io, None, image.name, 'image/jpeg', sys.getsizeof(img_io),None)    
+    
+    
+    # ARGUMENTOS PASSADOS PARA O InMemoryUploadedFile:
+    
+    # img_io: Este é o fluxo de bytes que contém os dados da imagem (que foi salva anteriormente com img.save(img_io, format="JPEG")). 
+    # Esse fluxo de bytes é o "conteúdo" do arquivo simulado.
+
+    # None: O segundo argumento é o campo field_name, que é utilizado para referenciar o nome do campo no qual o arquivo seria enviado 
+    # em um formulário de upload. Nesse caso, não está sendo utilizado, então é passado None.
+
+    # image.name: Este é o nome original do arquivo de imagem (o nome da imagem que foi passada para a função). 
+    # Ele será usado para simular o nome do arquivo ao ser armazenado como um arquivo em memória.
+
+    # 'image/jpeg': O tipo MIME (ou content type) do arquivo. Neste caso, a imagem é salva no formato JPEG, 
+    # então é passado 'image/jpeg' para indicar isso. É importante para que os sistemas que utilizem esse arquivo saibam qual o tipo de conteúdo.
+
+    # sys.getsizeof(img_io): Esse argumento especifica o tamanho do arquivo em bytes. sys.getsizeof(img_io) retorna o 
+    # número de bytes ocupados pelo objeto img_io (a imagem redimensionada em memória). Isso é necessário para que 
+    # o Django ou outro sistema que manipula esse arquivo saiba quanto espaço ele ocupa.
+
+    # None: O último argumento é o campo charset, que, em geral, é utilizado para arquivos de texto. 
+    # Nesse caso, como estamos lidando com uma imagem, o valor é None.
+    
+    return image_file
+
+
+
 # Função para cadastrar um novo usuario, após cadastrar o usuario ja é logado automaticamente
 def register_user(request):
     if request.method == "POST":
@@ -86,6 +139,7 @@ def register_user(request):
             bio = form.cleaned_data['bio']
             
             if user_image:
+                user_image = resize_profile_image(user_image,offset_top=450)
                 user_profile = UserProfile.objects.create(user = user, user_image = user_image, cpf = cpf, bio = bio)
             else:
                 # user_profile = UserProfile.objects.create(user = user,  user_image = "../../media/users/default.jpg" , cpf = cpf)
@@ -164,39 +218,47 @@ def profile_user_view(request, id):
     
     
 def profile_user_edit(request):
-    return redirect(request, 'profile_view')
-    # if request.user.is_authenticated:
-    #     user = request.user
-    #     user_profile = UserProfile.objects.filter(user=user).first() # apenas o primeiro registro encontrado vai ser retornado
-    #     form = ProfileForm(request.POST or None, request.FILES or None, instance=user)
+    # return redirect(request, 'profile_view')
+    if request.user.is_authenticated:
+        user = request.user
+        user_profile = UserProfile.objects.filter(user=user).first() # apenas o primeiro registro encontrado vai ser retornado
+        # form = ProfileForm(request.POST or None, request.FILES or None, instance=user)
+        form = ProfileForm(request.POST or None, request.FILES or None, instance=user_profile)
         
-    #     if user_profile:
-    #         form.fields['cpf'].initial = user_profile.cpf
-    #         form.fields['user_image'].initial = user_profile.user_image
+        if user_profile:
+            form.fields['cpf'].initial = user_profile.cpf
+            form.fields['user_image'].initial = user_profile.user_image
+            form.fields['email'].initial = user_profile.user.email
+            form.fields['username'].initial = user_profile.user.username
+            form.fields['first_name'].initial = user_profile.user.first_name
+            form.fields['last_name'].initial = user_profile.user.last_name
+            form.fields['bio'].initial = user_profile.bio
+            # form.fields['password1'].initial = user_profile.user.password1
+            # form.fields['password2'].initial = user_profile.user.password2
             
-    #     if request.method == 'POST':
-    #         if form.is_valid():
-    #             form.save()
+        if request.method == 'POST':
+            if form.is_valid():
+                form.save()
                 
-    #             user_profile.cpf = form.cleaned_data['cpf']
-    #             user_profile.user_image = form.cleaned_data['user_image']
-    #             user_profile.save()  # Salva as alterações no perfil
+                user_profile.cpf = form.cleaned_data['cpf']
+                user_profile.user_image = form.cleaned_data['user_image']
+                user_profile.save()  # Salva as alterações no perfil
                 
-    #             # # Atualiza o perfil do usuário com o campo cpf
-    #             # if user_profile:
-    #             #     user_profile.cpf = form.cleaned_data['cpf']
-    #             #     user_profile.save()
+                # # Atualiza o perfil do usuário com o campo cpf
+                # if user_profile:
+                #     user_profile.cpf = form.cleaned_data['cpf']
+                #     user_profile.save()
                     
-    #             messages.success(request, "Perfil Atualizado!")
-    #             return redirect('profile_view')
-    #         else:
-    #             messages.error(request,'Erro ao atualizar o perfil. Tente novamente.')
+                messages.success(request, "Perfil Atualizado!")
+                return redirect('profile_view')
+            else:
+                messages.error(request,'Erro ao atualizar o perfil. Tente novamente.')
 
-    #     # No caso de GET ou falha no formulário, renderiza o formulário
-    #     return render(request, 'profile_edit.html', {'form': form})
+        # No caso de GET ou falha no formulário, renderiza o formulário
+        return render(request, 'profile_edit.html', {'form': form})
     
-    # else:
-    #     return redirect('home')
+    else:
+        return redirect('home')
 
 
 # Só vai acessar os detalhes do livro se estiver autenticado
@@ -311,12 +373,66 @@ def book_delete(request,id):
 
 
 
+def resize_image_book(image, size=(800,800)):
+    img = Image.open(image)
+    
+    original_width, original_height = img.size # index 0 é a largura, index 1 é a altura         
+    shortest_side = min(original_width, original_height)
+    
+    if original_width > original_height:
+        
+        # Definição dos tamanhos para centralizar o corte da imagem (Para não ficar com as laterais pretas)
+        left = (original_width - shortest_side) // 2
+        top = (original_height - shortest_side) // 2 
+        top = max(top,0) # garante que o valor de top nunca seja negativo, evitando que o corte vá para fora da parte superior da imagem.
+        right = left + shortest_side
+        bottom = top + shortest_side
+    
+        img = img.crop((left,top,right,bottom)) # Corte da imagem
+    elif original_width < original_height:
+        
+        width_ratio  = size[0] / original_width
+        height_ratio  = size[1] / original_height        
+        
+        ratio  = min(width_ratio, height_ratio)
+        
+        new_width = int(original_width * ratio)
+        new_height = int(original_height * ratio)
+
+        print(f"Redimensionando para: {new_width}x{new_height}")
+        
+        img = img.resize((new_width, new_height), Image.LANCZOS)
+        
+        # if new_width > size[0]:
+        #     new_width = size[0]
+        #     new_height = int((new_width / original_width) * original_height)
+        #     img = img.resize((new_width, new_height), Image.LANCZOS)
+        
+    
+        # img = img.resize((200, 200), Image.LANCZOS)
+
+    img_io = BytesIO()  # cria um arquivo simulado na memória (em vez de um arquivo físico) para ser manipulado sem precisar gravá-lo em disco
+    img.save(img_io, format="JPEG") # salva no formato jpeg
+    img_io.seek(0)  # seek(0) basicamente "prepara" o fluxo de bytes para ser lido a partir do início após salvar a imagem
+
+    # Cria um arquivo simulado (objeto) em memória (usando o InMemoryUploadedFile) a partir do objeto img_io que pode ser tratado como um arquivo real, mas sem ser armazenado no disco.
+    image_file = InMemoryUploadedFile(img_io, None, image.name, 'image/jpeg', sys.getsizeof(img_io),None)    
+    
+    return image_file
+    
+
+
+
 def book_add(request):
     form = AddBookForm(request.POST or None, request.FILES or None ) # Se não tiver nenhuma requisição o valor de form vai ser none
     
     if request.user.is_authenticated: # Se o usuario estiver autenticado
         if request.method == "POST": # se o metodo da requisição for igual a post
             if form.is_valid(): # se todos os dados do formulário forem validos
+                image = request.FILES.get('image')
+                if image:
+                    image = resize_image_book(image)
+                    form.instance.image = image
                 form.save() # salva o formulário
                 messages.success(request, "Livro adicionado com sucesso")
                 return redirect('home') # redireciona para a home            
@@ -376,44 +492,24 @@ def book_search(request):
 
 
 
-# def get_cart_context(request):
-#     cart_user = Cart.objects.get(user=request.user)
-#     cart_items = CartItem.objects.filter(cart= cart_user)
-#     return{'cart_user':cart_user, 'cart_items':cart_items}
-
-
-
-# def add_cart(request,book_id):
-#     # book = Book.objects.get(id=book_id)
-#     # cart, created = Cart.objects.get_or_create(user=request.user)
+    # new_size = size[0]
     
-#     # Pega o livro que foi clicado
-#     book = get_object_or_404(Book, id=book_id)
-    
-#     # Recupera ou cria o carrinho para o usuário
-#     cart, created = Cart.objects.get_or_create(user=request.user)
+    # if original_width > original_height:
+    #     new_width = size[0]
+    #     new_height = int((new_width / original_width) * original_height)
+    #     img = img.resize((new_width, new_height), Image.LANCZOS) # Image.LANCZOS é o método adequado para redimensionamento com alta qualidade
         
-#     # Verifica se ja existe o item no carrinho:
-#     cart_item, created = CartItem.objects.get_or_create(cart=cart, book=book)
-    
-#     if not created:
-#         cart_item.quantity += 1
-#         cart_item.save()
-
-#     context_cart = get_cart_context(request)
-    
-#     # modal_html = render_to_string("modal_cart_add.html",context_cart)
-#     # return JsonResponse({'modal_html':modal_html})
-
-#     return render(request,'modal_cart_add.html', context_cart)
-#     # return {'context_cart': context_cart}
-
-
-
-# def view_cart(request):
-#     # cart_user = Cart.objects.get(user=request.user)
-#     context_cart = get_cart_context(request)
-#     return render(request, 'modal_cart_nav.html',{'context_cart': context_cart})
+    #     top = (new_height - size[1]) // 2
+    #     left = (new_width - size[0]) // 2
+    #     img = img.crop((left, top, left + size[0], top + size[0]))
+    # else:
+    #     new_height = size[1]
+    #     new_width = int((new_height / original_height) * original_width)
+    #     img = img.resize((new_width, new_height), Image.LANCZOS) # Image.LANCZOS é o método adequado para redimensionamento com alta qualidade
+        
+    #     top = (new_height - size[1]) // 2
+    #     left = (new_width - size[0]) // 2
+    #     img = img.crop((left, top, left + size[0], top + size[0]))
 
 
 

@@ -172,9 +172,86 @@ function addBookCart(){
 //////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////    RENDERIZA O STATUS DO CARRINHO    ////////////////////////
 
+// function renderStatusCart(){   
+
+//     console.log(itemShoppingCart)
+
+//     let modalNavTitleh6 = document.getElementById("quantityBookCartModalNavTitle")
+//     let statusModalContent = document.getElementById("status-modal-content")
+//     let totalValueStatusCart = document.getElementById("totalValueStatusCart")
+
+//     let totalItemsCart = 0
+//     let totalValueCart = 0
+//     let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"))
+
+//     let itemsToRender = loadSaveCart ? loadSaveCart : itemShoppingCart
+
+//     // Se não tiver itens o valor é 0
+//     if(itemsToRender.length === 0){
+//         totalValueStatusCart.textContent = "R$ 0,00"
+//         numberCart.classList.add("d-none")
+//         numberCart.classList.remove("d-flex")
+//         iconCart.style = "margin-right:10px"    
+//     }
+
+//     statusModalContent.innerHTML = ""
+
+
+//     for( item of itemsToRender){
+//         totalItemsCart += item.quantity
+//         totalValueCart += item.totalValue
+
+//         console.log("esse é o VALOR TOTAL:", totalValueCart.toFixed(2).replace('.',','))
+
+//         totalValueStatusCart.textContent = " R$ "+ totalValueCart.toFixed(2).replace('.',',')
+
+//         statusModalContent.innerHTML += `<div class="d-flex align-items-center" style="height:140px;">
+//                                             <img src="${item.img}" class="w-25 img-fluid" style="object-fit:contain; height:100%; width:auto;" >
+//                                             <div class="text-center" style="width:100%;">
+//                                                 <h6 id="title-book-status" class="mb-4" >${item.title}</h6>
+//                                                 <div class="d-flex align-items-center justify-content-center gap-4">
+//                                                     <button onclick="removeItem('${item.title}')" class="btn btn-danger small-btn" >Excluir</button>
+//                                                     <a class="p-2" onclick="decreaseStatus('${item.title}')" href="#">
+//                                                         <i   class="fa-solid fa-minus"></i>
+//                                                     </a>                            
+//                                                     <span id="quantityStatusCart" >${item.quantity}</span>
+//                                                     <a class="p-2" onclick="addStatus('${item.title}')" style="margin-left:5px;" href="#">
+//                                                         <i class="fa-solid fa-plus"></i>
+//                                                     </a>
+//                                                     <span style="margin-left:30px;">R$ ${item.totalValue.toFixed(2).replace('.',',')}</span>
+//                                                 </div>                        
+//                                             </div>                  
+//                                         </div>
+//                                         <hr>`
+//     }
+
+        
+    
+
+//     let reversedItems = itemShoppingCart.reverse()
+
+//     numberCart.textContent = totalItemsCart  // Numero de itens no icone da navbar
+
+//     let saveCart = JSON.stringify(reversedItems)
+//     localStorage.setItem('saveCart', saveCart)
+
+//     modalNavTitleh6.textContent = totalItemsCart
+    
+//     console.log("esse é o totalValue: ", totalValueCart)
+// }
+
+
+
 function renderStatusCart(){   
 
     console.log(itemShoppingCart)
+
+    let getSaveCartLS = localStorage.getItem("saveCart")
+    let loadSaveCart = JSON.parse(getSaveCartLS)
+
+    if(loadSaveCart){
+
+    }else{}
 
     let modalNavTitleh6 = document.getElementById("quantityBookCartModalNavTitle")
     let statusModalContent = document.getElementById("status-modal-content")
@@ -200,7 +277,6 @@ function renderStatusCart(){
 
         console.log("esse é o VALOR TOTAL:", totalValueCart.toFixed(2).replace('.',','))
 
-
         totalValueStatusCart.textContent = " R$ "+ totalValueCart.toFixed(2).replace('.',',')
         statusModalContent.innerHTML += `<div class="d-flex align-items-center" style="height:140px;">
                                             <img src="${item.img}" class="w-25 img-fluid" style="object-fit:contain; height:100%; width:auto;" >
@@ -222,6 +298,8 @@ function renderStatusCart(){
                                         <hr>`
     }
     numberCart.textContent = totalItemsCart  // Numero de itens no icone da navbar
+    let saveCart = JSON.stringify(reversedItems)
+    localStorage.setItem('saveCart', saveCart)
 
     modalNavTitleh6.textContent = totalItemsCart
     console.log("esse é o totalValue: ", totalValueCart)

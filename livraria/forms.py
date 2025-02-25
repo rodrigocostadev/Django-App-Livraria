@@ -64,69 +64,43 @@ class SignUpForm(UserCreationForm):
         
 
 # Formulário de edição de informações do usuário
-# class ProfileForm(forms.ModelForm):
-#     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'E-mail'}))
-#     first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
-#     last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
-#     user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil:")
-#     cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cpf'}),label = "")
+class ProfileForm(forms.ModelForm):
+    email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'E-mail'}))
+    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
+    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
+    user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil:")
+    cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cpf'}),label = "")
+    bio = forms.CharField(required=False, max_length=500, widget=forms.Textarea(attrs={'class':'form-control', 'placeholder':'Bio'}), label="Bio")
 
-#     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Nome de usuário'}),label="Nome de usuário")
-#     password1 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Nova Senha'}),label='Nova Senha ( OPCIONAL )')
-#     password2 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Confirmar Senha'}),label='Confirmar Senha ( OPCIONAL )')
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Nome de usuário'}),label="Nome de usuário")
+    password1 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Nova Senha'}),label='Nova Senha ( OPCIONAL )')
+    password2 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Confirmar Senha'}),label='Confirmar Senha ( OPCIONAL )')
 
 
-#     class Meta:
-#         model = User
-#         fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image')   
+    class Meta:
+        model = User
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio')   
         
         
-#     # Possibilita usar o mesmo nome de usuário
-#     def clean_username(self):
-#         username = self.cleaned_data.get('username') # Pega o novo valor do nome de usuário digitado no formulário.
-#         user = self.instance  # Usuario atual ( LOGADO )
-
-#         # Se o valor no campo de nome de usuario for igual ao nome do usuario logado, retorna o nome atual
-#         if username == user.username:
-#             return username
         
-#         # Se o nome de usuario for alterado, veifica se ja existe no banco de dados
-#         if User.objects.filter(username=username).exists():
-#             raise ValidationError("Esse nome de usuário já está em uso.")
-            
-#         return username     
+# Formulário do Usuário    
+class UserForm(forms.ModelForm):
     
-#     # Possibilita usar a mesma senha anterior
-#     def clean_password2(self):
-#         password1 = self.cleaned_data.get('password1')
-#         password2 = self.cleaned_data.get('password2')
-        
-#         if password1 or password2:
-#             if password1 != password2:
-#                 raise ValidationError("As senhas não coincidem.")
-#             if len(password1) < 8 or len(password2) < 8:
-#                 raise ValidationError("A senha deve ter pelo menos 8 caracteres")
-#             if password1.is_digit() or password2.is_digit():
-#                 raise ValidationError("A senha não pode ser totalmente numérica")
-#             return password2
-        
-        
-#     def save(self, commit=True):
-#         user = super(ProfileForm, self).save(commit=False)
-        
-#         # Se uma nova senha foi fornecida, alteramos a senha do usuario
-#         if self.cleaned_data.get('password1'):
-#             user.set_password(self.cleaned_data['password1'])
+    email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'E-mail'}))
+    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
+    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
+    user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil:")
+    cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cpf'}),label = "")
+    bio = forms.CharField(required=False, max_length=500, widget=forms.Textarea(attrs={'class':'form-control', 'placeholder':'Bio'}), label="Bio")
 
-#         if commit:
-#             user.save()
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Nome de usuário'}),label="Nome de usuário")
+    password1 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Nova Senha'}),label='Nova Senha ( OPCIONAL )')
+    password2 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Confirmar Senha'}),label='Confirmar Senha ( OPCIONAL )')
+    
+    class Meta:
+        model = User
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio')  
 
-#         user_profile = UserProfile.objects.filter(user=user).first()
-#         if user_profile:
-#             user_profile.cpf = self.cleaned_data.get('cpf')
-#             user_profile.user_image = self.cleaned_data.get('user_image')
-#             user_profile.save()
-#         return user
     
 
 
@@ -210,4 +184,49 @@ class RatingForm(forms.ModelForm):
 
 
 
+    # Possibilita usar o mesmo nome de usuário
+    # def clean_username(self):
+    #     username = self.cleaned_data.get('username') # Pega o novo valor do nome de usuário digitado no formulário.
+    #     user = self.instance  # Usuario atual ( LOGADO )
+
+    #     # Se o valor no campo de nome de usuario for igual ao nome do usuario logado, retorna o nome atual
+    #     if username == user.username:
+    #         return username
+        
+    #     # Se o nome de usuario for alterado, veifica se ja existe no banco de dados
+    #     if User.objects.filter(username=username).exists():
+    #         raise ValidationError("Esse nome de usuário já está em uso.")
+            
+    #     return username     
     
+    # Possibilita usar a mesma senha anterior
+    # def clean_password2(self):
+    #     password1 = self.cleaned_data.get('password1')
+    #     password2 = self.cleaned_data.get('password2')
+        
+    #     if password1 or password2:
+    #         if password1 != password2:
+    #             raise ValidationError("As senhas não coincidem.")
+    #         if len(password1) < 8 or len(password2) < 8:
+    #             raise ValidationError("A senha deve ter pelo menos 8 caracteres")
+    #         if password1.is_digit() or password2.is_digit():
+    #             raise ValidationError("A senha não pode ser totalmente numérica")
+    #         return password2
+        
+        
+    # def save(self, commit=True):
+    #     user = super(ProfileForm, self).save(commit=False)
+        
+    #     # Se uma nova senha foi fornecida, alteramos a senha do usuario
+    #     if self.cleaned_data.get('password1'):
+    #         user.set_password(self.cleaned_data['password1'])
+
+    #     if commit:
+    #         user.save()
+
+    #     user_profile = UserProfile.objects.filter(user=user).first()
+    #     if user_profile:
+    #         user_profile.cpf = self.cleaned_data.get('cpf')
+    #         user_profile.user_image = self.cleaned_data.get('user_image')
+    #         user_profile.save()
+    #     return user

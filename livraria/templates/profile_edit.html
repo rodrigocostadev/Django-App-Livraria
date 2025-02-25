@@ -24,9 +24,16 @@
         <p><label>Nome:</label>{{ form.first_name }}</p>        
         <p><label>Sobrenome:</label>{{ form.last_name }}</p>        
         <p><label>CPF:</label>{{ form.cpf }}</p>        
-        <p><label>Email:</label>{{ form.email }}</p>        
-        <p><label>Nova Senha:</label>{{ form.password1 }}</p>        
-        <p><label>Confirmação de Senha:</label>{{ form.password2 }}</p>        
+        <p><label>Email:</label>{{ form.email }}</p>  
+        <p><label>Bio:</label>{{ form.bio }}</p>
+        <a onclick="changePassword()"  style="text-decoration:none;cursor:pointer;" >
+            <p class="form-control">Deseja alterar a senha? Clique aqui</p>
+        </a>
+        <div id="passwords" style="display:none;">
+            <p><label>Nova Senha:</label>{{ form.password1 }}</p>        
+            <p><label>Confirmação de Senha:</label>{{ form.password2 }}</p>      
+        </div>        
+          
         <p><label>Imagem:</label>{{ form.user_image }}</p>
 
 
@@ -37,7 +44,19 @@
         
     </form> 
 
+    <script>
+        let passwords = document.getElementById("passwords")
+        function changePassword(){
+            if(passwords.style.display == "block"){
+                passwords.style.display = "none"
+            }else{
+                passwords.style.display = "block"
+            }
+        }
+    </script>
+
 
 </div>
+<br>
 
 {% endblock %}

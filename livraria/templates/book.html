@@ -248,7 +248,12 @@
 
         <div class="d-flex gap-2 justify-content-end">
             <a href="{% url 'home' %}" class="btn btn-secondary" >Voltar</a>
-            <a href="{% url 'home' %}" class="btn btn-primary" >Add ao Carrinho</a>
+            <a href="#myModal" onclick="renderCart(this, {{ book.id }})" class="btn btn-primary"
+                data-book-title="{{ book.title }}"
+                data-book-image="{{ book.image.url }}"
+                data-book-value="{{ book.value }}"
+                data-book-id="{{ book.id }}" 
+                data-bs-toggle="modal" data-bs-target="#myModal" >Add ao Carrinho</a>
 
         {% comment %} Se o Usuario for ADM  {% endcomment %}
         {% if user.is_authenticated and user.is_staff  %}
