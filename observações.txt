@@ -1,3 +1,8 @@
 /// ADMIN ///
 User: rodrigo.costa
 Password: senhafacil
+
+
+(django taggit foi instalado com o comando):
+
+python -m pip install django-taggit
