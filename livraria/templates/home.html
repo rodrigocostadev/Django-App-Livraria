@@ -34,7 +34,7 @@
                         <tr style="height:100px;vertical-align: middle;" >
                         {% comment %} <tr > {% endcomment %}
                             {% comment %} <a href="{% url 'book' book.id %}" > {% endcomment %}
-                            <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" ><img src="{{ book.image.url }} " class="w-25" alt="{{ book.title }}"></a></td>                            
+                            <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" ><img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"></a></td>                            
                             <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.title }}</a></td>
                             <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.genre }}</a></td>
                             <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.year }}</a></td>

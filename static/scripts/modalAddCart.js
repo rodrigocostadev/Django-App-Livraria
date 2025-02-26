@@ -238,7 +238,8 @@ function renderStatusCart(){
             totalValueStatusCart.textContent = "R$ 0,00"
             numberCart.classList.add("d-none")
             numberCart.classList.remove("d-flex")
-            iconCart.style = "margin-right:10px"    
+            iconCart.style = "margin-right:10px"   
+            // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"
         }
 
         statusModalContent.innerHTML = ""
@@ -250,7 +251,7 @@ function renderStatusCart(){
             // console.log("esse é o VALOR TOTAL:", totalValueCart.toFixed(2).replace('.',','))    
             totalValueStatusCart.textContent = " R$ "+ totalValueCart.toFixed(2).replace('.',',')
     
-            statusModalContent.innerHTML += `<div class="d-flex align-items-center" style="height:140px;">
+            statusModalContent.innerHTML += `<div class="d-flex align-items-center" style="height:120px;">
                                                 <img src="${item.img}" class="w-25 img-fluid" style="object-fit:contain; height:100%; width:auto;" >
                                                 <div class="text-center" style="width:100%;">
                                                     <h6 id="title-book-status" class="mb-4" >${item.title}</h6>
@@ -288,6 +289,7 @@ function renderStatusCart(){
             numberCart.classList.add("d-none")
             numberCart.classList.remove("d-flex")
             iconCart.style = "margin-right:10px"    
+            // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"
         }
 
         statusModalContent.innerHTML = ""

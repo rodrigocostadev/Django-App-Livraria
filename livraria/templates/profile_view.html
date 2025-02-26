@@ -38,11 +38,10 @@
                 <h5>Gêneros Preferidos:</h5>                
 
                 <div class="d-flex justify-content-center gap-2" >
-                        {% for rating in unique_genres %}
-                            <div class="card p-1" style="display: inline-block; margin-left:10px">{{ rating}}</div>
+                        {% for genre in unique_genres %}
+                            <div class="card p-1" style="display: inline-block; margin-left:10px">{{ genre }}</div>
                         {% empty %}
-                            <p >Este usuário ainda não fez avaliações.</p>
-                    
+                            <p >Este usuário ainda não fez avaliações.</p>                    
                         {% endfor %}
                 </div>
                 <br>
@@ -58,7 +57,7 @@
                                     <div>
                                         {% comment %} <img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"> {% endcomment %}
                                         <a href="{% url 'book' book.id %}">
-                                            <img src="{{ book.image.url }}" style="width: 10rem;" alt="{{ book.title }}">
+                                            <img src="{{ book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ book.title }}">
                                         </a>
                                         
                                         {% comment %} <p>{{ forloop.counter }}º</p> {% endcomment %}

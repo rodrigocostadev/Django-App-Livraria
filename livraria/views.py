@@ -373,12 +373,13 @@ def book_delete(request,id):
 
 
 
-def resize_image_book(image, size=(800,800)):
+def resize_image_book(image, size=(400,300)):
     img = Image.open(image)
     
     original_width, original_height = img.size # index 0 é a largura, index 1 é a altura         
-    shortest_side = min(original_width, original_height)
+    shortest_side = min(original_width, original_height) # Pega o menor dos lados
     
+    # Se largura for maior que altura
     if original_width > original_height:
         
         # Definição dos tamanhos para centralizar o corte da imagem (Para não ficar com as laterais pretas)
@@ -389,27 +390,18 @@ def resize_image_book(image, size=(800,800)):
         bottom = top + shortest_side
     
         img = img.crop((left,top,right,bottom)) # Corte da imagem
-    elif original_width < original_height:
         
+    # Se altura for maior que largura
+    elif original_width < original_height:        
         width_ratio  = size[0] / original_width
-        height_ratio  = size[1] / original_height        
-        
-        ratio  = min(width_ratio, height_ratio)
-        
+        height_ratio  = size[1] / original_height     
+        ratio  = min(width_ratio, height_ratio)    
+            
         new_width = int(original_width * ratio)
         new_height = int(original_height * ratio)
-
-        print(f"Redimensionando para: {new_width}x{new_height}")
-        
+        print(f"Redimensionando para: {new_width}x{new_height}")        
         img = img.resize((new_width, new_height), Image.LANCZOS)
         
-        # if new_width > size[0]:
-        #     new_width = size[0]
-        #     new_height = int((new_width / original_width) * original_height)
-        #     img = img.resize((new_width, new_height), Image.LANCZOS)
-        
-    
-        # img = img.resize((200, 200), Image.LANCZOS)
 
     img_io = BytesIO()  # cria um arquivo simulado na memória (em vez de um arquivo físico) para ser manipulado sem precisar gravá-lo em disco
     img.save(img_io, format="JPEG") # salva no formato jpeg
