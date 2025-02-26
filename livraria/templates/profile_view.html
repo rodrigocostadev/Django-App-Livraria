@@ -35,14 +35,63 @@
             <div class="text-center" >
 
                 {% comment %} <br> {% endcomment %}
-                <h5>Gêneros Preferidos:</h5>                
-
+                <h5>Gêneros Preferidos:</h5>              
                 <div class="d-flex justify-content-center gap-2" >
                         {% for genre in unique_genres %}
-                            <div class="card p-1" style="display: inline-block; margin-left:10px">{{ genre }}</div>
+                            <a href="{% url 'tag_search' %}?search={{ genre }}" style="color:black;">
+                                <div class="card p-1" style="display: inline-block; margin-left:10px">{{ genre }}</div>
+                            </a>
                         {% empty %}
                             <p >Este usuário ainda não fez avaliações.</p>                    
                         {% endfor %}
+                </div>
+                <br>
+
+
+                {% comment %} <h5>TESTE DE TAG USANDO DJANGO TAGGIT:</h5>   
+                <br>  
+                <div class="d-flex justify-content-center gap-2">
+                    {% for rating in ratings %}
+                        {% with book=rating.book %}
+                            <div>
+                                <h6>{{ book.title }}</h6>
+                                
+                                <h6>Tags:</h6>
+                                <div class="d-flex flex-wrap">
+                                    {% for tag in book.tags.all %}
+                                        <a href="{% url 'tag_search' %}?search={{ tag.name }}">
+                                            <div class="card p-1" style="display: inline-block; margin-left:10px;color:black; ">
+                                                {{ tag.name }}
+                                            </div>
+                                        </a>
+                                        
+                                    {% empty %}
+                                        <p>Este livro não tem tags associadas.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endwith %}
+                    {% empty %}
+                        <p>Este usuário ainda não fez avaliações.</p>
+                    {% endfor %}
+                </div> {% endcomment %}
+
+                <div class="d-flex justify-content-center gap-2" >
+                    {% comment %} {% for rating in ratings %}
+                        {% for tag in book.tags.all %}
+                            {% if rating.book == tag.name %}
+                                <div class="card p-1" style="display: inline-block; margin-left:10px">{{ tag.name }}</div>
+                            {% empty %}
+                                <p >Este usuário ainda não fez avaliações.</p>     
+                            {% endif %}               
+                        {% endfor %}
+                    {% endfor %} {% endcomment %}
+
+                        {% comment %} {% for tag in book.tags.all %}
+                            <div class="card p-1" style="display: inline-block; margin-left:10px">{{ tag.name }}</div>
+                        {% empty %}
+                            <p >Este usuário ainda não fez avaliações.</p>                    
+                        {% endfor %} {% endcomment %}
                 </div>
                 <br>
 

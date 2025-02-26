@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from taggit.managers import TaggableManager
 
 
 class UserProfile(models.Model):
@@ -22,6 +23,7 @@ class Book(models.Model):
     stock = models.IntegerField(default=0)
     image = models.ImageField(upload_to="images")
     media_rating = models.DecimalField(default=0, max_digits=3, decimal_places=1, )
+    tags = TaggableManager() # tags é o campo onde você pode adicionar múltiplas tags (como "Ficção", "Tecnologia", etc.)
     
     def __str__(self):
         return(f'{self.title}-{self.value}')

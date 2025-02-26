@@ -14,6 +14,9 @@ from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
 
+from django.db.models import Q
+# from taggit.models import Tag
+
 
 
 # Função para calcular a avaliação geral por estrelas
@@ -425,11 +428,24 @@ def book_add(request):
                 if image:
                     image = resize_image_book(image)
                     form.instance.image = image
-                form.save() # salva o formulário
+                book = form.save() # salva o formulário
+                
+                genre_tag = form.cleaned_data['genre']
+                
+                # book = Book.objects.get(id=1)
+                # book.tags.add("Ficção", "Tecnologia")  # Adicionando várias tags
+
+                
+                book.tags.add(genre_tag)
+                # tag, created = Tag.objects.get_or_create(name=genre_tag)
+                # book.tags.add(tag)
+                print(book)
+                print(book.tags.all())
+                
                 messages.success(request, "Livro adicionado com sucesso")
                 return redirect('home') # redireciona para a home            
         # return render(request, 'add_book.html', {'form':form, 'year_choices': year_choices,})
-        return render(request, 'add_book.html', {'form':form,})
+        return render(request, 'add_book.html', {'form':form})
     
     # EXPLICAÇÃO:
     # render(request, 'add_book.html'): Acontece quando:
@@ -470,7 +486,30 @@ def book_search(request):
         search_term = request.GET.get('search')
         
         if search_term:
-            books = Book.objects.filter(title__icontains = search_term) # Filtra os livros pelo título
+            books = Book.objects.filter(title__icontains = search_term) # Filtra os livros pelo título           
+            
+        else:
+            return redirect('home')
+            # books = Book.objects.all() # Se não houver termo de busca, mostra todos os livros
+    
+    else:
+        # books = [] # quando o usuário não está autenticado (else: books = []) vai garantir que nenhum livro será mostrado na página de busca.
+        return redirect('home')
+        
+    return render(request, 'search.html',{'books':books})
+
+
+
+
+
+
+def tag_search(request):
+    if request.user.is_authenticated:
+        search_term = request.GET.get('search')
+        
+        if search_term:
+            books = Book.objects.filter(tags__name__icontains=search_term) # Filtra as tags pelo nome         
+            
         else:
             return redirect('home')
             # books = Book.objects.all() # Se não houver termo de busca, mostra todos os livros

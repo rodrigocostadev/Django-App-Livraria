@@ -27,7 +27,7 @@
                 <tr style="height:100px;vertical-align: middle;" >
                 {% comment %} <tr > {% endcomment %}
                     {% comment %} <a href="{% url 'book' book.id %}" > {% endcomment %}
-                    <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" ><img src="{{ book.image.url }} " class="w-25" style="max-height:400px" alt="{{ book.title }}"></a></td>                            
+                    <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" ><img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"></a></td>                            
                     <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.title }}</a></td>
                     <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.genre }}</a></td>
                     <td class="text-center"  ><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.year }}</a></td>
@@ -66,7 +66,6 @@
                                     padding: 2px;
                                     font-size: 25px;
                                     position: relative;
-                                    {% comment %} cursor: pointer; {% endcomment %}
                                 }
                                 .rate input[type="radio"] {
                                     opacity: 0;
@@ -132,7 +131,7 @@
                         data-book-id="{{ book.id }}">
                             <i class="bi bi-cart fs-3 cursor-pointer" data-bs-toggle="modal" data-bs-target="#myModal" style="cursor:pointer;"></i>
                         </a>
-                    </td>  
+                    </td>   
 
                 </tr>                        
             {% endfor %}
@@ -147,22 +146,3 @@
 {% endif %}
 
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
