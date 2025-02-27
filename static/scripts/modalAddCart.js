@@ -10,9 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
 
     if (loadSaveCart ) {
-        // itemShoppingCart = loadSaveCart;
         renderStatusCart();
-        console.log("FOI LOADSAVE")
+        console.log("ONLOAD LOADSAVECART")
     }
 
     // let modal = new bootstrap.Modal(document.getElementById('myModal'))
@@ -108,7 +107,6 @@ function renderCart(element){
     if (fieldQuantityBook.textContent == ""){
         fieldQuantityBook.textContent = 1
         h6QuantityBookTitle.textContent = 1
-        console.log("teste AAA")
     }
 
     let quantityBook = fieldQuantityBook.textContent
@@ -226,18 +224,31 @@ function renderStatusCart(){
     let totalValueCart = 0
     let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"))
 
+
+    if(itemShoppingCart.length === 0){
+        totalValueStatusCart.textContent = "R$ 0,00"
+        numberCart.classList.add("d-none")
+        numberCart.classList.remove("d-flex")
+        iconCart.style = "margin-right:10px"   
+        console.log("TESTE itemShoppingCart")
+        // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"
+        // iconCart.classList.add("d-none")
+    }
+
     // Se tem dados salvos no LocalStorage
     if (loadSaveCart){
         // console.log("LOAD SAVE CART",loadSaveCart)
 
         // Se não tiver itens o valor é 0
-        if(loadSaveCart.length === 0){
-            totalValueStatusCart.textContent = "R$ 0,00"
-            numberCart.classList.add("d-none")
-            numberCart.classList.remove("d-flex")
-            iconCart.style = "margin-right:10px"   
-            // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"
-        }
+        // if(loadSaveCart.length == 0){
+        //     clearCart()
+        //     // totalValueStatusCart.textContent = "R$ 0,00"
+        //     // numberCart.classList.remove("d-flex")
+        //     // numberCart.classList.add("d-none")            
+        //     // iconCart.style = "margin-right:10px"   
+        //     console.log("TESTE loadSaveCart")
+        //     // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"            
+        // }
 
         statusModalContent.innerHTML = ""
 
@@ -277,54 +288,6 @@ function renderStatusCart(){
 
         // console.log("esse é o totalValue: ", totalValueCart)
     }
-    else{
-        // console.log("ELSE")
-
-        // Se não tiver itens o valor é 0
-        if(itemShoppingCart.length === 0){
-            totalValueStatusCart.textContent = "R$ 0,00"
-            numberCart.classList.add("d-none")
-            numberCart.classList.remove("d-flex")
-            iconCart.style = "margin-right:10px"    
-            // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"
-        }
-
-        statusModalContent.innerHTML = ""
-
-        for( item of itemShoppingCart.reverse()){
-            totalItemsCart += item.quantity
-            totalValueCart += item.totalValue
-
-            // console.log("esse é o VALOR TOTAL:", totalValueCart.toFixed(2).replace('.',','))
-            totalValueStatusCart.textContent = " R$ "+ totalValueCart.toFixed(2).replace('.',',')
-
-            statusModalContent.innerHTML += `<div class="d-flex align-items-center" style="height:140px;">
-                                                <img src="${item.img}" class="w-25 img-fluid" style="object-fit:contain; height:100%; width:auto;" >
-                                                <div class="text-center" style="width:100%;">
-                                                    <h6 id="title-book-status" class="mb-4" >${item.title}</h6>
-                                                    <div class="d-flex align-items-center justify-content-center gap-4">
-                                                        <button onclick="removeItem('${item.title}')" class="btn btn-danger small-btn" >Excluir</button>
-                                                        <a class="p-2" onclick="decreaseStatus('${item.title}')" href="#">
-                                                            <i   class="fa-solid fa-minus"></i>
-                                                        </a>                            
-                                                        <span id="quantityStatusCart" >${item.quantity}</span>
-                                                        <a class="p-2" onclick="addStatus('${item.title}')" style="margin-left:5px;" href="#">
-                                                            <i class="fa-solid fa-plus"></i>
-                                                        </a>
-                                                        <span style="margin-left:30px;">R$ ${item.totalValue.toFixed(2).replace('.',',')}</span>
-                                                    </div>                        
-                                                </div>                  
-                                            </div>
-                                            <hr>`
-        }
-
-        numberCart.textContent = totalItemsCart  // Numero de itens no icone da navbar
-        modalNavTitleh6.textContent = totalItemsCart        
-        numberCart.classList.remove("d-none")
-        numberCart.classList.add("d-flex")        
-        iconCart.style = ""
-        // console.log("esse é o totalValue: ", totalValueCart)
-    }
 
 }
 
@@ -360,15 +323,6 @@ function addStatus(title){
         }
         renderStatusCart()
     }
-
-    // for (item of reversedItems){
-    //     if(item.title == title){
-    //         item.quantity += 1
-    //         item.totalValue = item.quantity * item.valueUnitBook
-    //         break
-    //     }
-    // }
-    // renderStatusCart()
 }
 
 function decreaseStatus(title){
@@ -400,23 +354,64 @@ function decreaseStatus(title){
             }
         }
         renderStatusCart()
-    }
-
-    
+    }    
 }
 
 
 function removeItem(title){
     let reversedItems = itemShoppingCart.reverse()
+    let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"))
 
-    // Retorna o item encontrado com o título igual ao valor da variável title. Nesse caso, o findIndex() retorna o índice do item encontrado no array.
-    let indexToRemove = reversedItems.findIndex(item => item.title === title) 
+    if(loadSaveCart){
+        // Retorna o item encontrado com o título igual ao valor da variável title. Nesse caso, o findIndex() retorna o índice do item encontrado no array.
 
-    if(indexToRemove !== -1){ // Se o item for encontrado (ou seja, se indexToRemove for diferente de -1)
-        reversedItems.splice(indexToRemove,1)
+        let indexToRemove = loadSaveCart.findIndex(item => item.title === title) 
+
+        if(indexToRemove !== -1){ // Se o item for encontrado (ou seja, se indexToRemove for diferente de -1)
+            loadSaveCart.splice(indexToRemove,1)
+        }
+
+        let saveCart = JSON.stringify(loadSaveCart)
+        localStorage.setItem('saveCart', saveCart)
+
+        renderStatusCart()
+
+        // Remove o local storage e elimina o indicador na navbar 
+        if(loadSaveCart.length == 0){
+            clearCart()        
+            iconCart.classList.add("d-none")
+        }
+
+        
+    }
+    else{
+        // Retorna o item encontrado com o título igual ao valor da variável title. Nesse caso, o findIndex() retorna o índice do item encontrado no array.
+        let indexToRemove = reversedItems.findIndex(item => item.title === title) 
+
+        if(indexToRemove !== -1){ // Se o item for encontrado (ou seja, se indexToRemove for diferente de -1)
+            reversedItems.splice(indexToRemove,1)
+        }
+
+        // if(reversedItems.length == 0){
+        //     totalValueStatusCart.textContent = "R$ 0,00"
+        //     numberCart.classList.remove("d-flex")
+        //     numberCart.classList.add("d-none")            
+        //     iconCart.style = "margin-right:10px"   
+        //     console.log("TESTE loadSaveCart")
+        //     // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"            
+        // }
+
+        renderStatusCart()
     }
 
-    renderStatusCart()
+    // // Retorna o item encontrado com o título igual ao valor da variável title. Nesse caso, o findIndex() retorna o índice do item encontrado no array.
+    // let indexToRemove = reversedItems.findIndex(item => item.title === title) 
+
+    // if(indexToRemove !== -1){ // Se o item for encontrado (ou seja, se indexToRemove for diferente de -1)
+    //     reversedItems.splice(indexToRemove,1)
+    // }
+
+    // renderStatusCart()
 }
 
 
@@ -444,13 +439,15 @@ function clearCart(){
 // Verifica se a classe show foi removida para voltar ao valor inicial do livro
 let modal = document.getElementById('myModal')
 
+// let cartStatusModal = document.getElementById("cartStatusModal")
+
 const observer = new MutationObserver((mutationList) => {
     for( let mutation of mutationList){
         if(mutation.type === 'attributes' && mutation.attributeName === 'class'){
             if( !modal.classList.contains('show') ){     
                 console.log("teste close if MUTATION OBSERVER ")
                 closeModal()
-            }
+            }            
         }
     }
 })
@@ -648,7 +645,54 @@ function closeModal(){
 
 
 
+// else{
+    //     console.log("ELSE")
 
+    //     // Se não tiver itens o valor é 0
+    //     if(itemShoppingCart.length === 0){
+    //         totalValueStatusCart.textContent = "R$ 0,00"
+    //         numberCart.classList.add("d-none")
+    //         numberCart.classList.remove("d-flex")
+    //         iconCart.style = "margin-right:10px"    
+    //         // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"
+    //     }
+
+    //     statusModalContent.innerHTML = ""
+
+    //     for( item of itemShoppingCart.reverse()){
+    //         totalItemsCart += item.quantity
+    //         totalValueCart += item.totalValue
+
+    //         // console.log("esse é o VALOR TOTAL:", totalValueCart.toFixed(2).replace('.',','))
+    //         totalValueStatusCart.textContent = " R$ "+ totalValueCart.toFixed(2).replace('.',',')
+
+    //         statusModalContent.innerHTML += `<div class="d-flex align-items-center" style="height:140px;">
+    //                                             <img src="${item.img}" class="w-25 img-fluid" style="object-fit:contain; height:100%; width:auto;" >
+    //                                             <div class="text-center" style="width:100%;">
+    //                                                 <h6 id="title-book-status" class="mb-4" >${item.title}</h6>
+    //                                                 <div class="d-flex align-items-center justify-content-center gap-4">
+    //                                                     <button onclick="removeItem('${item.title}')" class="btn btn-danger small-btn" >Excluir</button>
+    //                                                     <a class="p-2" onclick="decreaseStatus('${item.title}')" href="#">
+    //                                                         <i   class="fa-solid fa-minus"></i>
+    //                                                     </a>                            
+    //                                                     <span id="quantityStatusCart" >${item.quantity}</span>
+    //                                                     <a class="p-2" onclick="addStatus('${item.title}')" style="margin-left:5px;" href="#">
+    //                                                         <i class="fa-solid fa-plus"></i>
+    //                                                     </a>
+    //                                                     <span style="margin-left:30px;">R$ ${item.totalValue.toFixed(2).replace('.',',')}</span>
+    //                                                 </div>                        
+    //                                             </div>                  
+    //                                         </div>
+    //                                         <hr>`
+    //     }
+
+    //     numberCart.textContent = totalItemsCart  // Numero de itens no icone da navbar
+    //     modalNavTitleh6.textContent = totalItemsCart        
+    //     numberCart.classList.remove("d-none")
+    //     numberCart.classList.add("d-flex")        
+    //     iconCart.style = ""
+    //     // console.log("esse é o totalValue: ", totalValueCart)
+    // }
 
 
 
