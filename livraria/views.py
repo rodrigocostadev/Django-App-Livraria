@@ -181,7 +181,8 @@ def register_user(request):
 
 
 def profile_user_view(request, id):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated:     
+        
         books = Book.objects.all()
 
         user_logged = request.user  # Usuário logado
@@ -203,14 +204,22 @@ def profile_user_view(request, id):
         unique_genres = set()
         for rating in ratings:
             unique_genres.add(rating.genre)           
-             
-        form = SignUpForm(request.POST or None, instance=user_profile)
+        
+        # form = SignUpForm(request.POST or None, instance=user_profile)
+        
+        # Solicitação de amizade
+        # if request.method == 'POST':
+            # name_friend_request = request.POST.get('name_friend_request') # Pega o nome do usuario da pagina visitada
+            # if name_friend_request:
+                # name_friend_request.
+            # user_profile_instance
+            
 
         return render(request, 'profile_view.html', {
             'user_logged': user_logged,  # Sempre mantém o usuário logado separado
             'user_profile': user_profile,  # Usuário cujo perfil está sendo visitado
             'user_profile_instance':user_profile_instance,
-            'form': form,
+            # 'form': form,
             "ratings": unique_ratings,
             "books": books,
             "unique_genres": unique_genres,
@@ -275,13 +284,10 @@ def book_detail(request, id):
         comments = book.comments.all().order_by('-date') # Ordena os comentário mais recentes no topo
         
         ratings = RatinStar.objects.filter(user = request.user, book = book)
+        
         # if ratings:
             # user_rating = ratings.last() if ratings.exists() else None # Pega a última avaliação do usuário
         user_rating = ratings.last() if ratings.exists() else None # Pega a última avaliação do usuário
-        # print("TESTEEE")
-        # print(ratings)
-        # print(user_rating)
-        # print(user_rating.rating)
         
         # ///////////////////////////////////////////////////////////////////////////
         # AVALIAÇÃO GERAL DO LIVRO POR ESTRELAS:                
@@ -326,9 +332,7 @@ def book_detail(request, id):
             
             # ///////////////////////////////////////////////////////////////////////////
             # ADICIONAR AVALIAÇÃO:
-            if 'rating_submit' in request.POST: # Nome do botão de envio do formulário = 'rating_submit'             
-                
-                
+            if 'rating_submit' in request.POST: # Nome do botão de envio do formulário = 'rating_submit'           
                 
                 rating_value = request.POST.get('rating') # Pega o valor do input através do name 'rating' do input
                 rating_value = int(rating_value) # Passa para int pra comparar no if abaixo
@@ -344,19 +348,22 @@ def book_detail(request, id):
                         rating.genre = book.genre
                         rating.save()
                         media_rating = calculate_media_rating(book) # Atualiza a avaliação geral do livro ao enviar a nota de avaliação
-                        # print(f"Esse é o media rating: {media_rating}")
-                        # print(f"Antes de salvar: media_rating = {media_rating}, book.media_rating = {book.media_rating}")
 
                         book.media_rating = media_rating # Salva a media da avaliação geral do livro no modelo do livro
                         book.save()
                         print(f"Depois de salvar: media_rating = {media_rating}, book.media_rating = {book.media_rating}")
                         messages.success(request, 'Avaliação enviada com sucesso!')
                         # return render(request, 'book.html', {'book':book, 'media_rating': media_rating, }) 
-                        return render(request, 'book.html', {'book':book, 'media_rating': media_rating, 'user_rating': user_rating if user_rating else None }) 
+                        return render(request, 'book.html', {
+                            'book':book, 'media_rating': media_rating,
+                            'comments': comments, 'comment_form':comment_form, # Envia comments e comment_form para renderizar o campo de comentário
+                            'user_rating': user_rating if user_rating else None }) 
                         # return redirect('book.html', id=book.id)                
    
         # return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments,  })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
-        return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments, 'user_rating': user_rating if user_rating else None })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
+        return render(request, 'book.html', {
+            'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments, 
+            'user_rating': user_rating if user_rating else None })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
         messages.error(request, 'Você precisa estar logado!')
         return redirect('home')

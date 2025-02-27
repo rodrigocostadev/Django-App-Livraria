@@ -20,6 +20,33 @@
                     <img src="{% static 'images/default.jpg' %}" style="width:205px; height:205px; border-radius: 50%; margin-left:10px" alt="s/ foto">
                 {% endif %}
                 <h6>{{ user_profile.username }}</h6>
+
+                {% if user_profile == user_logged %}
+                {% else %}
+
+                    {% comment %} <p>Enviar nome = {{ request.user }} </p>
+                    <p>para o campo de solicitação no modelo do usuario</p>
+                    <p>{{ user_profile.username }}</p> {% endcomment %}
+
+                    {% comment %} <form method="POST" >
+                        {% csrf_token %}
+                        <input type="hidden" name="name_friend_request" value="{{ user_profile.username }}" >
+                        <button id="addFriend" onclick="friendRequest()" type="button" class="btn btn-primary btn-small">Enviar Solicitação de Amizade</button>
+                    </form>  {% endcomment %}
+
+                    <button id="addFriend" onclick="friendRequest()" type="button" class="btn btn-primary btn-small">Enviar Solicitação de Amizade</button>
+                    
+                    
+                {% endif %}
+
+                <script>
+                    function friendRequest(){
+                        let btn = document.getElementById("addFriend")
+                        btn.classList.remove("btn-primary")
+                        btn.classList.add("btn-success")
+                        btn.textContent = "Solicitação Enviada"
+                    }
+                </script>
             </div> 
 
             {% comment %} <br> {% endcomment %}
@@ -27,7 +54,7 @@
             {% if user_profile_instance.bio %}
             <div class="d-flex gap-3" >
                 <h6>Bio:</h6>
-                <textarea class="form-control" style="height: 120px;" readonly> {{ user_profile_instance.bio }}</textarea>
+                <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile_instance.bio }}</textarea>
             </div>
                 
             {% endif %}
@@ -39,7 +66,9 @@
                 <div class="d-flex justify-content-center gap-2" >
                         {% for genre in unique_genres %}
                             <a href="{% url 'tag_search' %}?search={{ genre }}" style="color:black;">
-                                <div class="card p-1" style="display: inline-block; margin-left:10px">{{ genre }}</div>
+                                <div class="card p-1" style="display: inline-block; margin-left:10px" 
+                                onmouseover="this.style.backgroundColor='#d3d3d3';" onmouseout="this.style.backgroundColor='';"
+                                >{{ genre }}</div>
                             </a>
                         {% empty %}
                             <p >Este usuário ainda não fez avaliações.</p>                    
@@ -76,30 +105,12 @@
                     {% endfor %}
                 </div> {% endcomment %}
 
-                <div class="d-flex justify-content-center gap-2" >
-                    {% comment %} {% for rating in ratings %}
-                        {% for tag in book.tags.all %}
-                            {% if rating.book == tag.name %}
-                                <div class="card p-1" style="display: inline-block; margin-left:10px">{{ tag.name }}</div>
-                            {% empty %}
-                                <p >Este usuário ainda não fez avaliações.</p>     
-                            {% endif %}               
-                        {% endfor %}
-                    {% endfor %} {% endcomment %}
-
-                        {% comment %} {% for tag in book.tags.all %}
-                            <div class="card p-1" style="display: inline-block; margin-left:10px">{{ tag.name }}</div>
-                        {% empty %}
-                            <p >Este usuário ainda não fez avaliações.</p>                    
-                        {% endfor %} {% endcomment %}
-                </div>
-                <br>
+                
 
                 <br>
                 <h5>Livros Preferidos:</h5>                
 
                 <div class="d-flex justify-content-center" >
-                    {% comment %} {% with counter=1 %} {% endcomment %}
                         {% for rating in ratings %}
                             {% for book in books %}
                                 {% if rating.book.title == book.title %}
@@ -108,20 +119,13 @@
                                         <a href="{% url 'book' book.id %}">
                                             <img src="{{ book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ book.title }}">
                                         </a>
-                                        
-                                        {% comment %} <p>{{ forloop.counter }}º</p> {% endcomment %}
-                                        {% comment %} <p class="small">{{rating.book.title}}</p> {% endcomment %}
-                                    </div>
-                                    {% comment %} {% with counter=counter|add:1 %}
-                                    {% endwith %} {% endcomment %}
-                                
+                                    </div>                                
                                 {% endif %} 
                             {% endfor %}
 
                         {% empty %}
                             <p>Este usuário ainda não fez avaliações.</p>                    
                         {% endfor %}
-                    {% comment %} {% endwith %} {% endcomment %}
                 </div>
                 
 
@@ -146,23 +150,18 @@
             <div class="col-md-6 offset-md-3 d-flex flex-column gap-3 " >
                 <h4>Dados Pessoais:</h4>
                 <div>
-                    {% comment %} <label>Usuário:</label> {% endcomment %}
                     <input type="text" class="form-control" value="Usuário: {{user_profile.username}}" readonly>
                 </div>
                 <div>
-                    {% comment %} <label>Nome:</label> {% endcomment %}
                     <input type="text" class="form-control" value="Nome: {{user_profile.first_name}}" readonly>
                 </div>
                 <div>
-                    {% comment %} <label>Sobrenome:</label> {% endcomment %}
                     <input type="text" class="form-control" value="Sobrenome: {{user_profile.last_name}}" readonly>
                 </div>
                 <div>
-                    {% comment %} <label>Email:</label> {% endcomment %}
                     <input type="text" class="form-control" value="Email: {{user_profile.email}}" readonly>
                 </div>
                 <div>
-                    {% comment %} <label>Cpf:</label> {% endcomment %}
                     <input type="text" class="form-control" value="Cpf: {{user_profile.userprofile.cpf}}" readonly>
                 </div>
                 <div>
@@ -251,3 +250,22 @@
     </form> {% endcomment %}
 
 
+
+    {% comment %} <div class="d-flex justify-content-center gap-2" > {% endcomment %}
+        {% comment %} {% for rating in ratings %}
+            {% for tag in book.tags.all %}
+                {% if rating.book == tag.name %}
+                    <div class="card p-1" style="display: inline-block; margin-left:10px">{{ tag.name }}</div>
+                {% empty %}
+                    <p >Este usuário ainda não fez avaliações.</p>     
+                {% endif %}               
+            {% endfor %}
+        {% endfor %} {% endcomment %}
+
+            {% comment %} {% for tag in book.tags.all %}
+                <div class="card p-1" style="display: inline-block; margin-left:10px">{{ tag.name }}</div>
+            {% empty %}
+                <p >Este usuário ainda não fez avaliações.</p>                    
+            {% endfor %} {% endcomment %}
+    {% comment %} </div>
+    <br> {% endcomment %}

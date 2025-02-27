@@ -9,7 +9,16 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     # cpf = models.IntegerField(unique=True, null=False)
     # cpf = models.IntegerField(null=False)
-    cpf = models.CharField(max_length=11,null=False)
+    cpf = models.CharField(max_length=11,null=False)    
+    # solicitations = models.ManyToManyField(blank=True, symmetrical=False)
+    # friends = models.ManyToManyField('self', blank=True, symmetrical=False)
+    
+    # friends: O campo ManyToManyField permite que você crie uma relação de amizade entre os usuários. 
+    # Usamos 'self' para que a relação seja com a mesma tabela, ou seja, um usuário com outro usuário.
+    
+    # O argumento symmetrical=False é importante porque a amizade não é automaticamente bidirecional 
+    # (ou seja, se A é amigo de B, B não será amigo automaticamente de A sem uma ação explícita). 
+    # O symmetrical=False permite que você trate a amizade de forma manual.
 
 
 class Book(models.Model):
