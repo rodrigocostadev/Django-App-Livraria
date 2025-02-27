@@ -6,11 +6,8 @@
 ////////////////////////    REMOVE URL e CARREGA LOCALSTORAGE    ////////////////////////
 
 document.addEventListener('DOMContentLoaded', function () {
-
     
     let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
-
-    console.log("FOI")
 
     if (loadSaveCart ) {
         // itemShoppingCart = loadSaveCart;
@@ -170,7 +167,7 @@ function addBookCart(){
             img: fieldImg.src,
             quantity: totalItems,
             valueString: fieldValue.textContent,
-            valueUnitBook: parseFloat(currentValue),
+            valueUnitBook: parseFloat(currentValue.replace(',','.')),
             totalValue: result,
         })
         // console.log(itemShoppingCart)
@@ -194,7 +191,7 @@ function addBookCart(){
             img: fieldImg.src,
             quantity: totalItems,
             valueString: fieldValue.textContent,
-            valueUnitBook: parseFloat(currentValue),
+            valueUnitBook: parseFloat(currentValue.replace(',','.')),
             totalValue: result,
         })
         // console.log(itemShoppingCart)
@@ -337,28 +334,75 @@ function renderStatusCart(){
 
 function addStatus(title){
     let reversedItems = itemShoppingCart.reverse()
-    for (item of reversedItems){
-        if(item.title == title){
-            item.quantity += 1
-            item.totalValue = item.quantity * item.valueUnitBook
-            break
+    let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"))
+
+    if(loadSaveCart){
+        console.log(loadSaveCart)
+        for (item of loadSaveCart){
+            if(item.title == title){
+                item.quantity += 1
+                console.log(parseFloat(item.valueUnitBook))
+                item.totalValue = item.quantity * item.valueUnitBook
+                console.log(parseFloat(item.totalValue) )
+                break
+            }
         }
+        let saveCart = JSON.stringify(loadSaveCart)
+        localStorage.setItem('saveCart', saveCart)
+        renderStatusCart()
+    }else{
+        for (item of reversedItems){
+            if(item.title == title){
+                item.quantity += 1
+                item.totalValue = item.quantity * item.valueUnitBook
+                break
+            }
+        }
+        renderStatusCart()
     }
-    renderStatusCart()
+
+    // for (item of reversedItems){
+    //     if(item.title == title){
+    //         item.quantity += 1
+    //         item.totalValue = item.quantity * item.valueUnitBook
+    //         break
+    //     }
+    // }
+    // renderStatusCart()
 }
 
 function decreaseStatus(title){
     let reversedItems = itemShoppingCart.reverse()
-    for (item of reversedItems){
-        if(item.title == title){
-            if(item.quantity > 1){
-                item.quantity -= 1
-                item.totalValue = item.quantity * item.valueUnitBook
-            }            
-            break
+    let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"))
+
+
+    if(loadSaveCart){
+        for (item of loadSaveCart){
+            if(item.title == title){
+                if(item.quantity > 1){
+                    item.quantity -= 1
+                    item.totalValue = item.quantity * item.valueUnitBook
+                }            
+                break
+            }
         }
+        let saveCart = JSON.stringify(loadSaveCart)
+        localStorage.setItem('saveCart', saveCart)
+        renderStatusCart()
+    }else{
+        for (item of reversedItems){
+            if(item.title == title){
+                if(item.quantity > 1){
+                    item.quantity -= 1
+                    item.totalValue = item.quantity * item.valueUnitBook
+                }            
+                break
+            }
+        }
+        renderStatusCart()
     }
-    renderStatusCart()
+
+    
 }
 
 
