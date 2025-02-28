@@ -11,21 +11,22 @@
 
 
 
- <form method="POST" class="mx-auto" action="{% url 'register' %}" style="width:100%;" enctype="multipart/form-data" >
+{% comment %} <form method="POST" class="mx-auto" action="{% url 'register' %}" style="width:100%;" enctype="multipart/form-data" >
         {% csrf_token %}
         {% if form.errors %}
             <div class="alert alert-warning alert-dismissible fade show" role="alert" >
                 Seu Formulário Possui Erros
             </div>
         {% endif %}
-        {% comment %} {{ form.as_p }} {% endcomment %}
 
-        <p><label>Usuario:</label>{{ form.username }}</p>        
+        <p><label>Usuario:</label>{{ userform.username }}</p>        
         <p><label>Nome:</label>{{ form.first_name }}</p>        
         <p><label>Sobrenome:</label>{{ form.last_name }}</p>        
         <p><label>CPF:</label>{{ form.cpf }}</p>        
         <p><label>Email:</label>{{ form.email }}</p>  
         <p><label>Bio:</label>{{ form.bio }}</p>
+
+
         <a onclick="changePassword()"  style="text-decoration:none;cursor:pointer;" >
             <p class="form-control">Deseja alterar a senha? Clique aqui</p>
         </a>
@@ -42,7 +43,45 @@
             <button type="submit" class="btn btn-primary btn-lg" >Atualizar Perfil</button>
         </div> 
         
+    </form>   {% endcomment %}
+
+    <form method="POST" class="mx-auto" action="{% url 'profile_edit'  %}" style="width:100%;" enctype="multipart/form-data" >
+    {% comment %} <form method="POST" class="mx-auto" action="{% url 'register' %}" style="width:100%;" enctype="multipart/form-data" > {% endcomment %}
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" >
+                Seu Formulário Possui Erros
+            </div>
+        {% endif %}
+        {% comment %} {{ userForm.as_p }} {% endcomment %}
+
+        <p><label>Usuario:</label>{{ userForm.username }}</p>        
+        <p><label>Nome:</label>{{ userForm.first_name }}</p>        
+        <p><label>Sobrenome:</label>{{ userForm.last_name }}</p>        
+        <p><label>CPF:</label>{{ profileForm.cpf }}</p>        
+        <p><label>Email:</label>{{ userForm.email }}</p>  
+        <p><label>Bio:</label>{{ profileForm.bio }}</p>
+
+
+        <a onclick="changePassword()"  style="text-decoration:none;cursor:pointer;" >
+            <p class="form-control">Deseja alterar a senha? Clique aqui</p>
+        </a>
+        <div id="passwords" style="display:none;">
+            <p><label>Nova Senha:</label>{{ userForm.password1 }}</p>        
+            <p><label>Confirmação de Senha:</label>{{ userForm.password2 }}</p>      
+        </div>        
+          
+        <p><label>Imagem:</label>{{ userForm.user_image }}</p>
+        {% comment %} <p><label>Imagem:</label>{{ profileForm.user_image }}</p> {% endcomment %}
+
+
+        <br>
+        <div class="d-flex justify-content-center ">
+            <button type="submit" class="btn btn-primary btn-lg" >Atualizar Perfil</button>
+        </div> 
+        
     </form> 
+
 
     <script>
         let passwords = document.getElementById("passwords")

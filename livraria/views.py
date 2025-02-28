@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
 # from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
-from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm
+from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm, UserForm
 from .models import Book, Comment, RatinStar, UserProfile
 from django.template.loader import render_to_string
 
@@ -81,7 +81,7 @@ def logout_user(request):
 
 
 
-def resize_profile_image(image, offset_top=10):
+def resize_profile_image(image):
     img = Image.open(image)
     
     original_width, original_height = img.size # index 0 é a largura, index 1 é a altura         
@@ -89,7 +89,12 @@ def resize_profile_image(image, offset_top=10):
     
     # Definição dos tamanhos para centralizar o corte da imagem (Para não ficar com as laterais pretas)
     left = (original_width - shortest_side) // 2
-    top = (original_height - shortest_side) // 2 - offset_top
+
+    if original_height > 1500: # Se a imagem for maior que 1500 px, joga a imagem 450 px para baixo para cortar
+        top = (original_height - shortest_side) // 2 - 450
+    else:
+        top = (original_height - shortest_side) // 2 # Centraliza a imagem para cortar
+        
     top = max(top,0) # garante que o valor de top nunca seja negativo, evitando que o corte vá para fora da parte superior da imagem.
     right = left + shortest_side
     bottom = top + shortest_side
@@ -142,7 +147,7 @@ def register_user(request):
             bio = form.cleaned_data['bio']
             
             if user_image:
-                user_image = resize_profile_image(user_image,offset_top=450)
+                user_image = resize_profile_image(user_image)
                 user_profile = UserProfile.objects.create(user = user, user_image = user_image, cpf = cpf, bio = bio)
             else:
                 # user_profile = UserProfile.objects.create(user = user,  user_image = "../../media/users/default.jpg" , cpf = cpf)
@@ -187,8 +192,33 @@ def profile_user_view(request, id):
 
         user_logged = request.user  # Usuário logado
         user_profile = get_object_or_404(User, id=id)  # Usuário visitado
-        user_profile_instance = get_object_or_404(UserProfile, user=user_profile)  # Usuário visitado
+        user_profile_instance = get_object_or_404(UserProfile, user=user_profile)  # Usuário visitado ( Usado para mostar a bio pegando o id do usuario visitado )
+        
         ratings = RatinStar.objects.filter(user=user_profile, rating__gte=4.0).order_by('-rating') # rating__gt=4 filtra os ratings que são maiores que 4. O __gt é um lookup do Django que significa "maior que" (greater than).
+
+        # /////////////////////////////////////////////////////////////////////////////////////////////
+        # TESTE
+        
+        # ratings = RatinStar.objects.filter(user=user_profile) # Avaliações feita pelo usuário
+        # print(ratings)
+        
+        # last_ratings = {} # Avaliações recentes e sem repetições
+
+        # for rating in ratings: # Pega todas as avaliações feitas
+        #     book_id = rating.book.id
+            
+        #     last_ratings[book_id] = rating # Passa a ultima avaliação com rating superior a 4 e envia para o last_ratings
+            
+        #     # if rating.rating >= 4:
+        #     #     last_ratings[book_id] = rating # Passa a ultima avaliação com rating superior a 4 e envia para o last_ratings
+
+        # print("Esse é o last ratings",last_ratings)
+        
+        # last_ratings_list = list(last_ratings.values())
+        # print("Esse é o last ratings LIST",last_ratings_list)
+        
+        # /////////////////////////////////////////////////////////////////////////////////////////////
+        
         
         # Remover avaliações duplicadas por livro ( Não da pra fazer com set pois se não vai ser perdido as propriedades de busca )
         unique_ratings = []
@@ -218,8 +248,8 @@ def profile_user_view(request, id):
         return render(request, 'profile_view.html', {
             'user_logged': user_logged,  # Sempre mantém o usuário logado separado
             'user_profile': user_profile,  # Usuário cujo perfil está sendo visitado
-            'user_profile_instance':user_profile_instance,
-            # 'form': form,
+            'user_profile_instance':user_profile_instance, # usado para passar a bio do usuario visitado para o template
+            # 'last_ratings_list': last_ratings_list,
             "ratings": unique_ratings,
             "books": books,
             "unique_genres": unique_genres,
@@ -229,48 +259,47 @@ def profile_user_view(request, id):
         return redirect('home')
     
     
+    
 def profile_user_edit(request):
-    # return redirect(request, 'profile_view')
-    if request.user.is_authenticated:
-        user = request.user
-        user_profile = UserProfile.objects.filter(user=user).first() # apenas o primeiro registro encontrado vai ser retornado
-        # form = ProfileForm(request.POST or None, request.FILES or None, instance=user)
-        form = ProfileForm(request.POST or None, request.FILES or None, instance=user_profile)
-        
-        if user_profile:
-            form.fields['cpf'].initial = user_profile.cpf
-            form.fields['user_image'].initial = user_profile.user_image
-            form.fields['email'].initial = user_profile.user.email
-            form.fields['username'].initial = user_profile.user.username
-            form.fields['first_name'].initial = user_profile.user.first_name
-            form.fields['last_name'].initial = user_profile.user.last_name
-            form.fields['bio'].initial = user_profile.bio
-            # form.fields['password1'].initial = user_profile.user.password1
-            # form.fields['password2'].initial = user_profile.user.password2
+    if request.user.is_authenticated:        
+        # user = request.user
+        profile = get_object_or_404(UserProfile, user=request.user)  # Cria um objeto do modelo do usuario  
             
         if request.method == 'POST':
-            if form.is_valid():
-                form.save()
-                
-                user_profile.cpf = form.cleaned_data['cpf']
-                user_profile.user_image = form.cleaned_data['user_image']
-                user_profile.save()  # Salva as alterações no perfil
-                
-                # # Atualiza o perfil do usuário com o campo cpf
-                # if user_profile:
-                #     user_profile.cpf = form.cleaned_data['cpf']
-                #     user_profile.save()
-                    
-                messages.success(request, "Perfil Atualizado!")
-                return redirect('profile_view')
-            else:
-                messages.error(request,'Erro ao atualizar o perfil. Tente novamente.')
+            profileForm = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
+            # profileForm = ProfileForm(request.POST or None, request.FILES or None, instance=user) # Não aceita o usuario logado como instancia
+            userForm = UserForm(request.POST, instance=request.user  )
+        else:
+            profileForm = ProfileForm(instance=profile)
+            # profileForm = ProfileForm(instance=user) # Não aceita o usuario logado como instancia
+            userForm = UserForm(instance=request.user  )
+            
+        if profileForm.is_valid() and userForm.is_valid():            
+            user_image = profileForm.cleaned_data['user_image']
 
-        # No caso de GET ou falha no formulário, renderiza o formulário
-        return render(request, 'profile_edit.html', {'form': form})
-    
+            if user_image:
+                user_image = resize_profile_image(user_image)
+                profile.user_image = user_image # Passa a imagem editada pela função resize_profile_image() para o profile antes de salvar o formulário
+                
+            profileForm.save()
+            userForm.save()
+            
+            messages.success(request, "Perfil Atualizado!")
+            return redirect('profile_view', id=request.user.id)
+        else:
+            if request.method == 'POST':
+                messages.error(request,'Erro ao atualizar o perfil. Tente novamente.')
+        return render(request, 'profile_edit.html', {
+            'profileForm': profileForm,
+            'userForm': userForm
+        })
+
     else:
         return redirect('home')
+    
+    
+    
+    
 
 
 # Só vai acessar os detalhes do livro se estiver autenticado
@@ -351,13 +380,16 @@ def book_detail(request, id):
 
                         book.media_rating = media_rating # Salva a media da avaliação geral do livro no modelo do livro
                         book.save()
+                        user_rating = rating # Atualiza o rating star apos a avaliação do formulário para renderizar na pagina
                         print(f"Depois de salvar: media_rating = {media_rating}, book.media_rating = {book.media_rating}")
                         messages.success(request, 'Avaliação enviada com sucesso!')
                         # return render(request, 'book.html', {'book':book, 'media_rating': media_rating, }) 
+                        
                         return render(request, 'book.html', {
                             'book':book, 'media_rating': media_rating,
                             'comments': comments, 'comment_form':comment_form, # Envia comments e comment_form para renderizar o campo de comentário
                             'user_rating': user_rating if user_rating else None }) 
+                        
                         # return redirect('book.html', id=book.id)                
    
         # return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments,  })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.

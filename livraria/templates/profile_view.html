@@ -52,12 +52,20 @@
             {% comment %} <br> {% endcomment %}
 
             {% if user_profile_instance.bio %}
-            <div class="d-flex gap-3" >
-                <h6>Bio:</h6>
-                <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile_instance.bio }}</textarea>
-            </div>
-                
-            {% endif %}
+                <div class="d-flex gap-3" >
+                    <h6>Bio:</h6>
+                    <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile_instance.bio }}</textarea>
+                </div>                
+            {% endif %} 
+
+            {% comment %} {% if user_profile.bio %}
+                <div class="d-flex gap-3" >
+                    <h6>Bio:</h6>
+                    <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile.bio }}</textarea>
+                </div>                
+            {% endif %} {% endcomment %}
+
+            
 
             <div class="text-center" >
 
@@ -111,11 +119,25 @@
                 <h5>Livros Preferidos:</h5>                
 
                 <div class="d-flex justify-content-center" >
+
+                    {% comment %} {% for item in last_ratings_list %}
+                    <div>{{ item.rating }}</div>
+                        {% if item.rating >= 4 %}
+                            <a href="{% url 'book' item.book.id %}">
+                                <img src="{{ rating.book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ rating.book.title }}">
+                            </a>
+                        {% endif %}
+                    {% endfor %} {% endcomment %}
+                    {% comment %} <div>TESTE{{ rating.rating }}</div> {% endcomment %}
+
+
+
+
+
                         {% for rating in ratings %}
                             {% for book in books %}
                                 {% if rating.book.title == book.title %}
-                                    <div>
-                                        {% comment %} <img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"> {% endcomment %}
+                                    <div>                                        
                                         <a href="{% url 'book' book.id %}">
                                             <img src="{{ book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ book.title }}">
                                         </a>
@@ -125,8 +147,9 @@
 
                         {% empty %}
                             <p>Este usuário ainda não fez avaliações.</p>                    
-                        {% endfor %}
+                        {% endfor %} 
                 </div>
+                {% comment %} <img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"> {% endcomment %}
                 
 
 

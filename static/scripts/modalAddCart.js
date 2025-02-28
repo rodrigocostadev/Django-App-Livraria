@@ -171,7 +171,10 @@ function addBookCart(){
         // console.log(itemShoppingCart)
 
         numberCart.classList.remove("d-none")
-        numberCart.classList.add("d-flex")        
+        numberCart.classList.add("d-flex")   
+
+        iconCart.classList.remove("d-none")     
+        iconCart.classList.remove("d-flex")  
         iconCart.style = ""
 
         let saveCart = JSON.stringify(loadSaveCart)
@@ -195,7 +198,10 @@ function addBookCart(){
         // console.log(itemShoppingCart)
 
         numberCart.classList.remove("d-none")
-        numberCart.classList.add("d-flex")        
+        numberCart.classList.add("d-flex")    
+        
+        iconCart.classList.remove("d-none")     
+        iconCart.classList.remove("d-flex")  
         iconCart.style = ""
 
         let saveCart = JSON.stringify(itemShoppingCart)
@@ -237,18 +243,6 @@ function renderStatusCart(){
 
     // Se tem dados salvos no LocalStorage
     if (loadSaveCart){
-        // console.log("LOAD SAVE CART",loadSaveCart)
-
-        // Se não tiver itens o valor é 0
-        // if(loadSaveCart.length == 0){
-        //     clearCart()
-        //     // totalValueStatusCart.textContent = "R$ 0,00"
-        //     // numberCart.classList.remove("d-flex")
-        //     // numberCart.classList.add("d-none")            
-        //     // iconCart.style = "margin-right:10px"   
-        //     console.log("TESTE loadSaveCart")
-        //     // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"            
-        // }
 
         statusModalContent.innerHTML = ""
 
@@ -423,6 +417,8 @@ function clearCart(){
     itemShoppingCart = []    
     numberCart.classList.remove("d-flex")
     numberCart.classList.add("d-none")
+    iconCart.classList.remove("d-flex")     
+    iconCart.classList.add("d-none")  
     iconCart.style = "margin-right:10px"    
     totalValueStatusCart.textContent = "R$ 0,00"
     localStorage.removeItem('saveCart')

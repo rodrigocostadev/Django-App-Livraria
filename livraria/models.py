@@ -59,6 +59,7 @@ class RatinStar(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     n_review = models.IntegerField(default=0)
     genre = models.CharField(max_length=100)
+    # created_at = models.DateTimeField(auto_now_add=True)
     # media_rating = models.DecimalField(default=0,max_digits=3,decimal_places=1,)     COLOCAR MEDIA DE RATING
     # rating = models.IntegerField()    
     
