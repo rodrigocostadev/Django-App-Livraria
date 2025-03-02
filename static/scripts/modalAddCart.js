@@ -174,7 +174,7 @@ function addBookCart(){
         numberCart.classList.add("d-flex")   
 
         iconCart.classList.remove("d-none")     
-        iconCart.classList.remove("d-flex")  
+        iconCart.classList.add("d-flex")  
         iconCart.style = ""
 
         let saveCart = JSON.stringify(loadSaveCart)
@@ -201,7 +201,7 @@ function addBookCart(){
         numberCart.classList.add("d-flex")    
         
         iconCart.classList.remove("d-none")     
-        iconCart.classList.remove("d-flex")  
+        iconCart.classList.add("d-flex")  
         iconCart.style = ""
 
         let saveCart = JSON.stringify(itemShoppingCart)
@@ -222,6 +222,7 @@ function renderStatusCart(){
 
     console.log(itemShoppingCart)
 
+
     let modalNavTitleh6 = document.getElementById("quantityBookCartModalNavTitle")
     let statusModalContent = document.getElementById("status-modal-content")
     let totalValueStatusCart = document.getElementById("totalValueStatusCart")
@@ -230,16 +231,20 @@ function renderStatusCart(){
     let totalValueCart = 0
     let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"))
 
+    iconCart.classList.remove("d-none")     
+    iconCart.classList.add("d-flex")  
+    iconCart.style = ""
 
-    if(itemShoppingCart.length === 0){
-        totalValueStatusCart.textContent = "R$ 0,00"
-        numberCart.classList.add("d-none")
-        numberCart.classList.remove("d-flex")
-        iconCart.style = "margin-right:10px"   
-        console.log("TESTE itemShoppingCart")
-        // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"
-        // iconCart.classList.add("d-none")
-    }
+
+    // if(itemShoppingCart.length === 0){
+    //     totalValueStatusCart.textContent = "R$ 0,00"
+    //     // numberCart.classList.add("d-none")
+    //     // numberCart.classList.remove("d-flex")
+    //     iconCart.style = "margin-right:10px"   
+    //     console.log("TESTE itemShoppingCart")
+    //     // statusModalContent.innerHTML = "Você não possui itens adicionados ao carrinho"
+    //     // iconCart.classList.add("d-none")
+    // }
 
     // Se tem dados salvos no LocalStorage
     if (loadSaveCart){
@@ -398,14 +403,6 @@ function removeItem(title){
         renderStatusCart()
     }
 
-    // // Retorna o item encontrado com o título igual ao valor da variável title. Nesse caso, o findIndex() retorna o índice do item encontrado no array.
-    // let indexToRemove = reversedItems.findIndex(item => item.title === title) 
-
-    // if(indexToRemove !== -1){ // Se o item for encontrado (ou seja, se indexToRemove for diferente de -1)
-    //     reversedItems.splice(indexToRemove,1)
-    // }
-
-    // renderStatusCart()
 }
 
 
@@ -422,7 +419,7 @@ function clearCart(){
     iconCart.style = "margin-right:10px"    
     totalValueStatusCart.textContent = "R$ 0,00"
     localStorage.removeItem('saveCart')
-    renderStatusCart()
+    // renderStatusCart()
 }
 
 

@@ -63,8 +63,11 @@
         <p><label>Bio:</label>{{ profileForm.bio }}</p>
 
 
-        <a onclick="changePassword()"  style="text-decoration:none;cursor:pointer;" >
-            <p class="form-control">Deseja alterar a senha? Clique aqui</p>
+        <a onclick="changePassword()" style="text-decoration:none;cursor:pointer;" >
+            <p 
+            class="form-control" 
+            onmouseover="this.style.backgroundColor='#d3d3d3';" 
+            onmouseout="this.style.backgroundColor='';" >Deseja alterar a senha? Clique aqui</p>
         </a>
         <div id="passwords" style="display:none;">
             <p><label>Nova Senha:</label>{{ userForm.password1 }}</p>        
