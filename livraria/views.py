@@ -562,6 +562,18 @@ def tag_search(request):
 
 
 
+def page_checkout(request):
+    return render(request,'checkout.html')
+
+
+
+
+
+
+
+
+
+
     # new_size = size[0]
     
     # if original_width > original_height:
