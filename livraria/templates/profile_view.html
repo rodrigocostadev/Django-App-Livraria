@@ -190,6 +190,25 @@
                 <div>
                     <input type="text" class="form-control" value="Imagem de Perfil: {{user_profile.userprofile.user_image}}" readonly>
                 </div>
+
+
+
+
+                <div>
+                    <input type="text" class="form-control" value="Estado: {{user_profile.userprofile.state}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Cidade: {{user_profile.userprofile.city}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Bairro: {{user_profile.userprofile.district}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Rua: {{user_profile.userprofile.street}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Número da Casa: {{user_profile.userprofile.house_number}}" readonly>
+                </div>
                 <div class="d-flex justify-content-center ">
                     <a href="{% url 'profile_edit' %}">
                         <button type="button" class="btn btn-primary btn-lg" >Editar Perfil</button>
@@ -206,7 +225,6 @@
 <br>
 
 {% endblock %}
-
 
 
 

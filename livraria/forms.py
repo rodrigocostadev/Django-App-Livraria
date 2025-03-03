@@ -15,7 +15,12 @@ class SignUpForm(UserCreationForm):
     user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil ( Opcional ):")
     cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'CPF (Digite Apenas Números)'}),label = "")
     bio = forms.CharField(required=False, max_length=500, widget=forms.widgets.Textarea(attrs={"placeholder":"Bio ( Opcional )", "class":"form-control"}), label="")
-   
+    state = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Estado'}),label = "")
+    city = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Cidade'}),label = "")
+    district = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Bairro'}),label = "")
+    house_number = forms.IntegerField(required=True,min_value=0, max_value=99999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Numero da Casa'}),label = "")
+    street = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Rua'}),label = "")
+
     
     def clean_cpf(self):
         cpf = self.cleaned_data.get('cpf')        
@@ -28,7 +33,7 @@ class SignUpForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username','first_name','last_name', 'cpf','email','password1','password2','bio','user_image')        
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2','bio','state', 'city', 'district', 'house_number', 'street','user_image')        
     
         
     def __init__(self, *args, **kwargs):
@@ -77,10 +82,16 @@ class ProfileForm(forms.ModelForm):
     password1 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Nova Senha'}),label='Nova Senha ( OPCIONAL )')
     password2 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Confirmar Senha'}),label='Confirmar Senha ( OPCIONAL )')
 
+    state = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Estado'}),label = "")
+    city = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Cidade'}),label = "")
+    district = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Bairro'}),label = "")
+    house_number = forms.IntegerField(required=True,min_value=0, max_value=99999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Numero da Casa'}),label = "")
+    street = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Rua'}),label = "")
+
 
     class Meta:
         model = User
-        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio')   
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio', 'state', 'city', 'district', 'house_number', 'street')   
         
         
         
@@ -97,10 +108,16 @@ class UserForm(forms.ModelForm):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Nome de usuário'}),label="Nome de usuário")
     password1 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Nova Senha'}),label='Nova Senha ( OPCIONAL )')
     password2 = forms.CharField(required=False, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Confirmar Senha'}),label='Confirmar Senha ( OPCIONAL )')
+
+    state = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Estado'}),label = "")
+    city = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Cidade'}),label = "")
+    district = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Bairro'}),label = "")
+    house_number = forms.IntegerField(required=True,min_value=0, max_value=99999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Numero da Casa'}),label = "")
+    street = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Rua'}),label = "")
     
     class Meta:
         model = User
-        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio')  
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio','state', 'city', 'district', 'house_number', 'street')  
 
     
 

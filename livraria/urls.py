@@ -1,6 +1,6 @@
 from django.urls import path, include
 from django.http import HttpResponse
-from livraria.views import home, logout_user, register_user, book_detail, book_delete, book_add, book_update, book_search, profile_user_view, profile_user_edit, tag_search, page_checkout
+from livraria.views import home, logout_user, register_user, book_detail, book_delete, book_add, book_update, book_search, profile_user_view, profile_user_edit, tag_search, page_checkout, pix_payment, boleto_payment, card_payment, finish_purchase
 
 
 urlpatterns = [
@@ -17,6 +17,11 @@ urlpatterns = [
     path('profile_view/<int:id>/', profile_user_view, name="profile_view" ),
     path('profile_edit/', profile_user_edit, name="profile_edit" ),
     path('checkout/', page_checkout, name="page_checkout" ),
+    
+    path("finish_purchase/", finish_purchase,name="finish_purchase"),
+    path("pix_payment", pix_payment, name="pix_payment"),
+    path("boleto_payment",boleto_payment, name="boleto_payment"),
+    path("card_payment",card_payment, name="card_payment"),
     
     # path('ratings/', include('star_ratings.urls', namespace='ratings')),
     # path('sobre/', sobre)

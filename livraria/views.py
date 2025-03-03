@@ -564,6 +564,33 @@ def tag_search(request):
 
 def page_checkout(request):
     return render(request,'checkout.html')
+def pix_payment(request):
+    return render(request,"pix_payment")
+def boleto_payment(request):
+    return render(request,"boleto_payment")
+def card_payment(request):
+    return render(request,"card_payment")
+
+# Essa função redireciona o usuario que esta na pagina de checlout para a pagina de meio de pagamento 
+def finish_purchase(request):
+    if request.method == 'POST':
+        payment_method = request.POST.getlist("payment")[0]
+        # print("TESTE request.POST:", request.POST)
+        # print("TESTE",payment_method)
+
+        if payment_method == "pix":
+            return render(request,"pix_payment.html")
+        elif payment_method == "boleto":
+            return render(request,"boleto_payment.html")
+        elif payment_method == "cartao":
+            return render(request,"card_payment.html")
+        else:
+            messages.error(request,"Selecione um meio de pagamento.")
+            return redirect('page_checkout')
+    else:
+        messages.error(request,"Selecione um meio de pagamento.")
+        return redirect('page_checkout')
+            
 
 
 

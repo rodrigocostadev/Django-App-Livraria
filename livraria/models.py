@@ -9,7 +9,14 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     # cpf = models.IntegerField(unique=True, null=False)
     # cpf = models.IntegerField(null=False)
-    cpf = models.CharField(max_length=11,null=False)    
+    cpf = models.CharField(max_length=11,null=False)   
+    state = models.CharField(max_length=50,null=True)
+    city = models.CharField(max_length=50,null=True)
+    district = models.CharField(max_length=50,null=True)
+    house_number = models.IntegerField(null=True)
+    street = models.CharField(max_length=50,null=True)
+    
+     
     # solicitations = models.ManyToManyField(blank=True, symmetrical=False)
     # friends = models.ManyToManyField('self', blank=True, symmetrical=False)
     
