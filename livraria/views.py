@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
+from datetime import timedelta
 # from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
-from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm, UserForm
+from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm, UserForm, CheckoutForm
 from .models import Book, Comment, RatinStar, UserProfile
 from django.template.loader import render_to_string
 
@@ -14,7 +15,7 @@ from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
 
-from django.db.models import Q
+from django.urls import reverse
 # from taggit.models import Tag
 
 
@@ -366,6 +367,7 @@ def book_detail(request, id):
                 rating_value = request.POST.get('rating') # Pega o valor do input através do name 'rating' do input
                 rating_value = int(rating_value) # Passa para int pra comparar no if abaixo
                 if rating_value and rating_value >= 1 and rating_value <= 5:
+                # if rating_value :
                     rating_form = RatingForm(request.POST) 
                     if rating_form.is_valid():
                         rating = rating_form.save(commit=False)
@@ -383,6 +385,9 @@ def book_detail(request, id):
                         user_rating = rating # Atualiza o rating star apos a avaliação do formulário para renderizar na pagina
                         print(f"Depois de salvar: media_rating = {media_rating}, book.media_rating = {book.media_rating}")
                         messages.success(request, 'Avaliação enviada com sucesso!')
+                    else:
+                        messages.error(request,"Erro ao enviar a avaliação")
+                        # return render(request, 'book.html', {'book':book, 'comments': comments, 'comment_form':comment_form,'media_rating': media_rating})   
                         # return render(request, 'book.html', {'book':book, 'media_rating': media_rating, }) 
                         
                         return render(request, 'book.html', {
@@ -522,15 +527,12 @@ def book_update(request,id):
         
 def book_search(request):
     if request.user.is_authenticated:
-        search_term = request.GET.get('search')
-        
+        search_term = request.GET.get('search')        
         if search_term:
-            books = Book.objects.filter(title__icontains = search_term) # Filtra os livros pelo título           
-            
+            books = Book.objects.filter(title__icontains = search_term) # Filtra os livros pelo título         
         else:
             return redirect('home')
-            # books = Book.objects.all() # Se não houver termo de busca, mostra todos os livros
-    
+            # books = Book.objects.all() # Se não houver termo de busca, mostra todos os livros    
     else:
         # books = [] # quando o usuário não está autenticado (else: books = []) vai garantir que nenhum livro será mostrado na página de busca.
         return redirect('home')
@@ -561,9 +563,16 @@ def tag_search(request):
 
 
 
-
+# Apenas carrega as informações na pagina de checkout
 def page_checkout(request):
-    return render(request,'checkout.html')
+    # profile = get_object_or_404(UserProfile, user=request.user)  # Cria um objeto do modelo do usuario  
+    user_logged = get_object_or_404(UserProfile, user=request.user)  # Usuário logado
+    checkoutForm = CheckoutForm(instance=user_logged)
+    date = timezone.now()
+    prazo_entrega = date + timedelta(days=15)
+    checkout_url = reverse('page_checkout')  # Ou a URL que você usa
+    return render(request,'checkout.html', {'checkoutForm': checkoutForm,'prazo_entrega':prazo_entrega, 'checkout_url': checkout_url})
+
 def pix_payment(request):
     return render(request,"pix_payment")
 def boleto_payment(request):
@@ -573,24 +582,68 @@ def card_payment(request):
 
 # Essa função redireciona o usuario que esta na pagina de checlout para a pagina de meio de pagamento 
 def finish_purchase(request):
+    user_logged = get_object_or_404(UserProfile, user=request.user)  # Usuário logado
+    checkoutForm = CheckoutForm(instance=user_logged)
+    
+    payment_method = request.POST.get("payment")
+    
+    if not payment_method:
+        messages.error(request, "Selecione um meio de pagamento.")
+        return redirect('page_checkout')
+    
     if request.method == 'POST':
-        payment_method = request.POST.getlist("payment")[0]
-        # print("TESTE request.POST:", request.POST)
-        # print("TESTE",payment_method)
+        # payment_method = request.POST.getlist("payment")[0]
+        # payment_method = request.POST.get("payment")
+        # payment_method = cleaned_post_data.get("payment")         
+        print("TESTE",payment_method)
+        print("TESTE request.POST:", request.POST)
 
-        if payment_method == "pix":
-            return render(request,"pix_payment.html")
+        # # Ao tentar validar o formulário de checkout, o django mostrava que não esta sendo enviada uma resposta http valida
+        # if checkoutForm.is_valid():
+        #     if payment_method == "pix":            
+        #         checkoutForm.save()
+        #         return render(request,"pix_payment.html",{'checkoutForm':checkoutForm})
+        #     elif payment_method == "boleto":
+        #         checkoutForm.save()
+        #         return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm})
+        #     elif payment_method == "cartao":
+        #         checkoutForm.save()
+        #         return render(request,"card_payment.html",{'checkoutForm':checkoutForm})
+        #     else:
+        #         messages.error(request,"Selecione um meio de pagamento.")
+        #         return redirect('page_checkout')
+        
+        
+        if payment_method == "pix":            
+            return render(request,"pix_payment.html",{'checkoutForm':checkoutForm})
         elif payment_method == "boleto":
-            return render(request,"boleto_payment.html")
+            return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm})
         elif payment_method == "cartao":
-            return render(request,"card_payment.html")
+            return render(request,"card_payment.html",{'checkoutForm':checkoutForm})
         else:
             messages.error(request,"Selecione um meio de pagamento.")
             return redirect('page_checkout')
+        
+        
     else:
         messages.error(request,"Selecione um meio de pagamento.")
         return redirect('page_checkout')
             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

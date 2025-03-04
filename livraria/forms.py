@@ -10,8 +10,8 @@ from taggit.forms import TagField
 # Formulário de criação de novo usuario
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'E-mail'}))
-    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
-    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
+    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Nome'}))
+    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Sobrenome'}))
     user_image = forms.ImageField(required=False, widget = forms.widgets.FileInput(attrs={"class":"form-control"}), label = "Imagem de Perfil ( Opcional ):")
     cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'CPF (Digite Apenas Números)'}),label = "")
     bio = forms.CharField(required=False, max_length=500, widget=forms.widgets.Textarea(attrs={"placeholder":"Bio ( Opcional )", "class":"form-control"}), label="")
@@ -20,6 +20,7 @@ class SignUpForm(UserCreationForm):
     district = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Bairro'}),label = "")
     house_number = forms.IntegerField(required=True,min_value=0, max_value=99999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Numero da Casa'}),label = "")
     street = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Rua'}),label = "")
+    cep = forms.IntegerField(required=True,min_value=0, max_value=99999999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cep'}),label = "")
 
     
     def clean_cpf(self):
@@ -33,14 +34,14 @@ class SignUpForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username','first_name','last_name', 'cpf','email','password1','password2','bio','state', 'city', 'district', 'house_number', 'street','user_image')        
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2','bio','state', 'city', 'district', 'house_number', 'street','cep','user_image')        
     
         
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
         
         self.fields['username'].widget.attrs['class'] = 'form-control'
-        self.fields['username'].widget.attrs['placeholder'] = 'User Name'
+        self.fields['username'].widget.attrs['placeholder'] = 'Nome de Usuário'
         self.fields['username'].label = ''
         self.fields['username'].help_text = '''
         <span class=" form-text text-muted " >
@@ -49,7 +50,7 @@ class SignUpForm(UserCreationForm):
         '''
         
         self.fields['password1'].widget.attrs['class'] = 'form-control'
-        self.fields['password1'].widget.attrs['placeholder'] = 'Password'
+        self.fields['password1'].widget.attrs['placeholder'] = 'Senha'
         self.fields['password1'].label = ''
         self.fields['password1'].help_text = '''
         <ul class=" form-text text-muted small" >
@@ -60,7 +61,7 @@ class SignUpForm(UserCreationForm):
         '''
         
         self.fields['password2'].widget.attrs['class'] = 'form-control'
-        self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
+        self.fields['password2'].widget.attrs['placeholder'] = 'Confirme a Senha'
         self.fields['password2'].label = ''
         self.fields['password2'].help_text = '''
         <span class=" form-text text-muted " >
@@ -87,11 +88,12 @@ class ProfileForm(forms.ModelForm):
     district = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Bairro'}),label = "")
     house_number = forms.IntegerField(required=True,min_value=0, max_value=99999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Numero da Casa'}),label = "")
     street = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Rua'}),label = "")
+    cep = forms.IntegerField(required=True,min_value=0, max_value=99999999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cep'}),label = "")
 
 
     class Meta:
         model = User
-        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio', 'state', 'city', 'district', 'house_number', 'street')   
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio', 'state', 'city', 'district', 'house_number', 'street', 'cep')   
         
         
         
@@ -114,10 +116,63 @@ class UserForm(forms.ModelForm):
     district = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Bairro'}),label = "")
     house_number = forms.IntegerField(required=True,min_value=0, max_value=99999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Numero da Casa'}),label = "")
     street = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Rua'}),label = "")
+    cep = forms.IntegerField(required=True,min_value=0, max_value=99999999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cep'}),label = "")
     
     class Meta:
         model = User
-        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'user_image', 'bio','state', 'city', 'district', 'house_number', 'street')  
+        fields = ('username','first_name','last_name', 'cpf','email','password1','password2', 'bio','state', 'city', 'district', 'house_number', 'street', 'cep', 'user_image')  
+
+
+        
+# Formulário de Finalização de Compra
+class CheckoutForm(forms.ModelForm):
+    
+    email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'E-mail'}))
+    first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
+    last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
+    cpf = forms.CharField(required=True, min_length=11, max_length=11, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cpf'}),label = "")
+
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Nome de usuário'}),label="Nome de usuário")
+
+    state = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Estado'}),label = "")
+    city = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Cidade'}),label = "")
+    district = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Bairro'}),label = "")
+    house_number = forms.IntegerField(required=True,min_value=0, max_value=99999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Numero da Casa'}),label = "")
+    street = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Rua'}),label = "")
+    cep = forms.IntegerField(required=True,min_value=0, max_value=99999999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cep'}),label = "")
+
+    # number_card = forms.IntegerField(required=False,min_value=0000000000000000, max_value=9999999999999999,widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'( 16 Dígitos )'}),label = "Número do Cartão")
+    # name_card = forms.CharField(required=False, widget=forms.TextInput(attrs={'class':'form-control',}), label = "Nome do Titular do Cartão" )
+    # code_security_card = forms.IntegerField(required=False,min_value=000, max_value=999,widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'( 3 Dígitos )'}),label = "Código de Segurança")
+    # validity_month_card = forms.IntegerField(required=False,min_value=00, max_value=12,widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'MM'}),label = "Validade (Mês)")
+    # validity_year_card = forms.IntegerField(required=False,min_value=00, max_value=99,widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'AA'}),label = "Validade (Ano)")
+
+
+    
+    class Meta:
+        model = User
+        fields = ('username','first_name','last_name', 'cpf','email','state', 'city', 'district', 'house_number', 'street', 'cep')  
+        # fields = ('username','first_name','last_name', 'cpf','email','state', 'city', 'district', 
+        #           'house_number', 'street', 'cep','number_card','name_card','code_security_card','validity_month_card','validity_year_card')  
+
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     payment_method = cleaned_data.get("payment")
+
+    #     # Validação condicional para o cartão de crédito
+    #     if payment_method == "cartao":
+    #         # Verificar se os campos obrigatórios do cartão estão preenchidos
+    #         number_card = cleaned_data.get("number_card")
+    #         name_card = cleaned_data.get("name_card")
+    #         code_security_card = cleaned_data.get("code_security_card")
+    #         validity_month_card = cleaned_data.get("validity_month_card")
+    #         validity_year_card = cleaned_data.get("validity_year_card")
+
+    #         # Verificar se algum campo relacionado ao cartão está vazio
+    #         if not number_card or not name_card or not code_security_card or not validity_month_card or not validity_year_card:
+    #             raise forms.ValidationError("Todos os campos do cartão de crédito são obrigatórios.")
+            
+    #     return cleaned_data
 
     
 

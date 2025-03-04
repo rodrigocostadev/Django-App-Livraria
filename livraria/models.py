@@ -15,6 +15,7 @@ class UserProfile(models.Model):
     district = models.CharField(max_length=50,null=True)
     house_number = models.IntegerField(null=True)
     street = models.CharField(max_length=50,null=True)
+    cep = models.IntegerField(null=True)
     
      
     # solicitations = models.ManyToManyField(blank=True, symmetrical=False)
@@ -43,10 +44,7 @@ class Book(models.Model):
     
     def __str__(self):
         return(f'{self.title}-{self.value}')
-
-
-
-
+    
     
     
     
@@ -81,13 +79,28 @@ class RatinStar(models.Model):
     
     
     
+# class Checkout(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     created_at = models.DateTimeField(auto_now_add=True)    
+#     date = models.DateTimeField(auto_now_add=True)
+#     status = models.CharField(max_length=50, default="pendente")
+#     total_price = models.DecimalField(max_digits=10, decimal_places=2)
+#     address = models.TextField()
+    
+    
+#     def __str__(self):
+#         return f"Compra realizada por {self.user.username} em {self.created_at}"
 
 
 
+# class CheckoutItem(models.Model):
+#     checkout = models.ForeignKey(Checkout,related_name='items', on_delete=models.CASCADE)
+#     book = models.ForeignKey(Book, on_delete=models.CASCADE)
+#     quantity = models.PositiveIntegerField()
+#     price = models.DecimalField(max_digits=10,decimal_places=2)
 
-
-
-
+#     def __str__(self):
+#         return f"{self.quantity} x {self.book.title} para {self.checkout.user.username}"
 
 
 

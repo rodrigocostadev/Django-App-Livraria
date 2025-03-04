@@ -15,36 +15,44 @@
             {% comment %} style="border:solid 2px #d3d3d3" {% endcomment %}
             <div class="d-flex flex-column p-2 rounded" style="border:solid 2px #d3d3d3">
                 <h5>Endereço de Entrega</h5>
-                <span class="fs-6">(Edite para enviar a outro endereço)</span>
+                {% comment %} <span class="fs-6">(Edite para enviar a outro endereço)</span> {% endcomment %}
                 <hr style="width:98%;">
     
                 {% comment %} <p><label>Usuario:</label>{{ userForm.username }}</p>     {% endcomment %}
                 <div class="d-flex gap-3" >
                     <div style="width:50%;">
                         <label>Estado:</label>
-                        <p class="form-control"> Santa Catarina</p>   
+                        <p> {{checkoutForm.state}}</p>   
                     </div>
                     <div style="width:50%;">
                         <label>Cidade:</label>
-                        <p class="form-control" > Joinville</p>   
+                        <p> {{checkoutForm.city}}</p>   
                     </div>                   
                 </div>
                 <div class="d-flex gap-3">
                     <div style="width:50%;">
                         <label>Bairro:</label>
-                        <p class="form-control" > Comasa</p> 
+                        <p> {{checkoutForm.district}}</p> 
                     </div>
                     <div style="width:50%;">
                         <label>Número:</label>
-                        <p class="form-control" > 126</p> 
+                        <p> {{checkoutForm.house_number}}</p> 
                     </div>                     
                                          
                 </div>
-                <label>Rua:</label>
-                <p class="form-control" >Rua Apucarana</p>  
-
+                <div class="d-flex gap-3">
+                    <div style="width:50%;">
+                        <label>Rua:</label>
+                        <p>{{checkoutForm.street}}</p>  
+                    </div>   
+                    <div style="width:50%;">
+                        <label>Cep:</label>
+                        <p>{{checkoutForm.cep}}</p>  
+                    </div>  
+                </div>                    
+                
                 <hr style="width:98%;">
-                <p><label>Prazo de Entrega:</label> 30/03/2025</p>   
+                <p><label class="fw-bold"> <i class="fa-solid fa-truck"></i> Prazo de Entrega:</label> {{prazo_entrega}} </p>   
             </div>
             <br>
     
@@ -67,24 +75,29 @@
                     </label>
                     
                     <div class="d-none flex-column" id="credit-card-data">
-                        <label >Número do Cartão</label>
-                        <input class="form-control" name="payment" type="number">
-
                         <label >Nome do Titular do Cartão</label>
-                        <input class="form-control" name="payment" type="text">
+                        <input id="name_credit_card" class="form-control" name="name_credit_card" type="text">
+                        {% comment %} <p>{{ checkoutForm.name_card }}</p> {% endcomment %}
 
-                        <label >Código de Segurança</label>
-                        <input class="form-control" name="payment" type="number">
+                        <label >Número do Cartão ( 16 Dígitos )</label>
+                        <input id="number_credit_card" class="form-control" name="number_credit_card" type="number" >
+                        {% comment %} <p>{{ checkoutForm.number_card }}</p>                         {% endcomment %}
+
+                        <label >Código de Segurança ( 3 Dígitos )</label>
+                        <input id="security_code_credit_card" class="form-control" name="security_code_credit_card" type="number" >
+                        {% comment %} <p>{{ checkoutForm.code_security_card }}</p> {% endcomment %}
                         
                         <div class="d-flex gap-3">
                             <div>
                                 <label name="month-credit-card">Validade (Mês)</label>
-                                <input class="form-control" name="month-credit-card" type="number" placeholder="MMM" >
+                                <input id="validity_month_credit_card" class="form-control" name="validity_month_credit_card" type="number" placeholder="MM" >
+                                {% comment %} <p>{{ checkoutForm.validity_month_card }}</p> {% endcomment %}
                             </div>
                             
                             <div>
                                 <label name="year-credit-card">Validade (Ano)</label>
-                                <input class="form-control" name="year-credit-card" type="number" placeholder="AA" >
+                                <input id="validity_year_credit_card" class="form-control" name="validity_month_credit_card" type="number" placeholder="AA" >
+                                {% comment %} <p>{{ checkoutForm.validity_year_card }}</p> {% endcomment %}
                             </div>                            
                         </div>
                     </div>

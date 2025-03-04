@@ -3,5 +3,15 @@
 {% load static %}
 
 {% block content %}
-<h1>CARTÃO DE CRÉDITO</h1>
+<div class="col-md-12 offset-md-3 mx-auto text-center "  >
+    <h2 class="text-center" >Cartão de Crédito</h2>
+    <hr>
+    <div class="col-md-6 offset-md-3 mx-auto ">
+        {% comment %} <img src="{% static '/images/barcode.webp' %}" class=" mx-auto mt-5"> {% endcomment %}
+        <p>Aguardando Pagamento</p>
+        <a href="{% url 'home' %}" class="btn btn-primary" >Voltar ao Menu Inicial</a>
+    </div>
+    
+</div>
 {% endblock %}
+

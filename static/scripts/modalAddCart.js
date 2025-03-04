@@ -321,7 +321,6 @@ function renderCheckoutCart(){
 
     console.log("checkout")
 
-
     let modalNavTitleh6 = document.getElementById("quantityBookCartModalNavTitle")
     // let statusModalContent = document.getElementById("status-modal-content")
     let totalValueStatusCart = document.getElementById("totalValueStatusCart")
@@ -337,17 +336,18 @@ function renderCheckoutCart(){
 
     // Se tem dados salvos no LocalStorage
     if (loadSaveCart){
+        console.log(loadSaveCart)
 
         checkout.innerHTML = ""
 
         for( item of loadSaveCart.reverse()){
+            // console.log(item)
             totalItemsCart += item.quantity
             totalValueCart += item.totalValue
     
             // console.log("esse é o VALOR TOTAL:", totalValueCart.toFixed(2).replace('.',','))    
             totalValueStatusCart.textContent = " R$ "+ totalValueCart.toFixed(2).replace('.',',')
-            totalValueCheckout.textContent = " R$ " + totalValueCart.toFixed(2).replace('.',',')
-                                            
+            totalValueCheckout.textContent = " R$ " + totalValueCart.toFixed(2).replace('.',',')                                            
 
             checkout.innerHTML += `<div class="d-flex align-items-center" style="height:120px;">
                                             <img src="${item.img}" class="w-25 img-fluid" style="object-fit:contain; height:100%; width:auto;" >
@@ -366,11 +366,12 @@ function renderCheckoutCart(){
                                                 </div>                        
                                             </div>                  
                                         </div>
+                                        <input type="hidden" data-title="${item.title}" data-value="${item.totalValue}" data-quantity="${item.quantity}" > 
                                         <hr>`
-
-
         }
 
+        // TESTE
+        checkout.innerHTML += `<input id="total-value" type="hidden" value="${totalValueCart}" >`
 
         numberCart.textContent = totalItemsCart  // Numero de itens no icone da navbar
         modalNavTitleh6.textContent = totalItemsCart        
@@ -382,6 +383,7 @@ function renderCheckoutCart(){
     }
 
 }
+
 
 
 
@@ -556,6 +558,64 @@ function closeModal(){
 }
 
 
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+////////////////////////    ENVIAR DADOS DO JS PARA O BACK    ////////////////////////
+
+const checkoutUrl = "{{ checkout_url }}"
+
+function sendCartToBackend(){
+    let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
+
+    if(loadSaveCart && loadSaveCart.length > 0){
+        let cartData = loadSaveCart.map(item => ({
+            title:item.title,
+            quantity: item.quantity,
+            valueUnitBook:item.valueUnitBook,
+            totalValue: item.totalValue
+        }))
+    
+
+        fetch('checkout/',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body:JSON.stringify({ cart: cartData})
+        })
+        .then(response => response.json())
+        .then(data => {console.log("Dados enviados com sucesso:", data)})
+        .catch(error => {
+            console.error("Erro ao enviar os dados", error)
+        })
+    }
+}
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+    
+}
 
 
 
