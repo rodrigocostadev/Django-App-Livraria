@@ -65,14 +65,24 @@
 
                 <div class="d-flex flex-column gap-3">
                     <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
-                        <input id="pix" onclick="closeCreditCard()" type="radio" name="payment" value="pix" style="cursor:pointer;"><i class="fa-brands fa-pix"></i>Pix
+                        <input id="pix"  type="radio" name="payment" value="pix" style="cursor:pointer;"><i class="fa-brands fa-pix"></i>Pix
                     </label>
                     <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
-                        <input id="boleto" onclick="closeCreditCard()" type="radio" name="payment" value="boleto" style="cursor:pointer;"><i class="fa-solid fa-barcode"></i> Boleto
+                        <input id="boleto"  type="radio" name="payment" value="boleto" style="cursor:pointer;"><i class="fa-solid fa-barcode"></i> Boleto
                     </label>
                     <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
-                        <input id="cartao" onclick="openCloseCreditCard()" type="radio" name="payment" value="cartao" style="cursor:pointer;"><i class="fa-solid fa-credit-card"></i> Cartão de Crédito
+                        <input id="cartao"  type="radio" name="payment" value="cartao" style="cursor:pointer;"><i class="fa-solid fa-credit-card"></i> Cartão de Crédito
+                    </label> 
+
+                    {% comment %} <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
+                        <input id="pix" onclick="sendCartToBackend('pix')" type="radio" name="payment" value="pix" style="cursor:pointer;"><i class="fa-brands fa-pix"></i>Pix
                     </label>
+                    <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
+                        <input id="boleto" onclick="sendCartToBackend('boleto')" type="radio" name="payment" value="boleto" style="cursor:pointer;"><i class="fa-solid fa-barcode"></i> Boleto
+                    </label>
+                    <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
+                        <input id="cartao" onclick="sendCartToBackend('cartao')" type="radio" name="payment" value="cartao" style="cursor:pointer;"><i class="fa-solid fa-credit-card"></i> Cartão de Crédito
+                    </label> {% endcomment %}
                     
                     <div class="d-none flex-column" id="credit-card-data">
                         <label >Nome do Titular do Cartão</label>
@@ -101,6 +111,11 @@
                             </div>                            
                         </div>
                     </div>
+
+                    <!-- Colocando as URLs dinamicamente através dos atributos data-* -->
+                    <div id="pix-url" data-url="{% url 'pix_payment' %}" style="display:none;"></div>
+                    <div id="boleto-url" data-url="{% url 'boleto_payment' %}" style="display:none;"></div>
+                    <div id="cartao-url" data-url="{% url 'card_payment' %}" style="display:none;"></div>
                     
                 </div>  
             </div>
@@ -123,7 +138,7 @@
                 <a href="{% url 'home' %}" onclick="clearCart()" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</a>
                 <a href="{% url 'home' %}" class="btn btn-primary" >Continuar Comprando</a>
                 {% comment %} <a class="btn btn-success" >Finalizar Compra</a> {% endcomment %}
-                <button class="btn btn-success" type="submit" >Finalizar Compra</button>
+                <button onclick="sendCartToBackend(paymentMethod)" class="btn btn-success" type="submit" >Finalizar Compra</button>
             </div>
             
             {% comment %} <button class="btn btn-success" type="submit" >Finalizar Compra</button> {% endcomment %}
@@ -132,6 +147,146 @@
     <br>
 
     <script>
+
+        $(document).ready(function () {
+            // Variável para armazenar o método de pagamento selecionado
+            let selectedPaymentMethod = '';
+        
+            // Armazenar o método de pagamento quando o usuário clicar em um método de pagamento
+            $('#pix').click(function () {
+                selectedPaymentMethod = 'pix';
+                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+            });
+        
+            $('#boleto').click(function () {
+                selectedPaymentMethod = 'boleto';
+                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+            });
+        
+            $('#cartao').click(function () {
+                selectedPaymentMethod = 'cartao';
+                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+            });
+        
+            // Função para atualizar o formulário com base na seleção de pagamento
+            function updatePaymentForm(paymentMethod) {
+                // Esconde ou mostra o formulário de cartão de crédito
+                if (paymentMethod === 'cartao') {
+                    $('#credit-card-data').removeClass('d-none');
+                } else {
+                    $('#credit-card-data').addClass('d-none');
+                }
+            }
+        
+            // Evento para o botão de "Finalizar Compra"
+            $('#finalizar-compra').click(function () {
+                if (selectedPaymentMethod) {
+                    console.log("Clicou")
+                    sendCartToBackend(selectedPaymentMethod);
+                } else {
+                    alert('Por favor, selecione um método de pagamento!');
+                }
+            });
+        
+            // Função para enviar o carrinho para o backend
+            function sendCartToBackend(paymentMethod) {
+                console.log("Teste de click botão")
+                let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
+        
+                if (loadSaveCart && loadSaveCart.length > 0) {
+                    let cartData = loadSaveCart.map(item => ({
+                        title: item.title,
+                        quantity: item.quantity,
+                        valueUnitBook: item.valueUnitBook,
+                        totalValue: item.totalValue
+                    }));
+        
+                    // Determina a URL com base no método de pagamento
+                    let url = '';
+                    switch (paymentMethod) {
+                        case 'pix':
+                            url = $('#pix-url').data('url');
+                            break;
+                        case 'boleto':
+                            url = $('#boleto-url').data('url');
+                            break;
+                        case 'cartao':
+                            url = $('#cartao-url').data('url');
+                            break;
+                        default:
+                            console.error("Método de pagamento inválido");
+                            return;
+                    }
+        
+                    // Enviar os dados via AJAX para o servidor
+                    $.ajax({
+                        type: 'POST',
+                        url: url, // URL dinâmica baseada no pagamento
+                        contentType: 'application/json',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken') // Se você estiver usando CSRF tokens
+                        },
+                        data: JSON.stringify({ cart: cartData }), // Corpo da requisição
+                        success: function (response) {
+                            console.log('Dados enviados com sucesso:', response);
+                            // Redireciona para a URL do pagamento após o envio do carrinho
+                            window.location.href = url;
+                        },
+                        error: function (error) {
+                            console.error('Erro ao enviar os dados:', error);
+                        }
+                    });
+                }
+            }
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                let cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+
+
+
+
+        {% comment %} function selectPaymentMethod(method) {
+            // Esconde ou mostra o formulário de cartão de crédito
+            if (method === 'cartao') {
+                document.getElementById('credit-card-data').classList.remove('d-none');
+            } else {
+                document.getElementById('credit-card-data').classList.add('d-none');
+            }
+
+            // Redireciona para a URL correspondente
+            switch (method) {
+                case 'pix':
+                    window.location.href = '/pix_payment/';
+                    break;
+                case 'boleto':
+                    window.location.href = '/boleto_payment/';
+                    break;
+                case 'cartao':
+                    window.location.href = '/card_payment/';
+                    break;
+                default:
+                    console.log('Método de pagamento desconhecido');
+                    break;
+            }
+        } {% endcomment %}
+
+    </script>
+
+    {% comment %} <script>
         let divCreditCard = document.getElementById("credit-card-data")
         function openCloseCreditCard(){
             if(divCreditCard.classList.contains("d-none")){
@@ -146,7 +301,7 @@
             divCreditCard.classList.remove("d-flex")
             divCreditCard.classList.add("d-none")
         }
-    </script>
+    </script> {% endcomment %}
 
     
 </div>

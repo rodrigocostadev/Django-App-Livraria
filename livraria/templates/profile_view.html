@@ -21,23 +21,41 @@
                 {% endif %}
                 <h6>{{ user_profile.username }}</h6>
 
-                {% if user_profile == user_logged %}
+
+
+                
+                {% if user_profile != user_logged %}
+
+                    {% if is_friend %}
+                        <p class="btn btn-success" >Amigos</p>
+                    {% else %}
+                        <form method="POST" action="{% url 'profile_view' user_profile.id %}">
+                            {% csrf_token %}
+                            <button id="addFriend" onclick="friendRequest()" type="submit" class="btn btn-primary btn-small">Enviar Solicitação de Amizade</button>
+                        </form>                
+                    {% endif %}    
                 {% else %}
-
-                    {% comment %} <p>Enviar nome = {{ request.user }} </p>
-                    <p>para o campo de solicitação no modelo do usuario</p>
-                    <p>{{ user_profile.username }}</p> {% endcomment %}
-
-                    {% comment %} <form method="POST" >
-                        {% csrf_token %}
-                        <input type="hidden" name="name_friend_request" value="{{ user_profile.username }}" >
-                        <button id="addFriend" onclick="friendRequest()" type="button" class="btn btn-primary btn-small">Enviar Solicitação de Amizade</button>
-                    </form>  {% endcomment %}
-
-                    <button id="addFriend" onclick="friendRequest()" type="button" class="btn btn-primary btn-small">Enviar Solicitação de Amizade</button>
-                    
-                    
+                    {% if friend_requests %}    
+                        <div>Solicitações de amizade</div>
+                        {% for request in friend_requests %}                            
+                            <div class="d-flex justify-content-center align-items-center gap-3 btn btn-primary mx-auto mb-2"style="width:60%">
+                                {% comment %} <img src="{{ request.from_user.profile.user_image.url }}" width="50" height="50"> {% endcomment %}
+                                <img src="{{ request.from_user_image.url }}" width="50" height="50" style="border-radius:50%;">
+                                <p class="m-0">{{ request.from_user.username }} Enviou uma solicitação de amizade</p>
+                                <form method="POST" action="{% url 'accept_friend_request' request.id %}" >
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-check"></i></button>
+                                </form>
+                                <form method="POST" action="{% url 'reject_friend_request' request.id %}" >
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-x"></i></button>
+                                </form>
+                            </div>                            
+                        {% endfor %}
+                    {% endif %}                
                 {% endif %}
+
+
 
                 <script>
                     function friendRequest(){
@@ -51,120 +69,123 @@
 
             {% comment %} <br> {% endcomment %}
 
-            {% if user_profile_instance.bio %}
-                <div class="d-flex gap-3" >
-                    <h6>Bio:</h6>
-                    <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile_instance.bio }}</textarea>
-                </div>                
-            {% endif %} 
+            {% if is_friend or user_profile == user_logged %}
 
-            {% comment %} {% if user_profile.bio %}
-                <div class="d-flex gap-3" >
-                    <h6>Bio:</h6>
-                    <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile.bio }}</textarea>
-                </div>                
-            {% endif %} {% endcomment %}
+                {% if user_profile_instance.bio %}
+                    <div class="d-flex gap-3" >
+                        <h6>Bio:</h6>
+                        <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile_instance.bio }}</textarea>
+                    </div>                
+                {% endif %} 
+
+                {% comment %} {% if user_profile.bio %}
+                    <div class="d-flex gap-3" >
+                        <h6>Bio:</h6>
+                        <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile.bio }}</textarea>
+                    </div>                
+                {% endif %} {% endcomment %}
 
             
 
-            <div class="text-center" >
+                <div class="text-center" >
 
-                {% comment %} <br> {% endcomment %}
-                <h5>Gêneros Preferidos:</h5>              
-                <div class="d-flex justify-content-center gap-2" >
-                        {% for genre in unique_genres %}
-                            <a href="{% url 'tag_search' %}?search={{ genre }}" style="color:black;">
-                                <div class="card p-1" style="display: inline-block; margin-left:10px" 
-                                onmouseover="this.style.backgroundColor='#d3d3d3';" onmouseout="this.style.backgroundColor='';"
-                                >{{ genre }}</div>
-                            </a>
-                        {% empty %}
-                            <p >Este usuário ainda não fez avaliações.</p>                    
-                        {% endfor %}
-                </div>
-                <br>
-
-
-                {% comment %} <h5>TESTE DE TAG USANDO DJANGO TAGGIT:</h5>   
-                <br>  
-                <div class="d-flex justify-content-center gap-2">
-                    {% for rating in ratings %}
-                        {% with book=rating.book %}
-                            <div>
-                                <h6>{{ book.title }}</h6>
-                                
-                                <h6>Tags:</h6>
-                                <div class="d-flex flex-wrap">
-                                    {% for tag in book.tags.all %}
-                                        <a href="{% url 'tag_search' %}?search={{ tag.name }}">
-                                            <div class="card p-1" style="display: inline-block; margin-left:10px;color:black; ">
-                                                {{ tag.name }}
-                                            </div>
-                                        </a>
-                                        
-                                    {% empty %}
-                                        <p>Este livro não tem tags associadas.</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endwith %}
-                    {% empty %}
-                        <p>Este usuário ainda não fez avaliações.</p>
-                    {% endfor %}
-                </div> {% endcomment %}
-
-                
-
-                <br>
-                <h5>Livros Preferidos:</h5>                
-
-                <div class="d-flex justify-content-center" >
-
-                    {% comment %} {% for item in last_ratings_list %}
-                    <div>{{ item.rating }}</div>
-                        {% if item.rating >= 4 %}
-                            <a href="{% url 'book' item.book.id %}">
-                                <img src="{{ rating.book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ rating.book.title }}">
-                            </a>
-                        {% endif %}
-                    {% endfor %} {% endcomment %}
-                    {% comment %} <div>TESTE{{ rating.rating }}</div> {% endcomment %}
-
-
-
-
-
-                        {% for rating in ratings %}
-                            {% for book in books %}
-                                {% if rating.book.title == book.title %}
-                                    <div>                                        
-                                        <a href="{% url 'book' book.id %}">
-                                            <img src="{{ book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ book.title }}">
-                                        </a>
-                                    </div>                                
-                                {% endif %} 
+                    {% comment %} <br> {% endcomment %}
+                    <h5>Gêneros Preferidos:</h5>              
+                    <div class="d-flex justify-content-center gap-2" >
+                            {% for genre in unique_genres %}
+                                <a href="{% url 'tag_search' %}?search={{ genre }}" style="color:black;">
+                                    <div class="card p-1" style="display: inline-block; margin-left:10px" 
+                                    onmouseover="this.style.backgroundColor='#d3d3d3';" onmouseout="this.style.backgroundColor='';"
+                                    >{{ genre }}</div>
+                                </a>
+                            {% empty %}
+                                <p >Este usuário ainda não fez avaliações.</p>                    
                             {% endfor %}
+                    </div>
+                    <br>
 
+
+                    {% comment %} <h5>TESTE DE TAG USANDO DJANGO TAGGIT:</h5>   
+                    <br>  
+                    <div class="d-flex justify-content-center gap-2">
+                        {% for rating in ratings %}
+                            {% with book=rating.book %}
+                                <div>
+                                    <h6>{{ book.title }}</h6>
+                                    
+                                    <h6>Tags:</h6>
+                                    <div class="d-flex flex-wrap">
+                                        {% for tag in book.tags.all %}
+                                            <a href="{% url 'tag_search' %}?search={{ tag.name }}">
+                                                <div class="card p-1" style="display: inline-block; margin-left:10px;color:black; ">
+                                                    {{ tag.name }}
+                                                </div>
+                                            </a>
+                                            
+                                        {% empty %}
+                                            <p>Este livro não tem tags associadas.</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endwith %}
                         {% empty %}
-                            <p>Este usuário ainda não fez avaliações.</p>                    
-                        {% endfor %} 
-                </div>
-                {% comment %} <img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"> {% endcomment %}
-                
-
-
-                {% comment %} <h5>Gêneros Preferidos:</h5>
-
-                <div class="d-flex justify-content-center gap-2" >
-                        {% for rating in unique_genres %}
-                            <div class="card p-1" style="display: inline-block; margin-left:10px">{{ rating}}</div>
-                        {% empty %}
-                            <p >Este usuário ainda não fez avaliações.</p>
-                    
+                            <p>Este usuário ainda não fez avaliações.</p>
                         {% endfor %}
-                </div> {% endcomment %}
-                
-            </div>
+                    </div> {% endcomment %}
+
+                    
+
+                    <br>
+                    <h5>Livros Preferidos:</h5>                
+
+                    <div class="d-flex justify-content-center" >
+
+                        {% comment %} {% for item in last_ratings_list %}
+                        <div>{{ item.rating }}</div>
+                            {% if item.rating >= 4 %}
+                                <a href="{% url 'book' item.book.id %}">
+                                    <img src="{{ rating.book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ rating.book.title }}">
+                                </a>
+                            {% endif %}
+                        {% endfor %} {% endcomment %}
+                        {% comment %} <div>TESTE{{ rating.rating }}</div> {% endcomment %}
+
+
+
+
+
+                            {% for rating in ratings %}
+                                {% for book in books %}
+                                    {% if rating.book.title == book.title %}
+                                        <div>                                        
+                                            <a href="{% url 'book' book.id %}">
+                                                <img src="{{ book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ book.title }}">
+                                            </a>
+                                        </div>                                
+                                    {% endif %} 
+                                {% endfor %}
+
+                            {% empty %}
+                                <p>Este usuário ainda não fez avaliações.</p>                    
+                            {% endfor %} 
+                    </div>
+                    {% comment %} <img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"> {% endcomment %}
+                    
+
+
+                    {% comment %} <h5>Gêneros Preferidos:</h5>
+
+                    <div class="d-flex justify-content-center gap-2" >
+                            {% for rating in unique_genres %}
+                                <div class="card p-1" style="display: inline-block; margin-left:10px">{{ rating}}</div>
+                            {% empty %}
+                                <p >Este usuário ainda não fez avaliações.</p>
+                        
+                            {% endfor %}
+                    </div> {% endcomment %}
+                    
+                </div>
+            {% endif %}
             <br>
 
             {% if user_profile == user_logged %}

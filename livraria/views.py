@@ -7,7 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 # from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm
 from .forms import SignUpForm, AddBookForm, CommentForm, RatingForm, ProfileForm, UserForm, CheckoutForm
-from .models import Book, Comment, RatinStar, UserProfile
+from .models import Book, Comment, RatinStar, UserProfile, FriendRequest
 from django.template.loader import render_to_string
 
 from PIL import Image
@@ -236,15 +236,18 @@ def profile_user_view(request, id):
         for rating in ratings:
             unique_genres.add(rating.genre)           
         
-        # form = SignUpForm(request.POST or None, instance=user_profile)
-        
         # Solicitação de amizade
-        # if request.method == 'POST':
-            # name_friend_request = request.POST.get('name_friend_request') # Pega o nome do usuario da pagina visitada
-            # if name_friend_request:
-                # name_friend_request.
-            # user_profile_instance
+        if request.method == 'POST':
+            print("ENVIADO")
+            user_logged_profile = get_object_or_404(UserProfile, user=request.user)
+            user_logged_profile.send_friend_request(user_profile_instance)   
+            messages.success(request, "Solicitação enviada com sucesso.")
             
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+        
+        # Verificar amizades:
+        is_friend = user_logged.userprofile.friends.filter(id=user_profile_instance.id).exists()
 
         return render(request, 'profile_view.html', {
             'user_logged': user_logged,  # Sempre mantém o usuário logado separado
@@ -254,10 +257,38 @@ def profile_user_view(request, id):
             "ratings": unique_ratings,
             "books": books,
             "unique_genres": unique_genres,
-            # "unique_ratings_index": unique_ratings_index,
+            "friend_requests":friend_requests,
+            "is_friend":is_friend,
         })
     else:
         return redirect('home')
+    
+    
+def  accept_friend_request(request, id):
+    friend_request = get_object_or_404(FriendRequest, id=id)
+
+    # Aceita a solicitação de amizade
+    friend_request.accepted = True
+    friend_request.save()
+    
+    # Adiciona os amigos na lista de amizade
+    from_user_profile = get_object_or_404(UserProfile, user=friend_request.from_user)
+    to_user_profile = get_object_or_404(UserProfile, user = friend_request.to_user)
+
+    from_user_profile.friends.add(to_user_profile)
+    to_user_profile.friends.add(from_user_profile)
+    
+    return redirect('profile_view', id=friend_request.to_user.id)
+
+
+def reject_friend_request(request, id):
+    friend_request = get_object_or_404(FriendRequest, id=id)
+
+    # Rejeita a solicitação de amizade
+    friend_request.rejected = True
+    friend_request.save()
+    
+    return redirect('profile_view', id=friend_request.to_user.id)
     
     
     

@@ -54,19 +54,26 @@
             {% if user.userprofile.user_image.url %}      
               {% comment %} <a href="{% url 'profile_view' id=request.user.id %}" > {% endcomment %}
               <a href="{% url 'profile_view' id=request.user.id %}" >
-                <img src="{{request.user.userprofile.user_image.url}}" style="width:45px; height:45px; border-radius: 50%; margin-left:10px" alt="img user"> 
+                <img src="{{request.user.userprofile.user_image.url}}" style="width:45px; height:45px; border-radius: 50%; margin-left:15px;margin-right:10px;" alt="img user"> 
               </a>    
               
             {% else %}
               {% comment %} <a href="{% url 'profile_view' id=request.user.id  %}"  > {% endcomment %}
               <a href="{% url 'profile_view' id=request.user.id %}" >
                 {% comment %} <img src="{{"../../media/users/default.jpg"}}" style="width:45px; height:45px; border-radius: 50%; margin-left:10px" alt="s/ foto"> {% endcomment %}
-                <img src="{% static 'images/default.jpg' %}"  style="width:45px; height:45px; border-radius: 50%; margin-left:10px" alt="s/ foto">
+                <img src="{% static 'images/default.jpg' %}"  style="width:45px; height:45px; border-radius: 50%; margin-left:15px;margin-right:10px;" alt="s/ foto">
               </a>           
             {% endif %}
           </div>
+
+          <a href="#" >
+            <i class="bi bi-bell text-white fs-3 " style="margin-right:10px;"></i>
+          </a> 
+
+          
+
           <div class="nav-item">
-            <a onclick="clearCart()" class="nav-link text-white" href="{% url 'logout' %}">Sair</a>
+            <a onclick="clearCart()" class="nav-link text-white p-1" href="{% url 'logout' %}">Sair</a>
           </div>
           {% comment %} <div class="nav-item">
             <a class="nav-link text-white" href="{% url 'home' %}">Login</a>

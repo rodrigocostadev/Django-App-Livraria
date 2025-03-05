@@ -10,6 +10,7 @@ class UserProfile(models.Model):
     # cpf = models.IntegerField(unique=True, null=False)
     # cpf = models.IntegerField(null=False)
     cpf = models.CharField(max_length=11,null=False)   
+    
     state = models.CharField(max_length=50,null=True)
     city = models.CharField(max_length=50,null=True)
     district = models.CharField(max_length=50,null=True)
@@ -17,9 +18,7 @@ class UserProfile(models.Model):
     street = models.CharField(max_length=50,null=True)
     cep = models.IntegerField(null=True)
     
-     
-    # solicitations = models.ManyToManyField(blank=True, symmetrical=False)
-    # friends = models.ManyToManyField('self', blank=True, symmetrical=False)
+    friends = models.ManyToManyField('self', blank=True, symmetrical=False)    
     
     # friends: O campo ManyToManyField permite que você crie uma relação de amizade entre os usuários. 
     # Usamos 'self' para que a relação seja com a mesma tabela, ou seja, um usuário com outro usuário.
@@ -27,6 +26,58 @@ class UserProfile(models.Model):
     # O argumento symmetrical=False é importante porque a amizade não é automaticamente bidirecional 
     # (ou seja, se A é amigo de B, B não será amigo automaticamente de A sem uma ação explícita). 
     # O symmetrical=False permite que você trate a amizade de forma manual.
+    
+    def send_friend_request(self, to_user_profile):
+        # Previne que o usuário envie uma solicitação para si mesmo
+        if self != to_user_profile:
+            FriendRequest.objects.create(from_user=self.user, to_user=to_user_profile.user)
+
+            
+    def accept_friend_request(self,from_user_profile):
+        request = FriendRequest.objects.get(from_user=from_user_profile.user, to_user=self.user) # Encontra a solicitação de amizade
+        
+        # Marca a solicitação como aceita
+        request.accepted = True
+        request.save()
+
+        # Adiciona ambos os usuarios á lista de amigos
+        self.friends.add(from_user_profile)
+        from_user_profile.friends.add(self)
+        
+        request.delete() # Remove a solicitação de amizade aceita
+        
+        
+        
+    def reject_friend_request(self, from_user_profile):
+        request = FriendRequest.objects.get(from_user=from_user_profile.user, to_user=self.user) # Encontra a solicitação de amizade
+        
+        # marca a solicitação como rejeitada
+        request.reject = True
+        request.save()
+        
+        request.delete() # Remove a solicitação de amizade aceita
+
+
+
+
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='sent_requests')
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests')
+    created_at = models.DateTimeField(auto_now_add=True)
+    accepted = models.BooleanField(default=False)
+    rejected = models.BooleanField(default=False)
+    
+    # from_user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='sent_friend_requests')
+    # to_user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='received_friend_requests')
+    
+    def __str__(self):
+        return f"Solicitação de {self.from_user.username} para {self.to_user.username}"
+    
+    @property # Permite usar o método from_user_image sem o uso dos parenteses no final, como se fosse uma propriedade
+    def from_user_image(self):
+        # Acessa a imagem do usuário que enviou a solicitação de amizade.
+        return self.from_user.userprofile.user_image 
+
 
 
 class Book(models.Model):

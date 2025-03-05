@@ -570,52 +570,51 @@ function closeModal(){
 //////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////    ENVIAR DADOS DO JS PARA O BACK    ////////////////////////
 
-const checkoutUrl = "{{ checkout_url }}"
+// const checkoutUrl = "{{ checkout_url }}"
 
-function sendCartToBackend(){
-    let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
+// function sendCartToBackend(){
+//     let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
 
-    if(loadSaveCart && loadSaveCart.length > 0){
-        let cartData = loadSaveCart.map(item => ({
-            title:item.title,
-            quantity: item.quantity,
-            valueUnitBook:item.valueUnitBook,
-            totalValue: item.totalValue
-        }))
+//     if(loadSaveCart && loadSaveCart.length > 0){
+//         let cartData = loadSaveCart.map(item => ({
+//             title:item.title,
+//             quantity: item.quantity,
+//             valueUnitBook:item.valueUnitBook,
+//             totalValue: item.totalValue
+//         }))
     
 
-        fetch('checkout/',{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body:JSON.stringify({ cart: cartData})
-        })
-        .then(response => response.json())
-        .then(data => {console.log("Dados enviados com sucesso:", data)})
-        .catch(error => {
-            console.error("Erro ao enviar os dados", error)
-        })
-    }
-}
+//         fetch('checkout/',{
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-CSRFToken': getCookie('csrftoken')
+//             },
+//             body:JSON.stringify({ cart: cartData})
+//         })
+//         .then(response => response.json())
+//         .then(data => {console.log("Dados enviados com sucesso:", data)})
+//         .catch(error => {
+//             console.error("Erro ao enviar os dados", error)
+//         })
+//     }
+// }
 
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-    
-}
+// function getCookie(name) {
+//     let cookieValue = null;
+//     if (document.cookie && document.cookie !== '') {
+//         const cookies = document.cookie.split(';');
+//         for (let i = 0; i < cookies.length; i++) {
+//             const cookie = cookies[i].trim();
+//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
+//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//                 break;
+//             }
+//         }
+//     }
+//     return cookieValue;    
+// }
 
 
 

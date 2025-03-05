@@ -4,11 +4,11 @@
 
 {% block content %}
 <div class="col-md-12 offset-md-3 mx-auto text-center "  >
-    <h2 class="text-center" >Cartão de Crédito</h2>
+    <h2 class="text-center" >Forma de Pagamento - Cartão de Crédito</h2>
     <hr>
     <div class="col-md-6 offset-md-3 mx-auto ">
-        {% comment %} <img src="{% static '/images/barcode.webp' %}" class=" mx-auto mt-5"> {% endcomment %}
-        <p>Aguardando Pagamento</p>
+        <img src="{% static '/images/timer.png' %}" class=" mx-auto mt-5">
+        <p class="mt-5">Aguardando pagamento. Seu pedido ja está em espera.</p>
         <a href="{% url 'home' %}" class="btn btn-primary" >Voltar ao Menu Inicial</a>
     </div>
     
