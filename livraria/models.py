@@ -56,12 +56,18 @@ class UserProfile(models.Model):
         request.save()
         
         request.delete() # Remove a solicitação de amizade aceita
+        
+        
+    def remove_friend(self, from_user_profile):
+        if from_user_profile in self.friends.all():
+            self.friends.remove(from_user_profile)
+            from_user_profile.friends.remove(self)
 
 
 
 
 class FriendRequest(models.Model):
-    from_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='sent_requests')
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='sent_requests') # usuario logado
     to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests')
     created_at = models.DateTimeField(auto_now_add=True)
     accepted = models.BooleanField(default=False)

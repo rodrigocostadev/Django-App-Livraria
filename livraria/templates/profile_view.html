@@ -27,28 +27,53 @@
                 {% if user_profile != user_logged %}
 
                     {% if is_friend %}
-                        <p class="btn btn-success" >Amigos</p>
+                        <p class="btn btn-success mb-1 mt-1" onclick="openCloseUnfollow()">Amigos</p>
+                        <div id="div-unfollow" class="d-none" >
+                            <form method="POST" action="{% url 'profile_view' user_profile.id %}" >
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm" name="unfollow" >Desfazer amizade</button>
+                            </form>
+                        </div>                        
+
+                        <script>
+                            let divUnfollow = document.getElementById("div-unfollow")
+                            function openCloseUnfollow(){
+                                if (divUnfollow.classList.contains("d-none")){
+                                    divUnfollow.classList.remove("d-none")
+                                    divUnfollow.classList.add("d-block")
+                                }else{
+                                    divUnfollow.classList.add("d-none")
+                                    divUnfollow.classList.remove("d-block")
+                                }
+                            }
+                        </script>
+                    {% elif friend_request_solicitation and not is_friend %}
+                        <p class="btn btn-success mb-1 mt-1" style="cursor:default;" >Solicitação Enviada</p>
                     {% else %}
                         <form method="POST" action="{% url 'profile_view' user_profile.id %}">
                             {% csrf_token %}
-                            <button id="addFriend" onclick="friendRequest()" type="submit" class="btn btn-primary btn-small">Enviar Solicitação de Amizade</button>
+                            <br>
+                            <button id="addFriend" name="friend_request" onclick="friendRequest()" 
+                            type="submit" class="btn btn-primary btn-small">Enviar Solicitação de Amizade</button>
                         </form>                
                     {% endif %}    
                 {% else %}
                     {% if friend_requests %}    
-                        <div>Solicitações de amizade</div>
+                        <div>Solicitações de amizade:</div>
                         {% for request in friend_requests %}                            
                             <div class="d-flex justify-content-center align-items-center gap-3 btn btn-primary mx-auto mb-2"style="width:60%">
                                 {% comment %} <img src="{{ request.from_user.profile.user_image.url }}" width="50" height="50"> {% endcomment %}
-                                <img src="{{ request.from_user_image.url }}" width="50" height="50" style="border-radius:50%;">
+                                <a href="{% url 'profile_view' request.from_user.id %}">
+                                    <img src="{{ request.from_user_image.url }}" width="50" height="50" style="border-radius:50%;">
+                                </a>                                
                                 <p class="m-0">{{ request.from_user.username }} Enviou uma solicitação de amizade</p>
                                 <form method="POST" action="{% url 'accept_friend_request' request.id %}" >
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-check"></i></button>
+                                    <button type="submit" name="accept_request" class="btn btn-success"><i class="fa-solid fa-check"></i></button>
                                 </form>
                                 <form method="POST" action="{% url 'reject_friend_request' request.id %}" >
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-x"></i></button>
+                                    <button type="submit" name="reject_request" class="btn btn-danger"><i class="fa-solid fa-x"></i></button>
                                 </form>
                             </div>                            
                         {% endfor %}
