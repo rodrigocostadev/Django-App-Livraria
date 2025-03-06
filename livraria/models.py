@@ -20,6 +20,9 @@ class UserProfile(models.Model):
     
     friends = models.ManyToManyField('self', blank=True, symmetrical=False)    
     
+    # followers = models.ManyToManyField('self', blank=True, symmetrical=False) # seguidores
+    # following = models.ManyToManyField('self', blank=True, symmetrical=False) # seguindo
+    
     # friends: O campo ManyToManyField permite que você crie uma relação de amizade entre os usuários. 
     # Usamos 'self' para que a relação seja com a mesma tabela, ou seja, um usuário com outro usuário.
     
@@ -29,8 +32,8 @@ class UserProfile(models.Model):
     
     def send_friend_request(self, to_user_profile):
         # Previne que o usuário envie uma solicitação para si mesmo
-        if self != to_user_profile:
-            FriendRequest.objects.create(from_user=self.user, to_user=to_user_profile.user)
+        # if self != to_user_profile:
+        FriendRequest.objects.create(from_user=self.user, to_user=to_user_profile.user)
 
             
     def accept_friend_request(self,from_user_profile):

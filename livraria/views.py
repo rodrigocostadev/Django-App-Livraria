@@ -234,40 +234,43 @@ def profile_user_view(request, id):
         # Remover generos repetidos
         unique_genres = set()
         for rating in ratings:
-            unique_genres.add(rating.genre)           
+            unique_genres.add(rating.genre)      
+            
+            
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+
+        # Verifica se existe solicitação de amizade
+        friend_request_solicitation = FriendRequest.objects.filter(from_user=user_logged, to_user=user_profile).exists()
+        
+        # Verificar amizades:
+        is_friend = user_logged.userprofile.friends.filter(id=user_profile_instance.id).exists()     
         
         # Solicitação de amizade
-        if request.method == 'POST':
+        if request.method == 'POST':           
             
-            # Buscar solicitações de amizade
-            friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
-
-            # Verifica se existe solicitação de amizade
-            friend_request_solicitation = FriendRequest.objects.filter(from_user=user_logged, to_user=user_profile).exists()
-            
-            # Verificar amizades:
-            is_friend = user_logged.userprofile.friends.filter(id=user_profile_instance.id).exists()
-
-            
-            if 'friend_request' in request.POST:
-                print("Solicitação Enviada")
+            if 'friend_request' in request.POST:                
                 user_logged_profile = get_object_or_404(UserProfile, user=request.user)
                 user_logged_profile.send_friend_request(user_profile_instance)   
+                print("Solicitação Enviada 2")
                 messages.success(request, f"Solicitação para {user_profile_instance.user.username} enviada com sucesso.")
-
-            if 'accept_friend_request' in request.POST:
-                messages.success(request, f"Você aceitou a solicitação de amizade de {user_profile_instance.user.username}")
-
-            # if 'reject_request'
-
+                return redirect('profile_view', id=user_profile.id)
+                
             if 'unfollow' in request.POST:
                 user_logged_profile = get_object_or_404(UserProfile, user=request.user)
                 user_logged_profile.remove_friend(user_profile_instance)
                 messages.success(request, f"Voce deixou de seguir {user_profile_instance.user.username} .")
-            
+                # Verifica se existe solicitação de amizade
+                # friend_request_solicitation = FriendRequest.objects.filter(from_user=user_logged, to_user=user_profile).exists()
+                # if friend_request_solicitation.exists():
+                #     friend_request_solicitation.delete()
+                #     print("DELETE SOLICITATION UNFOLLOW")
+                print("UNFOLLOW")
+                # return render(request,'profile_view.html', {'friend_request_solicitation':friend_request_solicitation})                   
+                return redirect('profile_view', id=user_profile.id)
         
         return render(request, 'profile_view.html', {
-            'user_logged': user_logged,  # Sempre mantém o usuário logado separado
+            'user_logged': user_logged,  # usuário logado 
             'user_profile': user_profile,  # Usuário cujo perfil está sendo visitado
             'user_profile_instance':user_profile_instance, # usado para passar a bio do usuario visitado para o template
             # 'last_ratings_list': last_ratings_list,
@@ -296,24 +299,27 @@ def  accept_friend_request(request, id):
     from_user_profile.friends.add(to_user_profile)
     to_user_profile.friends.add(from_user_profile)
     
+    print("def accept")
+    messages.success(request, f"Você aceitou a solicitação de amizade de {friend_request.from_user.username}")
     return redirect('profile_view', id=friend_request.to_user.id)
 
 
 def reject_friend_request(request, id):
     friend_request = get_object_or_404(FriendRequest, id=id)
+    
+    # user_logged = request.user  # Usuário logado
+    # user_profile = get_object_or_404(User, id=id)  # Usuário visitado
+    # friend_request_solicitation = FriendRequest.objects.filter(from_user=user_logged, to_user=user_profile).exists()
 
     # Rejeita a solicitação de amizade
     friend_request.rejected = True
     friend_request.save()
-    
+    friend_request.delete()
+    # return redirect('profile_view', id=friend_request.to_user.id)
+    messages.success(request, f"Você recusou a solicitação de amizade de {friend_request.from_user.username}")
+    print("REJECT")
     return redirect('profile_view', id=friend_request.to_user.id)
-
-
-def remove_friend(request, id):
-    user_profile_to_remove = get_object_or_404(UserProfile, id=id)
-    user_logged = request.user  # Usuário logado
-    user_logged.remove_friend(user_profile_to_remove)
-    return redirect('profile_view', id=user_profile_to_remove.to_user.id)
+    # return render(request,'profile_view.html', {'friend_request_solicitation':friend_request_solicitation})
     
     
     
@@ -706,6 +712,57 @@ def finish_purchase(request):
 
 
 
+
+
+
+
+
+
+
+
+
+# def send_friend_request(request,id):
+#     # friend_request = get_object_or_404(FriendRequest, id=id)
+#     user_logged = request.user # usuario logado
+#     user_profile = get_object_or_404(UserProfile, id=id)  # Usuário visitado
+#     user_logged.send_friend_request(user_profile)
+#     messages.success(request, f"AA Solicitação para {user_profile.user.username} enviada com sucesso.")
+#     print("FRIEND REQUEST")
+#     return redirect('profile_view', id=user_profile.id)
+
+
+
+
+# def remove_friend(request, id):
+#     user_profile_to_remove = get_object_or_404(UserProfile, id=id)
+#     user_logged = request.user  # Usuário logado
+#     user_logged.remove_friend(user_profile_to_remove)
+#     friend_request_solicitation = FriendRequest.objects.filter(from_user=user_logged, to_user=user_profile_to_remove).exists()
+#     if friend_request_solicitation.exists():
+#         friend_request_solicitation.delete()
+#         print("DELETE SOLICITATION UNFOLLOW")
+#     # return redirect('profile_view', id=user_profile_to_remove.to_user.id)
+#     # return render(request, 'profile_view.html', id=user_profile_to_remove.to_user.id, {"friend_request_solicitation":friend_request_solicitation})
+#     return render(request, 'profile_view.html', {'id': user_profile_to_remove.to_user.id, 'friend_request_solicitation': friend_request_solicitation})
+
+
+                
+
+            # if 'accept_friend_request' in request.POST:
+            #     user_logged_profile = get_object_or_404(UserProfile, user=request.user)
+            #     user_logged_profile.accept_friend_request(user_profile_instance)
+            #     messages.success(request, f"Você aceitou a solicitação de amizade de {user_profile_instance.user.username}")
+            #     print("ACCEPT")
+            #     return redirect('profile_view', id=user_profile.id)
+
+
+            # if 'reject_request' in request.POST:
+            #     user_logged_profile = get_object_or_404(UserProfile, user=request.user)
+            #     user_logged_profile.remove_friend(user_profile_instance)
+            #     # messages.success(request, f"Você recusou a solicitação de amizade de {user_profile_instance.user.username}")
+            #     # print("REJECT")
+            #     # return render(request,'profile_view.html', {'friend_request_solicitation':friend_request_solicitation})
+                
 
 
 

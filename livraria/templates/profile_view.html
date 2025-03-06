@@ -28,7 +28,7 @@
 
                     {% if is_friend %}
                         <p class="btn btn-success mb-1 mt-1" onclick="openCloseUnfollow()">Amigos</p>
-                        <div id="div-unfollow" class="d-none" >
+                        <div id="div-unfollow" class="d-none mb-3" >
                             <form method="POST" action="{% url 'profile_view' user_profile.id %}" >
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-danger btn-sm" name="unfollow" >Desfazer amizade</button>
@@ -47,14 +47,14 @@
                                 }
                             }
                         </script>
-                    {% elif friend_request_solicitation and not is_friend %}
+                    {% elif friend_request_solicitation  %}
                         <p class="btn btn-success mb-1 mt-1" style="cursor:default;" >Solicitação Enviada</p>
                     {% else %}
+                        {% comment %} <form method="POST" action="{% url 'profile_view' user_profile.id %}"> {% endcomment %}
                         <form method="POST" action="{% url 'profile_view' user_profile.id %}">
                             {% csrf_token %}
-                            <br>
-                            <button id="addFriend" name="friend_request" onclick="friendRequest()" 
-                            type="submit" class="btn btn-primary btn-small">Enviar Solicitação de Amizade</button>
+                            <button id="addFriend" name="friend_request"
+                            type="submit" class="btn btn-primary btn-small mt-1">Seguir <i class="fa-solid fa-user-plus" style="margin-left:10px;"></i></button>
                         </form>                
                     {% endif %}    
                 {% else %}
@@ -80,18 +80,6 @@
                     {% endif %}                
                 {% endif %}
 
-
-
-                <script>
-                    function friendRequest(){
-                        let btn = document.getElementById("addFriend")
-                        btn.classList.remove("btn-primary")
-                        btn.classList.add("btn-success")
-                        btn.textContent = "Solicitação Enviada"
-                    }
-                </script>
-            </div> 
-
             {% comment %} <br> {% endcomment %}
 
             {% if is_friend or user_profile == user_logged %}
@@ -115,6 +103,7 @@
                 <div class="text-center" >
 
                     {% comment %} <br> {% endcomment %}
+                    <br>
                     <h5>Gêneros Preferidos:</h5>              
                     <div class="d-flex justify-content-center gap-2" >
                             {% for genre in unique_genres %}
@@ -311,6 +300,7 @@
                     </div>
                 </div>          
             </div>
+            <br>
             <div class="d-flex justify-content-center ">
                 <a href="{% url 'profile_edit' %}">
                     <button type="button" class="btn btn-primary btn-lg" >Editar Perfil</button>
