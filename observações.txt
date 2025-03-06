@@ -5,4 +5,8 @@ Password: senhafacil
 
 (django taggit foi instalado com o comando):
 
+pip install django-taggit
+
+ou
+
 python -m pip install django-taggit
