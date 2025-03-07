@@ -26,12 +26,12 @@
                 
                 {% if user_profile != user_logged %}
 
-                    {% if is_friend %}
-                        <p class="btn btn-success mb-1 mt-1" onclick="openCloseUnfollow()">Amigos</p>
+                    {% if is_follower %}
+                        <p class="btn btn-success mb-1 mt-1 mb-3" onclick="openCloseUnfollow()">Segue Você <i class="fa-solid fa-user-check"></i></p>
                         <div id="div-unfollow" class="d-none mb-3" >
                             <form method="POST" action="{% url 'profile_view' user_profile.id %}" >
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm" name="unfollow" >Desfazer amizade</button>
+                                <button type="submit" class="btn btn-outline-danger btn-sm" name="unfollow" >Remover Seguidor <i class="fa-solid fa-user-xmark"></i></button>
                             </form>
                         </div>                        
 
@@ -49,7 +49,9 @@
                         </script>
                     {% elif friend_request_solicitation  %}
                         <p class="btn btn-success mb-1 mt-1" style="cursor:default;" >Solicitação Enviada</p>
+
                     {% else %}
+                    {% comment %} {% elif user_logged in is_follower %} {% endcomment %}
                         {% comment %} <form method="POST" action="{% url 'profile_view' user_profile.id %}"> {% endcomment %}
                         <form method="POST" action="{% url 'profile_view' user_profile.id %}">
                             {% csrf_token %}
@@ -66,7 +68,7 @@
                                 <a href="{% url 'profile_view' request.from_user.id %}">
                                     <img src="{{ request.from_user_image.url }}" width="50" height="50" style="border-radius:50%;">
                                 </a>                                
-                                <p class="m-0">{{ request.from_user.username }} Enviou uma solicitação de amizade</p>
+                                <p class="m-0">{{ request.from_user.username }} deseja seguir você</p>
                                 <form method="POST" action="{% url 'accept_friend_request' request.id %}" >
                                     {% csrf_token %}
                                     <button type="submit" name="accept_request" class="btn btn-success"><i class="fa-solid fa-check"></i></button>
@@ -82,7 +84,12 @@
 
             {% comment %} <br> {% endcomment %}
 
-            {% if is_friend or user_profile == user_logged %}
+            <p>{{user_profile.followers }}</p>
+            {% if user_logged in user_profile.followers %} 
+                <p>TESTE DE SEGUIDORES</p>
+            {% endif %}
+
+            {% if is_follower or user_profile == user_logged %}
 
                 {% if user_profile_instance.bio %}
                     <div class="d-flex gap-3" >

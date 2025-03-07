@@ -18,9 +18,9 @@ class UserProfile(models.Model):
     street = models.CharField(max_length=50,null=True)
     cep = models.IntegerField(null=True)
     
-    friends = models.ManyToManyField('self', blank=True, symmetrical=False)    
+    # friends = models.ManyToManyField('self', blank=True, symmetrical=False)  # Seguindo
     
-    # followers = models.ManyToManyField('self', blank=True, symmetrical=False) # seguidores
+    followers = models.ManyToManyField('self', blank=True, symmetrical=False) # seguidores
     # following = models.ManyToManyField('self', blank=True, symmetrical=False) # seguindo
     
     # friends: O campo ManyToManyField permite que você crie uma relação de amizade entre os usuários. 
@@ -42,10 +42,11 @@ class UserProfile(models.Model):
         # Marca a solicitação como aceita
         request.accepted = True
         request.save()
-
-        # Adiciona ambos os usuarios á lista de amigos
-        self.friends.add(from_user_profile)
-        from_user_profile.friends.add(self)
+        
+        self.followers.add(from_user_profile) # Adiciona os seguidores
+        # self.followers.add()
+        # from_user_profile.friends.add(self)
+        # from_user_profile.followers.add(self)
         
         request.delete() # Remove a solicitação de amizade aceita
         
@@ -61,17 +62,18 @@ class UserProfile(models.Model):
         request.delete() # Remove a solicitação de amizade aceita
         
         
-    def remove_friend(self, from_user_profile):
-        if from_user_profile in self.friends.all():
-            self.friends.remove(from_user_profile)
-            from_user_profile.friends.remove(self)
+    def remove_friend(self, from_user_profile): # Remove seguidores
+        if from_user_profile in self.followers.all():
+            self.followers.remove(from_user_profile)
+            from_user_profile.followers.remove(self)
+            # from_user_profile.followers.remove(self)
 
 
 
 
 class FriendRequest(models.Model):
-    from_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='sent_requests') # usuario logado
-    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests')
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='sent_requests') # Usuario logado
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests') # Usuario visitado
     created_at = models.DateTimeField(auto_now_add=True)
     accepted = models.BooleanField(default=False)
     rejected = models.BooleanField(default=False)
