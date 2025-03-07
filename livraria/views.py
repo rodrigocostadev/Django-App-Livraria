@@ -243,8 +243,16 @@ def profile_user_view(request, id):
         # Verifica se existe solicitação de amizade
         friend_request_solicitation = FriendRequest.objects.filter(from_user=user_logged, to_user=user_profile).exists()
         
-        # Verificar Seguidores: 
+        # Verificar Seguidores do usuario logado: 
         is_follower = user_logged.userprofile.followers.filter(id=user_profile_instance.id).exists()     
+        
+        # Verificar quem o usuario logado segue: 
+        is_following = user_profile.userprofile.following.all()
+        print("is_following: ",is_following)
+        
+        # Filtra o usuario logado na lista de seguidores
+        is_following_filter = user_logged.userprofile.following.filter(user=user_logged).exists()
+        
         
         # Solicitação de amizade
         if request.method == 'POST':           
@@ -258,14 +266,14 @@ def profile_user_view(request, id):
                 
             if 'unfollow' in request.POST:
                 user_logged_profile = get_object_or_404(UserProfile, user=request.user)
-                user_logged_profile.remove_friend(user_profile_instance)
+                user_logged_profile.remove_follower(user_profile_instance)
                 messages.success(request, f"Voce deixou de seguir {user_profile_instance.user.username} .")
                 print("UNFOLLOW")              
                 return redirect('profile_view', id=user_profile.id)
         
         return render(request, 'profile_view.html', {
             'user_logged': user_logged,  # usuário logado 
-            'user_profile': user_profile,  # Usuário cujo perfil está sendo visitado
+            'user_profile': user_profile,  # Usuário que está sendo visitado
             'user_profile_instance':user_profile_instance, # usado para passar a bio do usuario visitado para o template
             # 'last_ratings_list': last_ratings_list,
             "ratings": unique_ratings,
@@ -273,6 +281,8 @@ def profile_user_view(request, id):
             "unique_genres": unique_genres,
             "friend_requests":friend_requests,
             "is_follower":is_follower,
+            "is_following":is_following,
+            "is_following_filter": is_following_filter,
             "friend_request_solicitation": friend_request_solicitation,
         })
     else:
@@ -292,6 +302,9 @@ def  accept_friend_request(request, id):
 
     # from_user_profile.friends.add(to_user_profile)
     to_user_profile.followers.add(from_user_profile)
+    
+    from_user_profile.following.add(to_user_profile)
+    print("TESTE", from_user_profile.following)
     friend_request.delete() # Exclui a solicitação de amizade
 
     messages.success(request, f"Você aceitou a solicitação de amizade de {friend_request.from_user.username}")

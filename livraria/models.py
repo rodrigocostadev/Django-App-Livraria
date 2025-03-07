@@ -20,8 +20,8 @@ class UserProfile(models.Model):
     
     # friends = models.ManyToManyField('self', blank=True, symmetrical=False)  # Seguindo
     
-    followers = models.ManyToManyField('self', blank=True, symmetrical=False) # seguidores
-    # following = models.ManyToManyField('self', blank=True, symmetrical=False) # seguindo
+    followers = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='followed_by') # seguidores
+    following = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='follows') # seguindo
     
     # friends: O campo ManyToManyField permite que você crie uma relação de amizade entre os usuários. 
     # Usamos 'self' para que a relação seja com a mesma tabela, ou seja, um usuário com outro usuário.
@@ -43,10 +43,10 @@ class UserProfile(models.Model):
         request.accepted = True
         request.save()
         
-        self.followers.add(from_user_profile) # Adiciona os seguidores
+        self.followers.add(from_user_profile) # Adiciona o nome do usuario a minha lista de seguidores
         # self.followers.add()
         # from_user_profile.friends.add(self)
-        # from_user_profile.followers.add(self)
+        from_user_profile.following.add(self) # Adiciona o meu usuario na lista de seguidores do outro usuario
         
         request.delete() # Remove a solicitação de amizade aceita
         
@@ -62,11 +62,13 @@ class UserProfile(models.Model):
         request.delete() # Remove a solicitação de amizade aceita
         
         
-    def remove_friend(self, from_user_profile): # Remove seguidores
+    def remove_follower(self, from_user_profile): # Remove seguidores
         if from_user_profile in self.followers.all():
             self.followers.remove(from_user_profile)
             from_user_profile.followers.remove(self)
-            # from_user_profile.followers.remove(self)
+            
+            from_user_profile.following.remove(self)
+
 
 
 
