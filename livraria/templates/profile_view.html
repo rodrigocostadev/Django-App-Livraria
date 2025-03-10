@@ -53,7 +53,7 @@
                                             
                     {% endif %}     
                     
-                    {% if not is_following_filter %}
+                    {% comment %} {% if not is_following_filter %}
                         <form class="mb-3" method="POST" action="{% url 'profile_view' user_profile.id %}">
                             {% csrf_token %}
                             <button id="addFriend" name="friend_request"
@@ -63,6 +63,19 @@
                         {% if friend_request_solicitation  %}
                             <p class="btn btn-success mb-3 mt-1" style="cursor:default;" >Solicitação Enviada</p>   
                         {% endif %}   
+                    {% endif %}    {% endcomment %}
+
+
+                    {% if friend_request_solicitation  %}
+                            <p class="btn btn-success mb-3 mt-1" style="cursor:default;" >Solicitação Enviada <i class="fa-solid fa-check"></i></p>  
+                    {% elif is_following_filter %}
+                        <p class="btn btn-success mb-3 mt-1" style="cursor:default;" >Seguindo</p> 
+                    {% else %}
+                        <form class="mb-3" method="POST" action="{% url 'profile_view' user_profile.id %}">
+                            {% csrf_token %}
+                            <button id="addFriend" name="friend_request"
+                            type="submit" class="btn btn-primary btn-small mt-1">Seguir <i class="fa-solid fa-user-plus" style="margin-left:10px;"></i></button>
+                        </form>  
                     {% endif %}   
                     
                 {% else %}
@@ -122,7 +135,8 @@
             {% comment %} <p>{{is_following }}</p> {% endcomment %}
 
            
-            <p>{{ is_following_filter }}</p>
+            <p>{{ is_following_filter }} TESTE </p>
+            
             {% if is_following or user_profile == user_logged %}
             {% comment %} {% if user_logged in is_following_filter or user_profile == user_logged %} {% endcomment %}
 
@@ -251,62 +265,29 @@
                         <p>Não há seguidores.</p>
                         {% endfor %}
                     </div>
+
+
+                    <h6>Seguindo:<h6>
+                    {% comment %} <p>{{ user_profile.userprofile.followings.all }} TESTE </p> {% endcomment %}
+                    <div class="d-flex justify-content-center gap-3" >
+                        {% for follower in user_profile.userprofile.followings.all %}                            
+                            <span>
+                                {% comment %} <p>{{ follower.user.username }}</p> {% endcomment %}
+                                <a href="{% url 'profile_view' following.user.id  %}" >
+                                    <img src="{{ follower.user.userprofile.user_image.url }}" style="width:40px;height:40px;border-radius:50%">
+                                </a>     
+                            </span>
+                        {% empty %}
+                        <p>Não há seguidores.</p>
+                        {% endfor %}
+                    </div>
+
                 </div>
             {% endif %}
             <br>
 
             {% if user_profile == user_logged %}
             <hr>          
-            
-            {% comment %} <div class="col-md-6 offset-md-3 d-flex flex-column gap-3 " >
-
-                <h4>Dados Pessoais:</h4>
-                <div>
-                    <input type="text" class="form-control" value="Usuário: {{user_profile.username}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Nome: {{user_profile.first_name}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Sobrenome: {{user_profile.last_name}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Email: {{user_profile.email}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Cpf: {{user_profile.userprofile.cpf}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Imagem de Perfil: {{user_profile.userprofile.user_image}}" readonly>
-                </div>
-
-
-                <div>
-                    <input type="text" class="form-control" value="Estado: {{user_profile.userprofile.state}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Cidade: {{user_profile.userprofile.city}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Bairro: {{user_profile.userprofile.district}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Rua: {{user_profile.userprofile.street}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Número da Casa: {{user_profile.userprofile.house_number}}" readonly>
-                </div>
-                <div>
-                    <input type="text" class="form-control" value="Cep: {{user_profile.userprofile.cep}}" readonly>
-                </div>
-
-
-                <div class="d-flex justify-content-center ">
-                    <a href="{% url 'profile_edit' %}">
-                        <button type="button" class="btn btn-primary btn-lg" >Editar Perfil</button>
-                    </a>                
-                </div> 
-            </div> {% endcomment %}
 
             <div class="col-md-12 offset-md-3 d-flex  gap-3 mx-auto " >
                 <div class="col-md-6 offset-md-3 d-flex flex-column gap-3 mx-auto " >
@@ -359,6 +340,58 @@
                     <button type="button" class="btn btn-primary btn-lg" >Editar Perfil</button>
                 </a>                
             </div> 
+            
+            {% comment %} <div class="col-md-6 offset-md-3 d-flex flex-column gap-3 " >
+
+                <h4>Dados Pessoais:</h4>
+                <div>
+                    <input type="text" class="form-control" value="Usuário: {{user_profile.username}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Nome: {{user_profile.first_name}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Sobrenome: {{user_profile.last_name}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Email: {{user_profile.email}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Cpf: {{user_profile.userprofile.cpf}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Imagem de Perfil: {{user_profile.userprofile.user_image}}" readonly>
+                </div>
+
+
+                <div>
+                    <input type="text" class="form-control" value="Estado: {{user_profile.userprofile.state}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Cidade: {{user_profile.userprofile.city}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Bairro: {{user_profile.userprofile.district}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Rua: {{user_profile.userprofile.street}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Número da Casa: {{user_profile.userprofile.house_number}}" readonly>
+                </div>
+                <div>
+                    <input type="text" class="form-control" value="Cep: {{user_profile.userprofile.cep}}" readonly>
+                </div>
+
+
+                <div class="d-flex justify-content-center ">
+                    <a href="{% url 'profile_edit' %}">
+                        <button type="button" class="btn btn-primary btn-lg" >Editar Perfil</button>
+                    </a>                
+                </div> 
+            </div> {% endcomment %}
+
+            
 
             {% endif %}
         </div>

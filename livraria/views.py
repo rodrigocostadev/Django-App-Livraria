@@ -147,12 +147,21 @@ def register_user(request):
             cpf = form.cleaned_data['cpf']
             bio = form.cleaned_data['bio']
             
+            state = form.cleaned_data['state']
+            city = form.cleaned_data['city']
+            district = form.cleaned_data['district']
+            street = form.cleaned_data['street']
+            house_number = form.cleaned_data['house_number']
+            cep = form.cleaned_data['cep']
+            
             if user_image:
                 user_image = resize_profile_image(user_image)
-                user_profile = UserProfile.objects.create(user = user, user_image = user_image, cpf = cpf, bio = bio)
+                user_profile = UserProfile.objects.create(user = user, user_image = user_image, cpf = cpf, bio = bio,
+                                                          state=state,city=city,district=district,street=street,house_number=house_number,cep=cep)
             else:
                 # user_profile = UserProfile.objects.create(user = user,  user_image = "../../media/users/default.jpg" , cpf = cpf)
-                user_profile = UserProfile.objects.create(user = user,  user_image = "users/default.jpg" , cpf = cpf, bio=bio)
+                user_profile = UserProfile.objects.create(user = user,  user_image = "users/default.jpg" , cpf = cpf, bio=bio,
+                                                          state=state,city=city,district=district,street=street,house_number=house_number,cep=cep)
                 
             user_profile.save()            
             
@@ -250,8 +259,9 @@ def profile_user_view(request, id):
         is_following = user_profile.userprofile.following.all()
         print("is_following: ",is_following)
         
-        # Filtra o usuario logado na lista de seguidores
-        is_following_filter = user_logged.userprofile.following.filter(user=user_logged).exists()
+        # Filtra se o usuario logado segue o usuario visitado
+        # is_following_filter = user_logged.userprofile.following.filter(user=user_logged).exists()
+        is_following_filter = user_logged.userprofile.followers.filter(id=user_profile_instance.id).exists()
         
         
         # Solicitação de amizade
