@@ -35,7 +35,7 @@
         </div>
         <div class="modal-footer">
             <button onclick="clearCart()" type="button" class="btn btn-danger" data-bs-dismiss="modal">Limpar</button>
-            <a href="{% url 'page_checkout' %}" onclick="sendCartToBackend()" class="btn btn-success" >Finalizar Compra</a>
+            <a href="{% url 'page_checkout' %}" onclick="addBookCart()" class="btn btn-success" >Finalizar Compra</a>
             {% comment %} <button  type="button" class="btn btn-success" data-bs-dismiss="modal">Finalizar Compra</button> {% endcomment %}
             <button onclick="addBookCart()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Adicionar</button>            
         </div>

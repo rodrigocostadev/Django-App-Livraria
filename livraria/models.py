@@ -43,7 +43,7 @@ class UserProfile(models.Model):
         request.accepted = True
         request.save()
         
-        self.followers.add(from_user_profile) # Adiciona o nome do usuario a minha lista de seguidores
+        # self.followers.add(from_user_profile) # Adiciona o nome do usuario a minha lista de seguidores
         # self.followers.add()
         # from_user_profile.friends.add(self)
         from_user_profile.following.add(self) # Adiciona o meu usuario na lista de seguidores do outro usuario

@@ -347,7 +347,7 @@ function renderCheckoutCart(){
     
             // console.log("esse é o VALOR TOTAL:", totalValueCart.toFixed(2).replace('.',','))    
             totalValueStatusCart.textContent = " R$ "+ totalValueCart.toFixed(2).replace('.',',')
-            totalValueCheckout.textContent = " R$ " + totalValueCart.toFixed(2).replace('.',',')                                            
+            totalValueCheckout.textContent = " R$ " + totalValueCart.toFixed(2).replace('.',',')   
 
             checkout.innerHTML += `<div class="d-flex align-items-center" style="height:120px;">
                                             <img src="${item.img}" class="w-25 img-fluid" style="object-fit:contain; height:100%; width:auto;" >
@@ -371,7 +371,9 @@ function renderCheckoutCart(){
         }
 
         // TESTE
-        checkout.innerHTML += `<input id="total-value" type="hidden" value="${totalValueCart}" >`
+        checkout.innerHTML += `<input id="total-value" name="total-value" type="hidden" value="R$${totalValueCart.toFixed(2).replace('.',',') }" >`
+        let teste = document.getElementById("total-value")
+        console.log("TESTE VALOR TOTAL",teste.value)
 
         numberCart.textContent = totalItemsCart  // Numero de itens no icone da navbar
         modalNavTitleh6.textContent = totalItemsCart        

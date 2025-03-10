@@ -257,6 +257,7 @@ def profile_user_view(request, id):
         
         # Verificar quem o usuario logado segue: 
         is_following = user_profile.userprofile.following.all()
+        # is_following = user_profile.userprofile.following.all()
         print("is_following: ",is_following)
         
         # Filtra se o usuario logado segue o usuario visitado
@@ -313,8 +314,8 @@ def  accept_friend_request(request, id):
     # from_user_profile.friends.add(to_user_profile)
     to_user_profile.followers.add(from_user_profile)
     
-    from_user_profile.following.add(to_user_profile)
-    print("TESTE", from_user_profile.following)
+    # from_user_profile.following.add(to_user_profile)
+    # print("TESTE", from_user_profile.following)
     friend_request.delete() # Exclui a solicitação de amizade
 
     messages.success(request, f"Você aceitou a solicitação de amizade de {friend_request.from_user.username}")
@@ -658,6 +659,8 @@ def finish_purchase(request):
     checkoutForm = CheckoutForm(instance=user_logged)
     
     payment_method = request.POST.get("payment")
+    total_value = request.POST.get("total-value")
+    # total_value = request.POST.get("total_value")
     
     if not payment_method:
         messages.error(request, "Selecione um meio de pagamento.")
@@ -668,7 +671,10 @@ def finish_purchase(request):
         # payment_method = request.POST.get("payment")
         # payment_method = cleaned_post_data.get("payment")         
         print("TESTE",payment_method)
+        print("TESTE VALOR TOTAL",total_value)
         print("TESTE request.POST:", request.POST)
+        
+        
 
         # # Ao tentar validar o formulário de checkout, o django mostrava que não esta sendo enviada uma resposta http valida
         # if checkoutForm.is_valid():
@@ -687,11 +693,11 @@ def finish_purchase(request):
         
         
         if payment_method == "pix":            
-            return render(request,"pix_payment.html",{'checkoutForm':checkoutForm})
+            return render(request,"pix_payment.html",{'checkoutForm':checkoutForm, "total_value":total_value})
         elif payment_method == "boleto":
-            return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm})
+            return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm, "total_value":total_value})
         elif payment_method == "cartao":
-            return render(request,"card_payment.html",{'checkoutForm':checkoutForm})
+            return render(request,"card_payment.html",{'checkoutForm':checkoutForm,"total_value":total_value})
         else:
             messages.error(request,"Selecione um meio de pagamento.")
             return redirect('page_checkout')

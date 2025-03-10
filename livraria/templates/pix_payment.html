@@ -8,6 +8,7 @@
     <hr>
     <div class="col-md-6 offset-md-3 mx-auto ">
         <img src="{% static '/images/QR_code_for_mobile_English_Wikipedia.svg.png' %}" class="w-75 mx-auto">
+        <p>Valor: {{ total_value }}</p>
         <p>Aguardando pagamento. Seu pedido ja está em espera.</p>
         <a href="{% url 'home' %}" class="btn btn-primary" >Voltar ao Menu Inicial</a>
     </div>

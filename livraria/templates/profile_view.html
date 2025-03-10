@@ -137,7 +137,7 @@
            
             <p>{{ is_following_filter }} TESTE </p>
             
-            {% if is_following or user_profile == user_logged %}
+            {% if is_following_filter or user_profile == user_logged %}
             {% comment %} {% if user_logged in is_following_filter or user_profile == user_logged %} {% endcomment %}
 
                 {% if user_profile_instance.bio %}
@@ -262,7 +262,7 @@
                                 </a>     
                             </span>
                         {% empty %}
-                        <p>Não há seguidores.</p>
+                        <p>-----</p>
                         {% endfor %}
                     </div>
 
@@ -278,7 +278,7 @@
                                 </a>     
                             </span>
                         {% empty %}
-                        <p>Não há seguidores.</p>
+                        <p>-----</p>
                         {% endfor %}
                     </div>
 

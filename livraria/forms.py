@@ -140,7 +140,9 @@ class CheckoutForm(forms.ModelForm):
     house_number = forms.IntegerField(required=True,min_value=0, max_value=99999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Numero da Casa'}),label = "")
     street = forms.CharField(required=True, max_length=50,widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Rua'}),label = "")
     cep = forms.IntegerField(required=True,min_value=0, max_value=99999999, widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'Cep'}),label = "")
-
+    
+    total_value = forms.CharField(required=True,max_length=10, widget=forms.TextInput(attrs={'class':'form-control','readonly':'readonly'}))
+    
     # number_card = forms.IntegerField(required=False,min_value=0000000000000000, max_value=9999999999999999,widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'( 16 Dígitos )'}),label = "Número do Cartão")
     # name_card = forms.CharField(required=False, widget=forms.TextInput(attrs={'class':'form-control',}), label = "Nome do Titular do Cartão" )
     # code_security_card = forms.IntegerField(required=False,min_value=000, max_value=999,widget=forms.NumberInput(attrs={'class':'form-control', 'placeholder':'( 3 Dígitos )'}),label = "Código de Segurança")
@@ -151,7 +153,7 @@ class CheckoutForm(forms.ModelForm):
     
     class Meta:
         model = User
-        fields = ('username','first_name','last_name', 'cpf','email','state', 'city', 'district', 'house_number', 'street', 'cep')  
+        fields = ('username','first_name','last_name', 'cpf','email','state', 'city', 'district', 'house_number', 'street', 'cep', "total_value")  
         # fields = ('username','first_name','last_name', 'cpf','email','state', 'city', 'district', 
         #           'house_number', 'street', 'cep','number_card','name_card','code_security_card','validity_month_card','validity_year_card')  
 
