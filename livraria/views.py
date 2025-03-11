@@ -277,9 +277,16 @@ def profile_user_view(request, id):
                 messages.success(request, f"Solicitação para {user_profile_instance.user.username} enviada com sucesso.")
                 return redirect('profile_view', id=user_profile.id)
                 
-            if 'unfollow' in request.POST:
+            if 'remove_follower' in request.POST:
                 user_logged_profile = get_object_or_404(UserProfile, user=request.user)
                 user_logged_profile.remove_follower(user_profile_instance)
+                messages.success(request, f"Voce removeu {user_profile_instance.user.username} .")
+                print("Remove FOLLOWER")              
+                return redirect('profile_view', id=user_profile.id)
+            
+            if 'unfollow' in request.POST:
+                user_logged_profile = get_object_or_404(UserProfile, user=request.user)
+                user_logged_profile.unfollow(user_profile_instance)
                 messages.success(request, f"Voce deixou de seguir {user_profile_instance.user.username} .")
                 print("UNFOLLOW")              
                 return redirect('profile_view', id=user_profile.id)
@@ -304,9 +311,7 @@ def profile_user_view(request, id):
     
 def  accept_friend_request(request, id):
     friend_request = get_object_or_404(FriendRequest, id=id)
-
-    # Aceita a solicitação de amizade
-    friend_request.accepted = True
+    friend_request.accepted = True # Aceita a solicitação de amizade
     friend_request.save()
     
     # Adiciona os amigos na lista de amizade
@@ -314,7 +319,6 @@ def  accept_friend_request(request, id):
     to_user_profile = get_object_or_404(UserProfile, user = friend_request.to_user)
 
     to_user_profile.accept_friend_request(from_user_profile)
-
     friend_request.delete() # Exclui a solicitação de amizade
 
     messages.success(request, f"Você aceitou a solicitação de amizade de {friend_request.from_user.username}")
@@ -323,9 +327,7 @@ def  accept_friend_request(request, id):
 
 def reject_friend_request(request, id):
     friend_request = get_object_or_404(FriendRequest, id=id)
-    
-    # Rejeita a solicitação de amizade
-    friend_request.rejected = True
+    friend_request.rejected = True # Rejeita a solicitação de amizade
     friend_request.save()
     friend_request.delete()
     messages.success(request, f"Você recusou a solicitação de amizade de {friend_request.from_user.username}")

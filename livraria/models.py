@@ -38,35 +38,33 @@ class UserProfile(models.Model):
             
     def accept_friend_request(self,from_user_profile):
         request = FriendRequest.objects.get(from_user=from_user_profile.user, to_user=self.user) # Encontra a solicitação de amizade
-        
-        # Marca a solicitação como aceita
-        request.accepted = True
+        request.accepted = True # Marca a solicitação como aceita
         request.save()
-        
         self.followers.add(from_user_profile) # Adiciona o nome do usuario a minha lista de seguidores
-        # from_user_profile.friends.add(self)
         from_user_profile.following.add(self) # Adiciona o meu usuario na lista de seguidores do outro usuario
+        # from_user_profile.friends.add(self) # maneira antiga
         
         request.delete() # Remove a solicitação de amizade aceita
         
         
         
-    def reject_friend_request(self, from_user_profile):
-        request = FriendRequest.objects.get(from_user=from_user_profile.user, to_user=self.user) # Encontra a solicitação de amizade
-        
-        # marca a solicitação como rejeitada
-        request.reject = True
-        request.save()
-        
-        request.delete() # Remove a solicitação de amizade aceita
+    # def reject_friend_request(self, from_user_profile):
+    #     request = FriendRequest.objects.get(from_user=from_user_profile.user, to_user=self.user) # Encontra a solicitação de amizade
+    #     request.reject = True # marca a solicitação como rejeitada
+    #     request.save()        
+    #     request.delete() # Remove a solicitação de amizade aceita
         
         
     def remove_follower(self, from_user_profile): # Remove seguidores
         if from_user_profile in self.followers.all():
             self.followers.remove(from_user_profile)
-            from_user_profile.followers.remove(self)
-            
+            from_user_profile.followers.remove(self)            
             from_user_profile.following.remove(self)
+            
+            
+    def unfollow(self,from_user_profile):
+        self.following.remove(from_user_profile)
+        from_user_profile.followers.remove(self)
 
 
 
