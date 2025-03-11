@@ -43,8 +43,7 @@ class UserProfile(models.Model):
         request.accepted = True
         request.save()
         
-        # self.followers.add(from_user_profile) # Adiciona o nome do usuario a minha lista de seguidores
-        # self.followers.add()
+        self.followers.add(from_user_profile) # Adiciona o nome do usuario a minha lista de seguidores
         # from_user_profile.friends.add(self)
         from_user_profile.following.add(self) # Adiciona o meu usuario na lista de seguidores do outro usuario
         
@@ -74,8 +73,8 @@ class UserProfile(models.Model):
 
 
 class FriendRequest(models.Model):
-    from_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='sent_requests') # Usuario logado
-    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests') # Usuario visitado
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='sent_requests') # Usuario que mandou o convite
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests') # Usuario que recebe o convite
     created_at = models.DateTimeField(auto_now_add=True)
     accepted = models.BooleanField(default=False)
     rejected = models.BooleanField(default=False)

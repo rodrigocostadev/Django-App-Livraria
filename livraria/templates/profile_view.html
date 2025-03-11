@@ -270,11 +270,11 @@
                     <h6>Seguindo:<h6>
                     {% comment %} <p>{{ user_profile.userprofile.followings.all }} TESTE </p> {% endcomment %}
                     <div class="d-flex justify-content-center gap-3" >
-                        {% for follower in user_profile.userprofile.followings.all %}                            
+                        {% for following in is_following %}                            
                             <span>
-                                {% comment %} <p>{{ follower.user.username }}</p> {% endcomment %}
+                                {% comment %} <p>{{ following.user.username }}</p> {% endcomment %}
                                 <a href="{% url 'profile_view' following.user.id  %}" >
-                                    <img src="{{ follower.user.userprofile.user_image.url }}" style="width:40px;height:40px;border-radius:50%">
+                                    <img src="{{ following.user.userprofile.user_image.url }}" style="width:40px;height:40px;border-radius:50%">
                                 </a>     
                             </span>
                         {% empty %}

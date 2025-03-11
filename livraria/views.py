@@ -252,18 +252,20 @@ def profile_user_view(request, id):
         # Verifica se existe solicitação de amizade
         friend_request_solicitation = FriendRequest.objects.filter(from_user=user_logged, to_user=user_profile).exists()
         
-        # Verificar Seguidores do usuario logado: 
+        # Verificar Seguidores do perfil do usuario visitado: 
         is_follower = user_logged.userprofile.followers.filter(id=user_profile_instance.id).exists()     
         
-        # Verificar quem o usuario logado segue: 
+        # Verificar quem o usuario que tem o perfil visitado segue: 
         is_following = user_profile.userprofile.following.all()
-        # is_following = user_profile.userprofile.following.all()
-        print("is_following: ",is_following)
+        # print("is_following: ",is_following) # mostra um objeto do tipo queryset
         
         # Filtra se o usuario logado segue o usuario visitado
         # is_following_filter = user_logged.userprofile.following.filter(user=user_logged).exists()
-        is_following_filter = user_logged.userprofile.followers.filter(id=user_profile_instance.id).exists()
-        
+        is_following_filter = user_logged.userprofile.following.filter(id=user_profile_instance.id).exists()
+
+        # print("TESTE DE QUEM EU SIGO ")
+        # for user_following in is_following:
+        #     print(user_following.user.username)
         
         # Solicitação de amizade
         if request.method == 'POST':           
@@ -311,11 +313,8 @@ def  accept_friend_request(request, id):
     from_user_profile = get_object_or_404(UserProfile, user=friend_request.from_user)
     to_user_profile = get_object_or_404(UserProfile, user = friend_request.to_user)
 
-    # from_user_profile.friends.add(to_user_profile)
-    to_user_profile.followers.add(from_user_profile)
-    
-    # from_user_profile.following.add(to_user_profile)
-    # print("TESTE", from_user_profile.following)
+    to_user_profile.accept_friend_request(from_user_profile)
+
     friend_request.delete() # Exclui a solicitação de amizade
 
     messages.success(request, f"Você aceitou a solicitação de amizade de {friend_request.from_user.username}")
