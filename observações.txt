@@ -10,3 +10,8 @@ pip install django-taggit
 ou
 
 python -m pip install django-taggit
+
+
+
+
+Rodar a api de pagamento na porta 8080 com o comando =    python manage.py runserver 8080
