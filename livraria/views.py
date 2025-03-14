@@ -648,6 +648,7 @@ def page_checkout(request):
     return render(request,'checkout.html', {'checkoutForm': checkoutForm,'prazo_entrega':prazo_entrega, 'checkout_url': checkout_url, 'user_logged': user_logged})
 
 def pix_payment(request):
+    print("OK")
     return render(request,"pix_payment")
 def boleto_payment(request):
     return render(request,"boleto_payment")
@@ -694,6 +695,9 @@ def finish_purchase(request):
         
         
         if payment_method == "pix":            
+            # print("OK")
+            # return HttpResponse("OK")
+            # return redirect('page_checkout')
             return render(request,"pix_payment.html",{'checkoutForm':checkoutForm, "total_value":total_value})
         elif payment_method == "boleto":
             return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm, "total_value":total_value})
