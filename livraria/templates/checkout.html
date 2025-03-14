@@ -49,7 +49,21 @@
                         <label>Cep:</label>
                         <p>{{checkoutForm.cep}}</p>  
                     </div>  
-                </div>                    
+                </div>      
+                
+                {% comment %} Usuário: {% endcomment %}
+                <input type="hidden" id="user_id" value="{{ user_logged.user.id }}">
+                <input type="hidden" id="username" value="{{ user_logged.user }}">
+                <input type="hidden" id="first_name" value="{{ user_logged.user.first_name }}">
+                <input type="hidden" id="last_name" value="{{ user_logged.user.last_name }}">
+                <input type="hidden" id="email" value="{{user_logged.user.email}}">
+                {% comment %} Endereço {% endcomment %}
+                <input type="hidden" id="state"  value="{{user_logged.user.userprofile.state}}">
+                <input type="hidden" id="city" value="{{user_logged.user.userprofile.city}}">
+                <input type="hidden" id="district" value="{{user_logged.user.userprofile.district}}">
+                <input type="hidden" id="street" value="{{user_logged.user.userprofile.street}}">
+                <input type="hidden" id="house_number" value="{{user_logged.user.userprofile.house_number}}">                        
+                <input type="hidden" id="cep" value="{{user_logged.user.userprofile.cep}}">  
                 
                 <hr style="width:98%;">
                 <p><label class="fw-bold"> <i class="fa-solid fa-truck"></i> Prazo de Entrega:</label> {{prazo_entrega}} </p>   
@@ -145,6 +159,33 @@
         </div> 
     </form>
     <br>
+
+    {% comment %} TESTE {% endcomment %}
+    <script>
+        let userId = document.getElementById("user_id")
+        let userName = document.getElementById("username")
+        let firstName = document.getElementById("first_name")
+        let lastName = document.getElementById("last_name")
+        let email = document.getElementById("email")
+        let state = document.getElementById("state")
+        let city = document.getElementById("city")
+        let district = document.getElementById("district")
+        let street = document.getElementById("street")
+        let houseNumber = document.getElementById("house_number")
+        let cep = document.getElementById("cep")
+
+        console.log(userId.value)
+        console.log(userName.value)
+        console.log(firstName.value)
+        console.log(lastName.value)
+        console.log(email.value)
+        console.log(state.value)
+        console.log(city.value)
+        console.log(district.value)
+        console.log(street.value)
+        console.log(houseNumber.value)
+        console.log(cep.value)
+    </script>
 
     <script>
 

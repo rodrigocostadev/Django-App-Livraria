@@ -645,7 +645,7 @@ def page_checkout(request):
     date = timezone.now()
     prazo_entrega = date + timedelta(days=15)
     checkout_url = reverse('page_checkout')  # Ou a URL que você usa
-    return render(request,'checkout.html', {'checkoutForm': checkoutForm,'prazo_entrega':prazo_entrega, 'checkout_url': checkout_url})
+    return render(request,'checkout.html', {'checkoutForm': checkoutForm,'prazo_entrega':prazo_entrega, 'checkout_url': checkout_url, 'user_logged': user_logged})
 
 def pix_payment(request):
     return render(request,"pix_payment")

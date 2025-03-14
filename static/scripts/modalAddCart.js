@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     modalElement.addEventListener('hidden.bs.modal', function(){
         history.pushState('', document.title, window.location.pathname)
     })  
+
 });
 
 
@@ -47,7 +48,6 @@ function add(){
     if( !modal.classList.contains('show') ){     
         console.log("teste close if")
         closeModal()
-        // teste()
     }
 }
 
@@ -571,6 +571,34 @@ function closeModal(){
 
 //////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////    ENVIAR DADOS DO JS PARA O BACK    ////////////////////////
+
+
+
+// function sendCartToBackend(){
+//     let userId = document.getElementById("user_id")
+//     let userName = document.getElementById("username")
+//     let firstName = document.getElementById("first_name")
+//     let lastName = document.getElementById("last_name")
+//     let email = document.getElementById("email")
+//     let state = document.getElementById("state")
+//     let city = document.getElementById("city")
+//     let district = document.getElementById("district")
+//     let street = document.getElementById("street")
+//     let houseNumber = document.getElementById("house_number")
+//     let cep = document.getElementById("cep")
+
+//     console.log(userId)
+//     console.log(userName)
+//     console.log(firstName)
+//     console.log(lastName)
+//     console.log(email)
+//     console.log(state)
+//     console.log(city)
+//     console.log(district)
+//     console.log(street)
+//     console.log(houseNumber)
+//     console.log(cep)
+// }
 
 // const checkoutUrl = "{{ checkout_url }}"
 
