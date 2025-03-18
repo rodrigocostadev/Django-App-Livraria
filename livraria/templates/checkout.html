@@ -98,7 +98,7 @@
                         <input id="cartao" onclick="sendCartToBackend('cartao')" type="radio" name="payment" value="cartao" style="cursor:pointer;"><i class="fa-solid fa-credit-card"></i> Cartão de Crédito
                     </label> {% endcomment %}
                     
-                    <div class="d-none flex-column" id="credit-card-data">
+                    <div id="credit-card-data" class="d-none flex-column" >
                         <label >Nome do Titular do Cartão</label>
                         <input id="name_credit_card" class="form-control" name="name_credit_card" type="text">
                         {% comment %} <p>{{ checkoutForm.name_card }}</p> {% endcomment %}
@@ -152,7 +152,8 @@
                 <a href="{% url 'home' %}" onclick="clearCart()" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</a>
                 <a href="{% url 'home' %}" class="btn btn-primary" >Continuar Comprando</a>
                 {% comment %} <a class="btn btn-success" >Finalizar Compra</a> {% endcomment %}
-                <button onclick="sendCartToBackend(paymentMethod)" class="btn btn-success" type="submit" >Finalizar Compra</button>
+                {% comment %} <button onclick="sendCartToBackend()" class="btn btn-success" type="submit" >Finalizar Compra</button> {% endcomment %}
+                <button id="sendCartToBackend" class="btn btn-success" type="submit" >Finalizar Compra</button>
             </div>
             
             {% comment %} <button class="btn btn-success" type="submit" >Finalizar Compra</button> {% endcomment %}
@@ -204,129 +205,184 @@
         let houseNumber = document.getElementById("house_number")
         let cep = document.getElementById("cep")
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Variável para armazenar o método de pagamento selecionado
-            let selectedPaymentMethod = '';
-        
-            // Armazenar o método de pagamento quando o usuário clicar em um método de pagamento
-            document.getElementById('pix').addEventListener('click', function () {
-                selectedPaymentMethod = 'pix';
-                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
-            });
-        
-            document.getElementById('boleto').addEventListener('click', function () {
-                selectedPaymentMethod = 'boleto';
-                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
-            });
-        
-            document.getElementById('cartao').addEventListener('click', function () {
-                selectedPaymentMethod = 'cartao';
-                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
-            });
-        
-            // Função para atualizar o formulário com base na seleção de pagamento
-            function updatePaymentForm(paymentMethod) {
-                // Esconde ou mostra o formulário de cartão de crédito
-                const creditCardData = document.getElementById('credit-card-data');
-                if (paymentMethod === 'cartao') {
-                    creditCardData.classList.remove('d-none');
-                } else {
-                    creditCardData.classList.add('d-none');
-                }
-            }
-        
-            // Evento para o botão de "Finalizar Compra"
-            document.getElementById('finalizar-compra').addEventListener('click', function () {
-                if (selectedPaymentMethod) {
-                    console.log("Clicou");
-                    sendCartToBackend(selectedPaymentMethod);
-                } else {
-                    alert('Por favor, selecione um método de pagamento!');
-                }
-            });
-        
-            // Função para enviar o carrinho para o backend
-            function sendCartToBackend(paymentMethod) {
-                console.log("Teste de click botão");
-                let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
+        let cardName = document.getElementById("name_credit_card")
+        let cardNumber = document.getElementById("number_credit_card")
+        let cardSecurityCode = document.getElementById("security_code_credit_card")
+        let cardValidityMonth = document.getElementById("validity_month_credit_card")
+        let cardValidityYear = document.getElementById("validity_year_credit_card")
 
-                const API_URL = "localhost:8080/api/v1/orders/" 
-                // "http://127.0.0.1:8080/api/v1/orders/"
-        
-                if (loadSaveCart && loadSaveCart.length > 0) {
-                    let cartData = loadSaveCart.map(item => ({
-                        title: item.title,
-                        quantity: item.quantity,
-                        valueUnitBook: item.valueUnitBook,
-                        totalValue: item.totalValue
-                    }));
-        
-                    // Determina a URL com base no método de pagamento
-                    let url = '';
-                    switch (paymentMethod) {
-                        case 'pix':
-                            url = document.getElementById('pix-url').getAttribute('data-url');
-                            break;
-                        case 'boleto':
-                            url = document.getElementById('boleto-url').getAttribute('data-url');
-                            break;
-                        case 'cartao':
-                            url = document.getElementById('cartao-url').getAttribute('data-url');
-                            break;
-                        default:
-                            console.error("Método de pagamento inválido");
-                            return;
-                    }
-        
-                    // Enviar os dados via Fetch API para o servidor
-                    fetch(API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken')  // Se você estiver usando CSRF tokens
-                        },
-                        body: JSON.stringify({ 
-                            order_number: 123,
-                            user_id: 1,
-                            user_name: "Rodrigo Costa",
-                            first_name: "Rodrigo",
-                            last_name: "Costa",   
-                            cart: cartData,                         
-                            total_price: "59.90",
-                            state: "SP",
-                            city: "São Paulo",
-                            district: "Centro",
-                            street: "Rua Teste",
-                            house_number: 100,
-                            cep: 12345678,
-                            payment_method: "Cartão",
-                            card_name: "Rodrigo Costa",
-                            card_number: 1234567812345678,
-                            card_security_code: 123,
-                            card_validity_month: 12,
-                            card_validity_year: 2025,
-                            //created_at: "2025-03-13T17:16:13.070005-03:00",                            
-                         })
 
-                        //book_title: "Django para Iniciantes",
-                        //book_price: 59.9,
-                        //book_quantity: 1,
-                    })
-                    .then(response => {
-                        console.log(response); 
-                        response.json()
-                    })
-                    .then(data => {
-                        console.log('Dados enviados com sucesso:', data);
-                        // Redireciona para a URL do pagamento após o envio do carrinho
-                        window.location.href = url;
-                    })
-                    .catch(error => {
-                        console.error('Erro ao enviar os dados:', error);
-                    });
+
+        
+
+
+
+        {% comment %} document.addEventListener('DOMContentLoaded', function () {          
+        
+        }); {% endcomment %}
+
+         // Variável para armazenar o método de pagamento selecionado
+         let selectedPaymentMethod = '';
+        
+         // Armazenar o método de pagamento quando o usuário clicar em um método de pagamento
+         document.getElementById('pix').addEventListener('click', function () {
+             selectedPaymentMethod = 'pix';
+             updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+         });
+     
+         document.getElementById('boleto').addEventListener('click', function () {
+             selectedPaymentMethod = 'boleto';
+             updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+         });
+     
+         document.getElementById('cartao').addEventListener('click', function () {
+             selectedPaymentMethod = 'cartao';
+             updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+         });
+     
+         // Função para atualizar o formulário com base na seleção de pagamento
+         function updatePaymentForm(paymentMethod) {
+             // Esconde ou mostra o formulário de cartão de crédito
+             const creditCardData = document.getElementById('credit-card-data');
+             if (paymentMethod === 'cartao') {
+                 creditCardData.classList.remove('d-none');
+             } else {
+                 creditCardData.classList.add('d-none');
+             }
+         }
+     
+         // Evento para o botão de "Finalizar Compra"
+         document.getElementById('sendCartToBackend').addEventListener('click', function () {
+             if (selectedPaymentMethod) {
+                 console.log("Clicou");
+                 sendCartToBackend(selectedPaymentMethod);
+             } else {
+                // alert('Por favor, selecione um método de pagamento!');
+                console.log('Por favor, selecione um método de pagamento!');
+             }
+         });
+
+
+
+        // Função para enviar o carrinho para o backend
+        function sendCartToBackend(paymentMethod) {
+            console.log("Teste de click botão");
+            let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
+
+            let cartData = loadSaveCart.map(item => ({
+                title: item.title,
+                quantity: item.quantity,
+                valueUnitBook: item.valueUnitBook,
+                totalValue: item.totalValue
+
+            }));
+
+
+
+            
+
+            const API_URL = "http://localhost:8080/api/v1/orders/" 
+            // "http://127.0.0.1:8080/api/v1/orders/"
+    
+            if (loadSaveCart && loadSaveCart.length > 0) {
+                let cartData = loadSaveCart.map(item => ({
+                    title: item.title,
+                    quantity: item.quantity,
+                    valueUnitBook: item.valueUnitBook,
+                    totalValue: item.totalValue
+
+                }));
+    
+                // Determina a URL com base no método de pagamento
+                let url = '';
+                switch (paymentMethod) {
+                    case 'pix':
+                        url = document.getElementById('pix-url').getAttribute('data-url');
+                        break;
+                    case 'boleto':
+                        url = document.getElementById('boleto-url').getAttribute('data-url');
+                        break;
+                    case 'cartao':
+                        url = document.getElementById('cartao-url').getAttribute('data-url');
+                        break;
+                    default:
+                        console.error("Método de pagamento inválido");
+                        return;
                 }
+
+
+                
+                
+    
+                // Enviar os dados via Fetch API para o servidor
+                fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')  // Se você estiver usando CSRF tokens
+                    },
+                    body: JSON.stringify({ 
+                        // order_number: 123,
+                        user_id: userId.value,
+                        user_name: userName.value,
+                        first_name: firstName.value,
+                        last_name: lastName.value,   
+                        cart: cartData,                         
+                        //total_price: "59.90",
+                        state: state.value,
+                        city: city.value,
+                        district: district.value,
+                        street: street.value,
+                        house_number: houseNumber.value,
+                        cep: cep.value,
+                        payment_method: paymentMethod,
+                        card_name: cardName.value,
+                        card_number: cardNumber.value,
+                        card_security_code: cardSecurityCode.value,
+                        card_validity_month: cardValidityMonth.value,
+                        card_validity_year: cardValidityYear.value,
+                        //created_at: "2025-03-13T17:16:13.070005-03:00",                            
+
+                        //user_id: 1,
+                        //user_name: "Rodrigo Costa",
+                        //first_name: "Rodrigo",
+                        //last_name: "Costa",   
+                        //cart: cartData,                         
+                        //total_price: "59.90",
+                        //state: "SP",
+                        //city: "São Paulo",
+                        //district: "Centro",
+                        //street: "Rua Teste",
+                        //house_number: 100,
+                        //cep: 12345678,
+                        //payment_method: "Cartão",
+                        //card_name: "Rodrigo Costa",
+                        //card_number: 1234567812345678,
+                        //card_security_code: 123,
+                        //card_validity_month: 12,
+                        //card_validity_year: 2025,
+                     })
+
+                    //book_title: "Django para Iniciantes",
+                    //book_price: 59.9,
+                    //book_quantity: 1,
+                })
+                .then(response => {
+                    console.log(response); 
+                    return response.json()
+                })
+                .then(data => {
+                    console.log('Dados enviados com sucesso:', data);
+                    // Redireciona para a URL do pagamento após o envio do carrinho
+                    // window.location.href = url;
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar os dados:', error);
+                });
             }
-        });
+        }
+
+
         
         // Função para obter o CSRF token (se estiver usando Django ou algo similar)
         function getCookie(name) {
@@ -342,14 +398,57 @@
         ////////////////////////////////////////////////////////////////////////////////////////////
 
 
+    </script>
 
 
 
 
 
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////  ENVIAR DADOS PARA O BACKEND COM JQUERY  //////////////////////////
+
+
+
+    {% comment %} <script>
+        let divCreditCard = document.getElementById("credit-card-data")
+        function openCloseCreditCard(){
+            if(divCreditCard.classList.contains("d-none")){
+                divCreditCard.classList.remove("d-none")
+                divCreditCard.classList.add("d-flex")
+            }else {
+                divCreditCard.classList.remove("d-flex")
+                divCreditCard.classList.add("d-none")
+            }            
+        }
+        function closeCreditCard(){
+            divCreditCard.classList.remove("d-flex")
+            divCreditCard.classList.add("d-none")
+        }
+    </script>  {% endcomment %}
+
+    
+</div>
+{% endblock %}
+
+
+
+
+
+    {% comment %} <label>Validade (Mês/Ano)</label>
+    <div class="d-flex form-control">
+        <div><input class="rounded form-control" name="month-credit-card" type="number" placeholder="MMM"></div>
+        <div><input class="rounded form-control" name="year-credit-card" type="number" placeholder="AA"></div></div>
+    </div>  {% endcomment %}
+
+
+
+
+
+
+
+
+
+    {% comment %} ////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////  ENVIAR DADOS PARA O BACKEND COM JQUERY  ////////////////////////// {% endcomment %}
 
         {% comment %} $(document).ready(function () {
             // Variável para armazenar o método de pagamento selecionado
@@ -458,8 +557,8 @@
             return cookieValue;
         } {% endcomment %}
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////
+        {% comment %} ////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////// {% endcomment %}
 
 
 
@@ -487,36 +586,3 @@
                     break;
             }
         } {% endcomment %}
-
-    </script>
-
-    {% comment %} <script>
-        let divCreditCard = document.getElementById("credit-card-data")
-        function openCloseCreditCard(){
-            if(divCreditCard.classList.contains("d-none")){
-                divCreditCard.classList.remove("d-none")
-                divCreditCard.classList.add("d-flex")
-            }else {
-                divCreditCard.classList.remove("d-flex")
-                divCreditCard.classList.add("d-none")
-            }            
-        }
-        function closeCreditCard(){
-            divCreditCard.classList.remove("d-flex")
-            divCreditCard.classList.add("d-none")
-        }
-    </script> {% endcomment %}
-
-    
-</div>
-{% endblock %}
-
-
-
-
-
-    {% comment %} <label>Validade (Mês/Ano)</label>
-    <div class="d-flex form-control">
-        <div><input class="rounded form-control" name="month-credit-card" type="number" placeholder="MMM"></div>
-        <div><input class="rounded form-control" name="year-credit-card" type="number" placeholder="AA"></div></div>
-    </div>  {% endcomment %}
