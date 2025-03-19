@@ -161,32 +161,7 @@
     </form>
     <br>
 
-    {% comment %} TESTE {% endcomment %}
-    {% comment %} <script>
-        let userId = document.getElementById("user_id")
-        let userName = document.getElementById("username")
-        let firstName = document.getElementById("first_name")
-        let lastName = document.getElementById("last_name")
-        let email = document.getElementById("email")
-        let state = document.getElementById("state")
-        let city = document.getElementById("city")
-        let district = document.getElementById("district")
-        let street = document.getElementById("street")
-        let houseNumber = document.getElementById("house_number")
-        let cep = document.getElementById("cep")
-
-        console.log(userId.value)
-        console.log(userName.value)
-        console.log(firstName.value)
-        console.log(lastName.value)
-        console.log(email.value)
-        console.log(state.value)
-        console.log(city.value)
-        console.log(district.value)
-        console.log(street.value)
-        console.log(houseNumber.value)
-        console.log(cep.value)
-    </script> {% endcomment %}
+    
 
     <script>
 
@@ -263,13 +238,26 @@
          });
 
 
+        
+
+
 
         // Função para enviar o carrinho para o backend
         function sendCartToBackend(paymentMethod) {
             console.log("Teste de click botão");
             let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
 
-            let cartData = loadSaveCart.map(item => ({
+            function numberRandomOrder(min,max){
+                return Math.floor(Math.random() * (max - min + 1) + min)
+            }
+    
+            let numberRandom = numberRandomOrder(100, 100000)
+
+            ///////////////////////////////////////////////////////////////////////////
+            ///////////   TESTE SALVA DADOS NO LS   ///////////////////////////////////
+
+            // Verifica no localstorage os dados que estão sendo enviados para a api
+            let cartDataTeste = loadSaveCart.map(item => ({
                 title: item.title,
                 quantity: item.quantity,
                 valueUnitBook: item.valueUnitBook,
@@ -277,8 +265,31 @@
 
             }));
 
+            let testeDadosCompra = {
+                order_number: numberRandom,
+                user_id: userId.value,
+                user_name: userName.value,
+                first_name: firstName.value,
+                last_name: lastName.value,   
+                cart: cartDataTeste,                         
+                state: state.value,
+                city: city.value,
+                district: district.value,
+                street: street.value,
+                house_number: parseInt(houseNumber.value),
+                cep: parseInt(cep.value),
+                payment_method: paymentMethod,
+                card_name: cardName.value ? cardName.value : null,
+                card_number: cardNumber.value ? cardNumber.value : null,
+                card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null,
+                card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null,
+                card_validity_year: cardValidityYear.value ? cardValidityYear.value : null,
+            }
 
+            // localStorage.setItem("TesteDados", JSON.stringify(testeDadosCompra))
 
+            ///////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////
             
 
             const API_URL = "http://localhost:8080/api/v1/orders/" 
@@ -322,54 +333,30 @@
                         'X-CSRFToken': getCookie('csrftoken')  // Se você estiver usando CSRF tokens
                     },
                     body: JSON.stringify({ 
-                        // order_number: 123,
+                        order_number: numberRandom,
                         user_id: userId.value,
                         user_name: userName.value,
                         first_name: firstName.value,
                         last_name: lastName.value,   
-                        cart: cartData,                         
-                        //total_price: "59.90",
+                        cart: cartData,         
                         state: state.value,
                         city: city.value,
                         district: district.value,
                         street: street.value,
-                        house_number: houseNumber.value,
-                        cep: cep.value,
+                        house_number: parseInt(houseNumber.value),
+                        cep: parseInt(cep.value),
                         payment_method: paymentMethod,
-                        card_name: cardName.value,
-                        card_number: cardNumber.value,
-                        card_security_code: cardSecurityCode.value,
-                        card_validity_month: cardValidityMonth.value,
-                        card_validity_year: cardValidityYear.value,
-                        //created_at: "2025-03-13T17:16:13.070005-03:00",                            
-
-                        //user_id: 1,
-                        //user_name: "Rodrigo Costa",
-                        //first_name: "Rodrigo",
-                        //last_name: "Costa",   
-                        //cart: cartData,                         
-                        //total_price: "59.90",
-                        //state: "SP",
-                        //city: "São Paulo",
-                        //district: "Centro",
-                        //street: "Rua Teste",
-                        //house_number: 100,
-                        //cep: 12345678,
-                        //payment_method: "Cartão",
-                        //card_name: "Rodrigo Costa",
-                        //card_number: 1234567812345678,
-                        //card_security_code: 123,
-                        //card_validity_month: 12,
-                        //card_validity_year: 2025,
+                        card_name: cardName.value ? cardName.value : null,
+                        card_number: cardNumber.value ? cardNumber.value : null,
+                        card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null,
+                        card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null,
+                        card_validity_year: cardValidityYear.value ? cardValidityYear.value : null,                        
                      })
 
-                    //book_title: "Django para Iniciantes",
-                    //book_price: 59.9,
-                    //book_quantity: 1,
                 })
                 .then(response => {
                     console.log(response); 
-                    return response.json()
+                    //return response.json()
                 })
                 .then(data => {
                     console.log('Dados enviados com sucesso:', data);
@@ -428,6 +415,73 @@
     
 </div>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} //user_id: 1,
+//user_name: "Rodrigo Costa",
+//first_name: "Rodrigo",
+//last_name: "Costa",   
+//cart: cartData,     
+//book_title: "Django para Iniciantes",
+//book_price: 59.9,
+//book_quantity: 1,               
+//total_price: "59.90",                    
+//total_price: "59.90",
+//state: "SP",
+//city: "São Paulo",
+//district: "Centro",
+//street: "Rua Teste",
+//house_number: 100,
+//cep: 12345678,
+//payment_method: "Cartão",
+//card_name: "Rodrigo Costa",
+//card_number: 1234567812345678,
+//card_security_code: 123,
+//card_validity_month: 12,
+//card_validity_year: 2025, {% endcomment %}
+
+
+
+
+{% comment %} TESTE {% endcomment %}
+    {% comment %} <script>
+        let userId = document.getElementById("user_id")
+        let userName = document.getElementById("username")
+        let firstName = document.getElementById("first_name")
+        let lastName = document.getElementById("last_name")
+        let email = document.getElementById("email")
+        let state = document.getElementById("state")
+        let city = document.getElementById("city")
+        let district = document.getElementById("district")
+        let street = document.getElementById("street")
+        let houseNumber = document.getElementById("house_number")
+        let cep = document.getElementById("cep")
+
+        console.log(userId.value)
+        console.log(userName.value)
+        console.log(firstName.value)
+        console.log(lastName.value)
+        console.log(email.value)
+        console.log(state.value)
+        console.log(city.value)
+        console.log(district.value)
+        console.log(street.value)
+        console.log(houseNumber.value)
+        console.log(cep.value)
+    </script> {% endcomment %}
+
+
+
 
 
 
