@@ -64,6 +64,9 @@
                 <input type="hidden" id="street" value="{{user_logged.user.userprofile.street}}">
                 <input type="hidden" id="house_number" value="{{user_logged.user.userprofile.house_number}}">                        
                 <input type="hidden" id="cep" value="{{user_logged.user.userprofile.cep}}">  
+
+                {% comment %} Pega o número do pedido criado pela função numberRandomOrder para passar para a view {% endcomment %}
+                <input type="hidden" id="hiddenOrderNumber" name="hidden_order_number">
                 
                 <hr style="width:98%;">
                 <p><label class="fw-bold"> <i class="fa-solid fa-truck"></i> Prazo de Entrega:</label> {{prazo_entrega}} </p>   
@@ -126,10 +129,14 @@
                         </div>
                     </div>
 
+                    {% comment %} TESTAR PEGAR O VALOR DESSE INPUT NO DJANGO (NAO ESTA PEGANDO) {% endcomment %}
+                    {% comment %} <label name="order-number"></label>
+                    <input type="hidden" id="hiddenOrderNumber"> {% endcomment %}
+
                     <!-- Colocando as URLs dinamicamente através dos atributos data-* -->
-                    <div id="pix-url" data-url="{% url 'pix_payment' %}" style="display:none;"></div>
+                    {% comment %} <div id="pix-url" data-url="{% url 'pix_payment' %}" style="display:none;"></div>
                     <div id="boleto-url" data-url="{% url 'boleto_payment' %}" style="display:none;"></div>
-                    <div id="cartao-url" data-url="{% url 'card_payment' %}" style="display:none;"></div>
+                    <div id="cartao-url" data-url="{% url 'card_payment' %}" style="display:none;"></div> {% endcomment %}
                     
                 </div>  
             </div>
@@ -238,7 +245,15 @@
          });
 
 
-        
+        // Essa função cria um numero aleatorio para colocar no campo do numero do pedido ( order_number )
+        function numberRandomOrder(min,max){
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        let numberRandom = numberRandomOrder(100, 100000)
+        let inputHiddenOrderNumber = document.getElementById("hiddenOrderNumber")
+        inputHiddenOrderNumber.value = numberRandom
+        localStorage.setItem("NumberOrder", JSON.stringify(numberRandom)) // Salva o numero da ordem para poder consultar na api depois
 
 
 
@@ -247,16 +262,12 @@
             console.log("Teste de click botão");
             let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
 
-            function numberRandomOrder(min,max){
-                return Math.floor(Math.random() * (max - min + 1) + min)
-            }
-    
-            let numberRandom = numberRandomOrder(100, 100000)
+            
 
             ///////////////////////////////////////////////////////////////////////////
             ///////////   TESTE SALVA DADOS NO LS   ///////////////////////////////////
 
-            // Verifica no localstorage os dados que estão sendo enviados para a api
+            // Serve somente para verificar no localstorage os dados que estão sendo enviados para a api
             let cartDataTeste = loadSaveCart.map(item => ({
                 title: item.title,
                 quantity: item.quantity,
@@ -302,28 +313,8 @@
                     valueUnitBook: item.valueUnitBook,
                     totalValue: item.totalValue
 
-                }));
-    
-                // Determina a URL com base no método de pagamento
-                let url = '';
-                switch (paymentMethod) {
-                    case 'pix':
-                        url = document.getElementById('pix-url').getAttribute('data-url');
-                        break;
-                    case 'boleto':
-                        url = document.getElementById('boleto-url').getAttribute('data-url');
-                        break;
-                    case 'cartao':
-                        url = document.getElementById('cartao-url').getAttribute('data-url');
-                        break;
-                    default:
-                        console.error("Método de pagamento inválido");
-                        return;
-                }
+                }));          
 
-
-                
-                
     
                 // Enviar os dados via Fetch API para o servidor
                 fetch(API_URL, {
@@ -346,11 +337,11 @@
                         house_number: parseInt(houseNumber.value),
                         cep: parseInt(cep.value),
                         payment_method: paymentMethod,
-                        card_name: cardName.value ? cardName.value : null,
-                        card_number: cardNumber.value ? cardNumber.value : null,
-                        card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null,
-                        card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null,
-                        card_validity_year: cardValidityYear.value ? cardValidityYear.value : null,                        
+                        card_name: cardName.value ? cardName.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
+                        card_number: cardNumber.value ? cardNumber.value : null,// Se estiver vazio precisa passar null para a api receber a requisição sem erro
+                        card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
+                        card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
+                        card_validity_year: cardValidityYear.value ? cardValidityYear.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro                
                      })
 
                 })
@@ -387,32 +378,6 @@
 
     </script>
 
-
-
-
-
-
-
-
-
-    {% comment %} <script>
-        let divCreditCard = document.getElementById("credit-card-data")
-        function openCloseCreditCard(){
-            if(divCreditCard.classList.contains("d-none")){
-                divCreditCard.classList.remove("d-none")
-                divCreditCard.classList.add("d-flex")
-            }else {
-                divCreditCard.classList.remove("d-flex")
-                divCreditCard.classList.add("d-none")
-            }            
-        }
-        function closeCreditCard(){
-            divCreditCard.classList.remove("d-flex")
-            divCreditCard.classList.add("d-none")
-        }
-    </script>  {% endcomment %}
-
-    
 </div>
 {% endblock %}
 
@@ -421,6 +386,35 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} // Determina a URL com base no método de pagamento
+                let url = '';
+                switch (paymentMethod) {
+                    case 'pix':
+                        url = document.getElementById('pix-url').getAttribute('data-url');
+                        break;
+                    case 'boleto':
+                        url = document.getElementById('boleto-url').getAttribute('data-url');
+                        break;
+                    case 'cartao':
+                        url = document.getElementById('cartao-url').getAttribute('data-url');
+                        break;
+                    default:
+                        console.error("Método de pagamento inválido");
+                        return;
+                }     {% endcomment %}
 
 
 
@@ -449,6 +443,36 @@
 //card_security_code: 123,
 //card_validity_month: 12,
 //card_validity_year: 2025, {% endcomment %}
+
+
+
+
+
+
+
+
+
+{% comment %} <script>
+        let divCreditCard = document.getElementById("credit-card-data")
+        function openCloseCreditCard(){
+            if(divCreditCard.classList.contains("d-none")){
+                divCreditCard.classList.remove("d-none")
+                divCreditCard.classList.add("d-flex")
+            }else {
+                divCreditCard.classList.remove("d-flex")
+                divCreditCard.classList.add("d-none")
+            }            
+        }
+        function closeCreditCard(){
+            divCreditCard.classList.remove("d-flex")
+            divCreditCard.classList.add("d-none")
+        }
+    </script>  {% endcomment %}
+
+
+
+
+
 
 
 

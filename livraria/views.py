@@ -16,6 +16,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
 
 from django.urls import reverse
+import requests
 # from taggit.models import Tag
 
 
@@ -648,61 +649,52 @@ def page_checkout(request):
     return render(request,'checkout.html', {'checkoutForm': checkoutForm,'prazo_entrega':prazo_entrega, 'checkout_url': checkout_url, 'user_logged': user_logged})
 
 def pix_payment(request):
-    print("OK")
     return render(request,"pix_payment")
 def boleto_payment(request):
     return render(request,"boleto_payment")
 def card_payment(request):
     return render(request,"card_payment")
 
-# Essa função redireciona o usuario que esta na pagina de checlout para a pagina de meio de pagamento 
+# Essa função redireciona o usuario que esta na pagina de checkout para a pagina de meio de pagamento 
 def finish_purchase(request):
     user_logged = get_object_or_404(UserProfile, user=request.user)  # Usuário logado
     checkoutForm = CheckoutForm(instance=user_logged)
     
-    payment_method = request.POST.get("payment")
-    total_value = request.POST.get("total-value")
-    # total_value = request.POST.get("total_value")
+    payment_method = request.POST.get("payment") # valor pego pelo name da tag (name="payment")
+    total_value = request.POST.get("total-value") # valor pego pelo name da tag (name="total-value")
+    order_number = request.POST.get("hidden_order_number") # valor pego pelo name da tag (name="hidden_order_number")
+    
     
     if not payment_method:
         messages.error(request, "Selecione um meio de pagamento.")
         return redirect('page_checkout')
     
-    if request.method == 'POST':
-        # payment_method = request.POST.getlist("payment")[0]
-        # payment_method = request.POST.get("payment")
-        # payment_method = cleaned_post_data.get("payment")         
+    
+    if request.method == 'POST':   
         print("TESTE",payment_method)
         print("TESTE VALOR TOTAL",total_value)
-        print("TESTE request.POST:", request.POST)
+        print("TESTE request.POST:", request.POST) # Verifica o que esta sendo enviado na requisição  
         
+        if order_number:
+            try:
+                response = requests.get(f'http://localhost:8080/api/v1/order/total-price/{order_number}/')
+                if response.status_code == 200:
+                    api_data = response.json()
+                    total_price = api_data.get('total_price')
+                else:
+                    messages.error(request,"Erro ao obter o preço total do pedido")
+                    return redirect('page_checkout')
+            except requests.exceptions.RequestException as e:
+                messages.error(request, f"Erro ao se comunicar com a API: {str(e)}")
+                return redirect('page_checkout')
+            
         
-
-        # # Ao tentar validar o formulário de checkout, o django mostrava que não esta sendo enviada uma resposta http valida
-        # if checkoutForm.is_valid():
-        #     if payment_method == "pix":            
-        #         checkoutForm.save()
-        #         return render(request,"pix_payment.html",{'checkoutForm':checkoutForm})
-        #     elif payment_method == "boleto":
-        #         checkoutForm.save()
-        #         return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm})
-        #     elif payment_method == "cartao":
-        #         checkoutForm.save()
-        #         return render(request,"card_payment.html",{'checkoutForm':checkoutForm})
-        #     else:
-        #         messages.error(request,"Selecione um meio de pagamento.")
-        #         return redirect('page_checkout')
-        
-        
-        if payment_method == "pix":            
-            # print("OK")
-            # return HttpResponse("OK")
-            # return redirect('page_checkout')
-            return render(request,"pix_payment.html",{'checkoutForm':checkoutForm, "total_value":total_value})
+        if payment_method == "pix":                        
+            return render(request,"pix_payment.html",{'checkoutForm':checkoutForm, "total_value":total_value, "order_number":order_number, "total_price":total_price,})
         elif payment_method == "boleto":
-            return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm, "total_value":total_value})
+            return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm, "total_value":total_value, "order_number":order_number, "total_price":total_price,})
         elif payment_method == "cartao":
-            return render(request,"card_payment.html",{'checkoutForm':checkoutForm,"total_value":total_value})
+            return render(request,"card_payment.html",{'checkoutForm':checkoutForm,"total_value":total_value, "order_number":order_number, "total_price":total_price,})
         else:
             messages.error(request,"Selecione um meio de pagamento.")
             return redirect('page_checkout')
@@ -734,7 +726,20 @@ def finish_purchase(request):
 
 
 
-
+        # # Ao tentar validar o formulário de checkout, o django mostrava que não esta sendo enviada uma resposta http valida
+        # if checkoutForm.is_valid():
+        #     if payment_method == "pix":            
+        #         checkoutForm.save()
+        #         return render(request,"pix_payment.html",{'checkoutForm':checkoutForm})
+        #     elif payment_method == "boleto":
+        #         checkoutForm.save()
+        #         return render(request,"boleto_payment.html",{'checkoutForm':checkoutForm})
+        #     elif payment_method == "cartao":
+        #         checkoutForm.save()
+        #         return render(request,"card_payment.html",{'checkoutForm':checkoutForm})
+        #     else:
+        #         messages.error(request,"Selecione um meio de pagamento.")
+        #         return redirect('page_checkout')
 
 
 

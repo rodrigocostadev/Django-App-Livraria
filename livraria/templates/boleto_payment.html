@@ -8,8 +8,13 @@
     <hr>
     <div class="col-md-6 offset-md-3 mx-auto ">
         <img src="{% static '/images/barcode.webp' %}" class=" mx-auto mt-5">
-        {% comment %} <p>TESTE {{ checkoutForm.total_value }}</p> {% endcomment %}
-        <p>Valor: {{ total_value }}</p>
+
+        <p>Número do Pedido: {{ order_number }}</p>
+        
+        <p>Valor: {{ total_value }}</p> {% comment %} Valor Passado por contexto na view mas que pode ser alterado no inspecionar na pagina de checkout {% endcomment %}
+
+        <p>Valor: R${{ total_price }}</p> {% comment %} Resposta da API (Preço total do Pedido) {% endcomment %}    
+        
         <p>Aguardando pagamento. Seu pedido ja está em espera.</p>
         <a href="{% url 'home' %}" class="btn btn-primary" >Voltar ao Menu Inicial</a>
     </div>
