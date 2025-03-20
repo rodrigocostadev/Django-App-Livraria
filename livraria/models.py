@@ -104,7 +104,7 @@ class Book(models.Model):
     tags = TaggableManager() # tags é o campo onde você pode adicionar múltiplas tags (como "Ficção", "Tecnologia", etc.)
     
     def __str__(self):
-        return(f'{self.title}-{self.value}')
+        return(f'{self.title} - {self.value}')
     
     
     
