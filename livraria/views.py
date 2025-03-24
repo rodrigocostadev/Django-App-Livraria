@@ -487,6 +487,43 @@ def book_delete(request,id):
     if request.user.is_authenticated:
         book = Book.objects.get(id = id)
         book.delete()
+        
+        # //////////////////////////////////////////////////////////////////////////////////////////////////////
+        # //////////////// Remove o cadastro do livro no banco de dados da API ////////////////////////
+        
+        book_title = book.title
+        
+        # get_id_bookDB_API = requests.get(f'http://localhost:8080/api/v1/books/?title={book_title}')
+        get_id_bookDB_API = requests.get(f'http://localhost:8080/api/v1/books/', json= {"title":book_title})
+        print("Teste get_id_bookDB_API: ",get_id_bookDB_API)
+        
+        if get_id_bookDB_API.status_code == 200:
+            book_data = get_id_bookDB_API.json()
+            
+            for item in book_data:
+                if item['title'] == book_title:
+                    object_API_to_delete = item
+                    
+            print("Esse é o object_API_to_delete: ", object_API_to_delete)
+            
+            id_delete = object_API_to_delete["id"]
+
+        else:
+            print("Erro ao buscar Livro: ", get_id_bookDB_API.status_code, get_id_bookDB_API.text)
+            
+            
+        
+        send_response = requests.delete(f'http://localhost:8080/api/v1/books/{id_delete}/')
+        
+        if send_response.status_code == 200:
+            print("Livro cadastrado na api com sucesso!", send_response.json())
+        else:
+            print("Erro:", send_response.status_code, send_response.text)
+            
+        # //////////////////////////////////////////////////////////////////////////////////////////////////////
+        # //////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        
         messages.success(request, "Livro excluído com sucesso!")
         return redirect('home')
     else:
@@ -561,6 +598,24 @@ def book_add(request):
                 print(book)
                 print(book.tags.all())
                 
+                # //////////////////////////////////////////////////////////////////////////////////////////////////////
+                # //////////////// Cadastro de titulo e valor do livro no banco de dados da API ////////////////////////
+                
+                data = {
+                    "title":book.title,
+                    "total_value":book.value,
+                }
+                
+                send_response = requests.post('http://localhost:8080/api/v1/books/', json=data)
+                
+                if send_response.status_code == 200:
+                    print("Livro cadastrado na api com sucesso!", send_response.json())
+                else:
+                    print("Erro:", send_response.status_code, send_response.text)
+                    
+                # //////////////////////////////////////////////////////////////////////////////////////////////////////
+                # //////////////////////////////////////////////////////////////////////////////////////////////////////
+                
                 messages.success(request, "Livro adicionado com sucesso")
                 return redirect('home') # redireciona para a home            
         # return render(request, 'add_book.html', {'form':form, 'year_choices': year_choices,})
@@ -591,6 +646,41 @@ def book_update(request,id):
         
         if form.is_valid():
             form.save()
+            
+            # //////////////////////////////////////////////////////////////////////////////////////////////////////
+            # //////////////// Atualiza o cadastro do livro no banco de dados da API ////////////////////////
+            
+            book_title = book.title
+            book_value = book.value
+            
+            get_id_bookDB_API = requests.get(f'http://localhost:8080/api/v1/books/', json= {"title":book_title}) # Busca o livro a ser atualizado na API pelo título
+            print("Teste get_id_bookDB_API: ",get_id_bookDB_API)
+            
+            if get_id_bookDB_API.status_code == 200:
+                book_data = get_id_bookDB_API.json()
+                
+                for item in book_data:
+                    if item['title'] == book_title:
+                        object_API_to_update = item
+                        
+                print("Esse é o object_API_to_update: ", object_API_to_update)
+                
+                id_update = object_API_to_update["id"]
+            else:
+                print("Erro ao buscar Livro: ", get_id_bookDB_API.status_code, get_id_bookDB_API.text)
+                
+            data = {"title":book_title, "total_value": book_value}
+            
+            send_response = requests.put(f'http://localhost:8080/api/v1/books/{id_update}/', json= data)
+            
+            if send_response.status_code == 200:
+                print("Livro cadastrado na api com sucesso!", send_response.json())
+            else:
+                print("Erro:", send_response.status_code, send_response.text)
+                
+            # //////////////////////////////////////////////////////////////////////////////////////////////////////
+            # //////////////////////////////////////////////////////////////////////////////////////////////////////
+            
             messages.success(request, "Livro atualizado com sucesso!")
             return redirect('home')
         
