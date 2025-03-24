@@ -77,7 +77,9 @@ function updateQuantBook(bookValue){
 
     // let result = bookValueValid * parseInt(fieldQuantityBook.textContent)
     result = bookValueValid * quantityBook
-    // result = bookValueValid * quantityBook
+
+    // result = (bookValueValid - (bookValueValid * 0.1)) * quantityBook   // TESTE COM 10% DE DESCONTO
+
     fieldValueBook.textContent = `R$ ${result.toFixed(2).replace('.',',')}`
     console.log("result: ",result)
 

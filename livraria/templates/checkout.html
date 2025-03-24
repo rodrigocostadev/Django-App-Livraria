@@ -148,11 +148,20 @@
             <hr style="width:98%;">
             <br>
 
-            <div id="checkout-content" style="max-height:480px;overflow:auto;">
+            <div id="checkout-content" style="max-height:420px;overflow:auto;">
                 {% comment %} LISTA DE ITENS ADICIONADOS AO CARRINHO {% endcomment %}
             </div>
             
             <div class="modal-footer">
+                <div class="d-flex justify-content-end gap-3" style="height:30px">
+                    <input id="promo_code" name="promo_code" class="form-control" type="text" placeholder="CUPOM DE DESCONTO" style="width:50%;" >
+                    <button type="button" onclick="addPromoCode()" class="btn btn-info btn-sm" >Aplicar Cupom</button>
+                </div>
+
+                {% comment %} <div> {% endcomment %}
+                <div id="used_promo_code" style="font-size:13px;width:100%;text-align:end" ></div>
+                {% comment %} </div> {% endcomment %}
+                
                 <div style="width:100%;" class=" d-flex justify-content-end align-items-center">
                     <h6 style="display:inline-block; margin-right:5px;" >Valor Total: </h6><h6 style="display:inline-block" id="totalValueCheckout">R$ 0,00</h6>
                 </div>
@@ -240,6 +249,48 @@
          });
 
 
+         let promoCode = null
+         
+         function addPromoCode(){
+
+            let totalValueCheckout = document.getElementById("totalValueCheckout")
+            let input_promo_code = document.getElementById("promo_code")
+            let used_promo_code = document.getElementById("used_promo_code")
+            console.log(totalValueCheckout.textContent)
+
+            codes = [{"GANHEI5":0.05},{"APP10":0.1},{"LIVRO15":0.15},]
+
+            for (item of codes){
+                let codeName = Object.keys(item)[0]
+                let codeValue = item[codeName]
+                // console.log(item)
+                // console.log(codeName)
+                // console.log(codeValue)
+
+                if (input_promo_code.value == codeName ){
+
+                    console.log("TESTE",codeValue)
+
+                    if(used_promo_code.textContent == ""){
+                        let valueValid = totalValueCheckout.textContent.replace("R$", "").trim()
+                        valueValid = parseFloat(valueValid.replace(",", "."))
+                        console.log("valueValid: ", valueValid)
+
+                        let newValue = valueValid - (valueValid * codeValue)
+                        totalValueCheckout.textContent = "R$" + newValue.toFixed(2).replace(".", ",")
+                        used_promo_code.innerHTML = `Cupom <strong>${codeName}</strong> Adicionado`
+                        input_promo_code.value = ""
+
+                        promoCode = codeName
+                    }                   
+                    
+                }
+
+            }           
+            
+         }
+
+
         // Essa função cria um numero aleatorio para colocar no campo do numero do pedido ( order_number )
         function numberRandomOrder(min,max){
             return Math.floor(Math.random() * (max - min + 1) + min)
@@ -285,14 +336,19 @@
                 house_number: parseInt(houseNumber.value),
                 cep: parseInt(cep.value),
                 payment_method: paymentMethod,
+                payment:"wait",
                 card_name: cardName.value ? cardName.value : null,
                 card_number: cardNumber.value ? cardNumber.value : null,
                 card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null,
                 card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null,
                 card_validity_year: cardValidityYear.value ? cardValidityYear.value : null,
+                promo_code: promoCode ? promoCode : null,
             }
 
-            // localStorage.setItem("TesteDados", JSON.stringify(testeDadosCompra))
+            let promo_code2 = promoCode.value
+            console.log("promo_code2: ",promo_code2)
+
+            localStorage.setItem("TesteDados", JSON.stringify(testeDadosCompra))
 
             ///////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////
@@ -332,11 +388,13 @@
                         house_number: parseInt(houseNumber.value),
                         cep: parseInt(cep.value),
                         payment_method: paymentMethod,
+                        payment:"wait",
                         card_name: cardName.value ? cardName.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
                         card_number: cardNumber.value ? cardNumber.value : null,// Se estiver vazio precisa passar null para a api receber a requisição sem erro
                         card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
                         card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
                         card_validity_year: cardValidityYear.value ? cardValidityYear.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro                
+                        promo_code: promoCode ? promoCode : null,
                      })
 
                 })
