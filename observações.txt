@@ -3,7 +3,7 @@ User: rodrigo.costa
 Password: senhafacil
 
 
-(django taggit foi instalado com o comando):
+# (django taggit foi instalado com o comando):
 
 pip install django-taggit
 
@@ -11,7 +11,9 @@ ou
 
 python -m pip install django-taggit
 
+# Cupons de desconto: "GANHEI5" 5% de Desc,"APP10" 10% de Desc,"LIVRO15" 15% de Desc
+# Ao querer mudar um cupom de desconto, mudar no front end (projeto app livraria) na pagina de checkout na variavel codes, e na API (api django app livraria) no arquivo views na variavel codes
 
 
 
-Rodar a api de pagamento na porta 8080 com o comando =    python manage.py runserver 8080
+# Rodar a api de pagamento na porta 8080 com o comando =    python manage.py runserver 8080

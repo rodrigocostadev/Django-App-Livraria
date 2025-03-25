@@ -90,16 +90,6 @@
                     <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
                         <input id="cartao"  type="radio" name="payment" value="cartao" style="cursor:pointer;"><i class="fa-solid fa-credit-card"></i> Cartão de Crédito
                     </label> 
-
-                    {% comment %} <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
-                        <input id="pix" onclick="sendCartToBackend('pix')" type="radio" name="payment" value="pix" style="cursor:pointer;"><i class="fa-brands fa-pix"></i>Pix
-                    </label>
-                    <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
-                        <input id="boleto" onclick="sendCartToBackend('boleto')" type="radio" name="payment" value="boleto" style="cursor:pointer;"><i class="fa-solid fa-barcode"></i> Boleto
-                    </label>
-                    <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
-                        <input id="cartao" onclick="sendCartToBackend('cartao')" type="radio" name="payment" value="cartao" style="cursor:pointer;"><i class="fa-solid fa-credit-card"></i> Cartão de Crédito
-                    </label> {% endcomment %}
                     
                     <div id="credit-card-data" class="d-none flex-column" >
                         <label >Nome do Titular do Cartão</label>
@@ -128,15 +118,6 @@
                             </div>                            
                         </div>
                     </div>
-
-                    {% comment %} TESTAR PEGAR O VALOR DESSE INPUT NO DJANGO (NAO ESTA PEGANDO) {% endcomment %}
-                    {% comment %} <label name="order-number"></label>
-                    <input type="hidden" id="hiddenOrderNumber"> {% endcomment %}
-
-                    <!-- Colocando as URLs dinamicamente através dos atributos data-* -->
-                    {% comment %} <div id="pix-url" data-url="{% url 'pix_payment' %}" style="display:none;"></div>
-                    <div id="boleto-url" data-url="{% url 'boleto_payment' %}" style="display:none;"></div>
-                    <div id="cartao-url" data-url="{% url 'card_payment' %}" style="display:none;"></div> {% endcomment %}
                     
                 </div>  
             </div>
@@ -202,11 +183,7 @@
         let cardValidityMonth = document.getElementById("validity_month_credit_card")
         let cardValidityYear = document.getElementById("validity_year_credit_card")
 
-
-        {% comment %} document.addEventListener('DOMContentLoaded', function () {          
         
-        }); {% endcomment %}
-
          // Variável para armazenar o método de pagamento selecionado
          let selectedPaymentMethod = '';
         
@@ -250,6 +227,7 @@
 
 
          let promoCode = null
+         let promoValue = null
          
          function addPromoCode(){
 
@@ -282,6 +260,7 @@
                         input_promo_code.value = ""
 
                         promoCode = codeName
+                        promoValue = codeValue
                     }                   
                     
                 }
@@ -308,52 +287,6 @@
             console.log("Teste de click botão");
             let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
 
-            
-
-            ///////////////////////////////////////////////////////////////////////////
-            ///////////   TESTE SALVA DADOS NO LS   ///////////////////////////////////
-
-            // Serve somente para verificar no localstorage os dados que estão sendo enviados para a api
-            let cartDataTeste = loadSaveCart.map(item => ({
-                title: item.title,
-                quantity: item.quantity,
-                valueUnitBook: item.valueUnitBook,
-                totalValue: item.totalValue
-
-            }));
-
-            let testeDadosCompra = {
-                order_number: numberRandom,
-                user_id: userId.value,
-                user_name: userName.value,
-                first_name: firstName.value,
-                last_name: lastName.value,   
-                cart: cartDataTeste,                         
-                state: state.value,
-                city: city.value,
-                district: district.value,
-                street: street.value,
-                house_number: parseInt(houseNumber.value),
-                cep: parseInt(cep.value),
-                payment_method: paymentMethod,
-                payment:"wait",
-                card_name: cardName.value ? cardName.value : null,
-                card_number: cardNumber.value ? cardNumber.value : null,
-                card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null,
-                card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null,
-                card_validity_year: cardValidityYear.value ? cardValidityYear.value : null,
-                promo_code: promoCode ? promoCode : null,
-            }
-
-            let promo_code2 = promoCode.value
-            console.log("promo_code2: ",promo_code2)
-
-            localStorage.setItem("TesteDados", JSON.stringify(testeDadosCompra))
-
-            ///////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////
-            
-
             const API_URL = "http://localhost:8080/api/v1/orders/" 
             // "http://127.0.0.1:8080/api/v1/orders/"
     
@@ -362,7 +295,8 @@
                     title: item.title,
                     quantity: item.quantity,
                     valueUnitBook: item.valueUnitBook,
-                    totalValue: item.totalValue
+                    // totalValue: item.totalValue
+                    totalValue: promoValue? item.totalValue - (item.totalValue * promoValue) : item.totalValue
 
                 }));          
 
@@ -388,7 +322,7 @@
                         house_number: parseInt(houseNumber.value),
                         cep: parseInt(cep.value),
                         payment_method: paymentMethod,
-                        payment:"wait",
+                        payment: "wait",
                         card_name: cardName.value ? cardName.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
                         card_number: cardNumber.value ? cardNumber.value : null,// Se estiver vazio precisa passar null para a api receber a requisição sem erro
                         card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
@@ -445,6 +379,56 @@
 
 
 
+
+
+
+
+
+
+
+
+{% comment %} ///////////////////////////////////////////////////////////////////////////
+            ///////////   TESTE SALVA DADOS NO LS   ///////////////////////////////////
+
+            // Serve somente para verificar no localstorage os dados que estão sendo enviados para a api
+            let cartDataTeste = loadSaveCart.map(item => ({
+                title: item.title,
+                quantity: item.quantity,
+                valueUnitBook: item.valueUnitBook,
+                totalValue: item.totalValue
+
+            }));
+
+            let testeDadosCompra = {
+                order_number: numberRandom,
+                user_id: userId.value,
+                user_name: userName.value,
+                first_name: firstName.value,
+                last_name: lastName.value,   
+                cart: cartDataTeste,                         
+                state: state.value,
+                city: city.value,
+                district: district.value,
+                street: street.value,
+                house_number: parseInt(houseNumber.value),
+                cep: parseInt(cep.value),
+                payment_method: paymentMethod,
+                payment: "wait",
+                card_name: cardName.value ? cardName.value : null,
+                card_number: cardNumber.value ? cardNumber.value : null,
+                card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null,
+                card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null,
+                card_validity_year: cardValidityYear.value ? cardValidityYear.value : null,
+                promo_code: promoCode ? promoCode : null,
+            }
+
+            let promo_code2 = promoCode
+            console.log("promo_code2: ",promo_code2)
+
+            localStorage.setItem("TesteDados", JSON.stringify(testeDadosCompra))
+
+            ///////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////// {% endcomment %}
 
 
 
