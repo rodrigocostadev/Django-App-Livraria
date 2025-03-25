@@ -17,3 +17,13 @@ python -m pip install django-taggit
 
 
 # Rodar a api de pagamento na porta 8080 com o comando =    python manage.py runserver 8080
+
+
+Próximas implementações:
+- Implementar Qr code generator na pagina de pix (utilizando o number order "Número do pedido")
+- Implementar Barcode generator na pagina de boleto (utilizando o number order "Número do pedido")
+- Implementar offcanvas lateral para notificações de solicitações de amizade
+- Implementar cards em vez de tabela na home para apresentar os livros
+
+- Implementar confirmação de pagamento, e alterando a propriedade do pedido "payment" que é wait por padrão
+- Implementar se pagamento for concluido, descontar o estoque do livro que foi comprado pela quantidade do mesmo livro do pedido
