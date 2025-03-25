@@ -32,7 +32,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'livraria',
+    
     'taggit',
+    'qr_code',
 ]
 
 MIDDLEWARE = [

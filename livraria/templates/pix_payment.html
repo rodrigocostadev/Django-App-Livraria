@@ -2,12 +2,18 @@
 
 {% load static %}
 
+{% load qr_code %}
+
 {% block content %}
 <div class="col-md-12 offset-md-3 mx-auto text-center "  >
     <h2 class="text-center" >Forma de Pagamento - Pix</h2>
     <hr>
     <div class="col-md-6 offset-md-3 mx-auto ">
-        <img src="{% static '/images/QR_code_for_mobile_English_Wikipedia.svg.png' %}" class="w-75 mx-auto">
+        {% comment %} <img src="{% static '/images/QR_code_for_mobile_English_Wikipedia.svg.png' %}" class="w-75 mx-auto"> {% endcomment %}
+
+        {% qr_from_text order_number  size="L" %}
+
+        <p>Aguardando pagamento. Seu pedido ja está em espera.</p>
 
         {% comment %} Teste (passa o numero da ordem diretamente pelo JS): não esta funcionando {% endcomment %}
         {% comment %} <p id="order" ></p>  {% endcomment %}
@@ -19,7 +25,7 @@
         <p>Valor: R${{ total_price }}</p> {% comment %} Resposta da API (Preço total do Pedido) {% endcomment %}        
         
         
-        <p>Aguardando pagamento. Seu pedido ja está em espera.</p>
+        
         <a href="{% url 'home' %}" class="btn btn-primary" >Voltar ao Menu Inicial</a>
 
         {% comment %} TESTE Envia o formulário ao carregar a pagina {% endcomment %}
