@@ -183,7 +183,7 @@
         let cardValidityMonth = document.getElementById("validity_month_credit_card")
         let cardValidityYear = document.getElementById("validity_year_credit_card")
 
-        
+
          // Variável para armazenar o método de pagamento selecionado
          let selectedPaymentMethod = '';
         
@@ -275,7 +275,7 @@
             return Math.floor(Math.random() * (max - min + 1) + min)
         }
 
-        let numberRandom = numberRandomOrder(100, 100000)
+        let numberRandom = numberRandomOrder(100, 100000000000)
         let inputHiddenOrderNumber = document.getElementById("hiddenOrderNumber")
         inputHiddenOrderNumber.value = numberRandom
         localStorage.setItem("NumberOrder", JSON.stringify(numberRandom)) // Salva o numero da ordem para poder consultar na api depois
