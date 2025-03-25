@@ -20,7 +20,7 @@ python -m pip install django-taggit
 
 
 Próximas implementações:
-- Implementar Qr code generator na pagina de pix (utilizando o number order "Número do pedido")
+- Implementar Qr code generator na pagina de pix (utilizando o number order "Número do pedido")  OK
 - Implementar Barcode generator na pagina de boleto (utilizando o number order "Número do pedido")
 - Implementar offcanvas lateral para notificações de solicitações de amizade
 - Implementar cards em vez de tabela na home para apresentar os livros

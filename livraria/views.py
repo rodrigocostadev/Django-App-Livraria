@@ -19,6 +19,8 @@ from django.urls import reverse
 import requests
 # from taggit.models import Tag
 
+# import zxing
+
 
 
 # Função para calcular a avaliação geral por estrelas
@@ -793,6 +795,39 @@ def finish_purchase(request):
     else:
         messages.error(request,"Selecione um meio de pagamento.")
         return redirect('page_checkout')
+    
+    
+# def generate_barcode(request, order_number):
+#     print("Esse é o barcode_value: ",order_number)
+    
+#     # zxing_generator = zxing.BarCodeGenerator()
+#     # zxing_generator = zxing.BarCode(uri="/static/barcodes")
+
+#     image_path = "/tmp/barcode.png"
+#     zxing_generator.encode(order_number, "code128", image_path)
+    
+#     with open(image_path, 'rb') as f:
+#         return HttpResponse(f.read(), content_type="image/png")
+    
+    
+    
+    
+    
+    # barcode_format = barcode.get_barcode_class('Code128')
+    # # barcode_format = Code128
+    # barcode_instance = barcode_format(barcode_value, writer=ImageWriter())
+    
+    # # barcode_instance = Code128(barcode_value, writer=ImageWriter())
+    
+    # # barcode_instance.writer.set_options({'text': ''})
+
+    # buffer = BytesIO()
+    # barcode_instance.write(buffer)
+    # buffer.seek(0)
+    
+    # print("Código de barras gerado com sucesso.")
+
+    # return HttpResponse(buffer, content_type="image/png")
             
 
 
