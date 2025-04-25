@@ -185,14 +185,15 @@
         <style>
             .div-cards{
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
                 width: 100%; 
                 margin-bottom: 50px;
             }
             
             .card{
-                width: 300px;
-                background-color: rgb(238, 235, 235);
+                width: 250px;
+                /* background-color: rgb(238, 235, 235); */
+                background-color: rgba(0, 0, 0, .03);
                 box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
             }
 
@@ -206,8 +207,8 @@
         {% if books %}
             {% for book in books %}                
                 <div class="card text-center" > <!-- d-flex flex-collumn justify-content-center -->
-                    <a class="text-decoration-none text-dark mt-3" href="{% url 'book' book.id %}" ><img src="{{ book.image.url }}"  alt="img-book" style="max-width: 280px;min-height: 280px; max-height: 300px;"></a>
-                    <h5 class="mt-3"><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.title }}</a></h5>
+                    <a class="text-decoration-none text-dark mt-3" href="{% url 'book' book.id %}" ><img src="{{ book.image.url }}"  alt="img-book" style="max-width: 220px;min-height: 220px; max-height: 250px;"></a>
+                    <h6 class="mt-3"><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.title }}</a></h6>
                     
 
                     <div class="d-flex align-items-center justify-content-center" style="height:20px;">
