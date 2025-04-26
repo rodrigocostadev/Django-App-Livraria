@@ -1,10 +1,11 @@
 from django.urls import path, include
 from django.http import HttpResponse
-from livraria.views import home, logout_user, register_user, book_detail, book_delete, book_add, book_update, book_search, profile_user_view, profile_user_edit, tag_search, page_checkout, pix_payment, boleto_payment, card_payment, finish_purchase, accept_friend_request, reject_friend_request
+from livraria.views import home, logout_user, register_user, book_detail, book_delete, book_add, book_update, book_search, profile_user_view, profile_user_edit, tag_search, page_checkout, pix_payment, boleto_payment, card_payment, finish_purchase, accept_friend_request, reject_friend_request, login_user
 # generate_barcode
 
 urlpatterns = [
     path('', home, name='home'),
+    path('login/', login_user, name='login'),
     path('logout/', logout_user, name='logout'),
     path('register/', register_user, name="register" ),
     path('book/<int:id>/', book_detail, name="book"),

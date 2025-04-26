@@ -179,8 +179,9 @@
         </div>
         </div> {% endcomment %}
 
-    {% elif user.is_authenticated  %}
-        <h1 class="text-center mb-4">Ofertas</h1>
+    {% else %} 
+    {% comment %} {% elif user.is_authenticated  %} {% endcomment %}
+        <h1 class="text-center mb-4">Aproveite as ofertas</h1>
 
         <style>
             .div-cards{
@@ -201,17 +202,41 @@
                 transform: scale(1.03);
                 transition: 300ms;
             }
+
+            
         </style>
+
+
+        
+
+
 
         <div class="div-cards gap-5" >
         {% if books %}
-            {% for book in books %}                
-                <div class="card text-center" > <!-- d-flex flex-collumn justify-content-center -->
-                    <a class="text-decoration-none text-dark mt-3" href="{% url 'book' book.id %}" ><img src="{{ book.image.url }}"  alt="img-book" style="max-width: 220px;min-height: 220px; max-height: 250px;"></a>
-                    <h6 class="mt-3"><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.title }}</a></h6>
+            {% for book in books %} 
+            
+            <script>
+
+                function overDivCartBtn(cardElement) {
+                    let divCart = cardElement.querySelector(".div_cart")
+                    divCart.style.display = "block"
+                }
+
+                function outDivCartBtn(cardElement) {
+                    let divCart = cardElement.querySelector(".div_cart")
+                    divCart.style.display = "none"
+                }
+
+            </script>
+
+                <div class="card text-center pb-3" onmouseover="overDivCartBtn(this)" onmouseout="outDivCartBtn(this)"  > <!-- d-flex flex-collumn justify-content-center -->
+                    <a class="text-decoration-none text-dark mt-4" href="{% url 'book' book.id %}" ><img src="{{ book.image.url }}"  alt="img-book" style="max-width: 220px;min-height: 220px; max-height: 250px;"></a>
+                    <div style="width: 100%; height: 50px;">
+                        <h6 class="mt-3 mx-auto" style="max-width: 200px;"><a class="text-decoration-none text-dark" href="{% url 'book' book.id %}" >{{ book.title }}</a></h6>
+                    </div>
                     
 
-                    <div class="d-flex align-items-center justify-content-center" style="height:20px;">
+                    <div class="d-flex align-items-center justify-content-center mt-2 mb-2" style="height:20px;">
                         <style>                                   
                             .wrap {
                                 width: 150px;
@@ -288,15 +313,50 @@
                         </div> 
                     </div> 
 
-                    <div class="mx-2">
-                        <a href="#myModal" onclick="renderCart(this, {{ book.id }})" class=" btnIconCarts text-decoration-none text-dark" 
+                    <div><a href="{% url 'book' book.id %}" class="text-decoration-none">R$ {{ book.value|floatformat:2 }}</a></div>
+
+
+                    <script>
+
+                        function overCartBtn(iconElement) {                            
+                            iconElement.style = "transition: 600ms; background-color: #0be6e6; width:40px; border-radius: 45px"
+                            iconElement.style.transform = "scale(1.25)";
+                        }
+
+                        function outCartBtn(iconElement) {                            
+                            iconElement.style = "transition: 600ms; background-color:none;"
+                            iconElement.style.transform = "scale(1)";
+                        }               
+    
+                    </script>
+
+                    <style>
+                        .cart-icon-animate {
+                            display: inline-block; /* Permite aplicar transform */
+                            transition: transform 300ms ease;
+                        }
+                    </style>
+
+                    <div class="div_cart mx-2"  style="position: absolute; top: 0; right:0; display:none;">
+                        <!-- <div class="bg-icon"> -->
+                            <a href="#myModal" 
+                                onclick="renderCart(this, {{ book.id }})" 
+                                 
+                                
+                                class=" btnIconCarts text-decoration-none text-dark" 
                                 data-book-title="{{ book.title }}"
                                 data-book-image="{{ book.image.url }}"
                                 data-book-value="{{ book.value }}"
                                 data-book-id="{{ book.id }}">
-                                R$ {{ book.value|floatformat:2 }}
-                                    <i class="bi bi-cart fs-3 cursor-pointer" data-bs-toggle="modal" data-bs-target="#myModal" style="cursor:pointer;"></i>
+                                    <i class="bi bi-cart fs-3 cart-icon-animate mt-2" 
+                                    onmouseover="overCartBtn(this)"   
+                                    onmouseout="outCartBtn(this)"  
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#myModal" 
+                                    style="cursor:pointer;"></i>
                                 </a>
+                        <!-- </div> -->
+                        
                     </div>
 
                 </div>      
@@ -305,43 +365,12 @@
         {% endif %}
         </div>
 
-    {% else %}
-        <div class="mt-3" >
-            {% comment %} <h2 class="text-center mb-5">Login</h2> {% endcomment %}
-            <h1 class="text-center mb-5">App Livraria</h1>
-            <hr>
-        </div>
-
-        <h3 class="text-center mt-5">Login</h3>
-        
-
-        <div class="d-flex mt-5" >
-            <form method="POST" class="mx-auto" style="width:40%;" action="{% url 'home' %}" >
-                {% csrf_token %}
-        
-                    <div class='mb-3 '>
-                        <label class="form-label" >Usuário</label>
-                        <input type="text"  name="usuario" class="form-control" required >
-                    </div>
-        
-                    <div class='mb-3'>
-                        <label class="form-label" >Senha</label>
-                        <input type="password" name="senha" class="form-control" required >
-                        
-                    </div>
-        
-                    <div class="d-flex justify-content-center mt-5">
-                        <button class="btn btn-primary btn-lg" type="submit" >Acessar</button>
-                    </div>        
-        
-                </form>
-        </div>
-
-        
-
     {% endif %}
+    
+
     {% comment %} <script src="modalCart.js"></script> {% endcomment %}
     {% comment %} <script src="{% static 'scripts/modalAddCart.js' %}"></script> {% endcomment %}
+
 {% endblock %}
 
 

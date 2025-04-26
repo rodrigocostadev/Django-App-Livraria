@@ -43,17 +43,7 @@ def calculate_media_rating(book):
     return media_rating
 
 
-
-def home(request):
-    # return HttpResponse('Teste Home')
-    books = Book.objects.all().order_by('-media_rating') # Ordena em ordem alfabetica pelo titulo
-    # book_id = Book.objects.get(id =id)
-    # media_rating = calculate_media_rating(book_id)
-    
-    # for book in books:
-    #     media_rating = calculate_media_rating(book)
-
-    # Se eu fizer uma requisição do tipo post:
+def login_user(request):
     if request.method == "POST":
         username = request.POST['usuario'] # Pega o usuario atraves do atributo name do input do html 
         password = request.POST['senha'] # Pega o usuario atraves do atributo name do input do html 
@@ -70,11 +60,47 @@ def home(request):
             return redirect('home')
         else:
             messages.error(request,"Erro na autenticação. Tente novamente!")
-            return redirect('home')
+            return redirect('login')
+    return render(request, 'login.html')
+
+
+
+def home(request):
+    # return HttpResponse('Teste Home')
+    books = Book.objects.all().order_by('-media_rating') # Ordena em ordem alfabetica pelo titulo
+    # book_id = Book.objects.get(id =id)
+    # media_rating = calculate_media_rating(book_id)
+    
+    # for book in books:
+    #     media_rating = calculate_media_rating(book)
+
+
+
+
+
+    # Se eu fizer uma requisição do tipo post:
+
+    # if request.method == "POST":
+    #     username = request.POST['usuario'] # Pega o usuario atraves do atributo name do input do html 
+    #     password = request.POST['senha'] # Pega o usuario atraves do atributo name do input do html 
+        
+    #     user = authenticate(
+    #         request,
+    #         username = username,
+    #         password = password
+    #     )
+        
+    #     if user is not None:
+    #         login(request,user)
+    #         messages.success(request, f'Olá {user.username}, Seja Bem Vindo! ')
+    #         return redirect('home')
+    #     else:
+    #         messages.error(request,"Erro na autenticação. Tente novamente!")
+    #         return redirect('home')
         
     # Se eu não realizei nenhuma requisição e ja estou autenticado, vai para o else (vai para a home)
-    else:
-        return render(request, 'home.html',{'books':books})
+    # else:
+    return render(request, 'home.html',{'books':books})
 
 
 
@@ -479,7 +505,7 @@ def book_detail(request, id):
             'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments, 
             'user_rating': user_rating if user_rating else None })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
-        messages.error(request, 'Você precisa estar logado!')
+        messages.warning(request, 'Faça Login ou Cadastre-se agora mesmo, é rapido!')
         return redirect('home')
 
 
