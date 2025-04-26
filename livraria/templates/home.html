@@ -185,8 +185,8 @@
 
         <style>
             .div-cards{
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                /* display: grid; */
+                /* grid-template-columns: repeat(4, 1fr); */
                 width: 100%; 
                 margin-bottom: 50px;
             }
@@ -211,7 +211,7 @@
 
 
 
-        <div class="div-cards gap-5" >
+        <div class="div-cards d-flex justify-content-center flex-wrap gap-5" >
         {% if books %}
             {% for book in books %} 
             
