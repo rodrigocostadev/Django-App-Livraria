@@ -2,7 +2,9 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top ">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}">Meu Livro.com</a>
+      <a class="navbar-brand d-flex gap-3" href="{% url 'home' %}">
+        <img src="{% static "images/book-logo.png" %}" class="mx-auto d-block" alt="logo" style="width: 40px;">Meu Livro.com
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -12,12 +14,14 @@
             <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
           </li>
           {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'add_book' %}">Cadastro de Livro</a>
-          </li>
-          {% comment %} <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Sair</a>
-          </li> {% endcomment %}
+            {% if user.is_staff %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_book' %}">Cadastro de Livro</a>
+              </li>
+              {% comment %} <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Sair</a>
+              </li> {% endcomment %}
+            {% endif %}
           {% else %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'register' %}">Cadastre-se</a>
