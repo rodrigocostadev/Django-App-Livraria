@@ -27,7 +27,7 @@ Próximas implementações:
 - Implementar offcanvas lateral para notificações de solicitações de amizade
 
 - ( OK ) Implementar cards em vez de tabela na home para USUARIOS para apresentar os livros (Ocultar: genero, data disp venda, ultima atualização, estoque) 
-- também ocultar para o usuario para o item da navbar CADASTRO DE LIVRO. Para ADM ainda será tabela sem nehuma informação ocultada
+- ( OK ) também ocultar para o usuario para o item da navbar CADASTRO DE LIVRO. Para ADM ainda será tabela sem nehuma informação ocultada
 
 - Implementar na pagina de adição de livro a integração com o ChatGPT, para adicionar a DESCRIÇÃO e ANO
 
