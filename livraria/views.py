@@ -66,8 +66,19 @@ def login_user(request):
 
 
 def home(request):
-    # return HttpResponse('Teste Home')
     books = Book.objects.all().order_by('-media_rating') # Ordena em ordem alfabetica pelo titulo
+
+    if request.user.is_authenticated:
+
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+
+        return render(request, 'home.html',{'books':books,'friend_requests':friend_requests,})
+    
+    else:
+
     # book_id = Book.objects.get(id =id)
     # media_rating = calculate_media_rating(book_id)
     
@@ -78,29 +89,29 @@ def home(request):
 
 
 
-    # Se eu fizer uma requisição do tipo post:
+        # Se eu fizer uma requisição do tipo post:
 
-    # if request.method == "POST":
-    #     username = request.POST['usuario'] # Pega o usuario atraves do atributo name do input do html 
-    #     password = request.POST['senha'] # Pega o usuario atraves do atributo name do input do html 
-        
-    #     user = authenticate(
-    #         request,
-    #         username = username,
-    #         password = password
-    #     )
-        
-    #     if user is not None:
-    #         login(request,user)
-    #         messages.success(request, f'Olá {user.username}, Seja Bem Vindo! ')
-    #         return redirect('home')
-    #     else:
-    #         messages.error(request,"Erro na autenticação. Tente novamente!")
-    #         return redirect('home')
-        
-    # Se eu não realizei nenhuma requisição e ja estou autenticado, vai para o else (vai para a home)
-    # else:
-    return render(request, 'home.html',{'books':books})
+        # if request.method == "POST":
+        #     username = request.POST['usuario'] # Pega o usuario atraves do atributo name do input do html 
+        #     password = request.POST['senha'] # Pega o usuario atraves do atributo name do input do html 
+            
+        #     user = authenticate(
+        #         request,
+        #         username = username,
+        #         password = password
+        #     )
+            
+        #     if user is not None:
+        #         login(request,user)
+        #         messages.success(request, f'Olá {user.username}, Seja Bem Vindo! ')
+        #         return redirect('home')
+        #     else:
+        #         messages.error(request,"Erro na autenticação. Tente novamente!")
+        #         return redirect('home')
+            
+        # Se eu não realizei nenhuma requisição e ja estou autenticado, vai para o else (vai para a home)
+        # else:
+        return render(request, 'home.html',{'books':books})
 
 
 
@@ -368,6 +379,11 @@ def profile_user_edit(request):
     if request.user.is_authenticated:        
         # user = request.user
         profile = get_object_or_404(UserProfile, user=request.user)  # Cria um objeto do modelo do usuario  
+
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
             
         if request.method == 'POST':
             profileForm = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
@@ -395,7 +411,8 @@ def profile_user_edit(request):
                 messages.error(request,'Erro ao atualizar o perfil. Tente novamente.')
         return render(request, 'profile_edit.html', {
             'profileForm': profileForm,
-            'userForm': userForm
+            "friend_requests":friend_requests,
+            'userForm': userForm,
         })
 
     else:
@@ -417,6 +434,11 @@ def book_detail(request, id):
         comments = book.comments.all().order_by('-date') # Ordena os comentário mais recentes no topo
         
         ratings = RatinStar.objects.filter(user = request.user, book = book)
+
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
         
         # if ratings:
             # user_rating = ratings.last() if ratings.exists() else None # Pega a última avaliação do usuário
@@ -502,7 +524,12 @@ def book_detail(request, id):
    
         # return render(request, 'book.html', {'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments,  })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
         return render(request, 'book.html', {
-            'book':book, 'comment_form':comment_form, 'rating_form': rating_form, 'media_rating': media_rating,'comments': comments, 
+            'book':book, 
+            'comment_form':comment_form, 
+            'rating_form': rating_form, 
+            'media_rating': media_rating,
+            'comments': comments, 
+            "friend_requests":friend_requests,
             'user_rating': user_rating if user_rating else None })  # {'book': book} é um dicionário sendo passado para o contexto da página que será renderizada.
     else:
         messages.warning(request, 'Faça Login ou Cadastre-se agora mesmo, é rapido!')
@@ -606,6 +633,11 @@ def book_add(request):
     form = AddBookForm(request.POST or None, request.FILES or None ) # Se não tiver nenhuma requisição o valor de form vai ser none
     
     if request.user.is_authenticated: # Se o usuario estiver autenticado
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+
         if request.method == "POST": # se o metodo da requisição for igual a post
             if form.is_valid(): # se todos os dados do formulário forem validos
                 image = request.FILES.get('image')
@@ -647,7 +679,7 @@ def book_add(request):
                 messages.success(request, "Livro adicionado com sucesso")
                 return redirect('home') # redireciona para a home            
         # return render(request, 'add_book.html', {'form':form, 'year_choices': year_choices,})
-        return render(request, 'add_book.html', {'form':form})
+        return render(request, 'add_book.html', {'form':form,'friend_requests':friend_requests,})
     
     # EXPLICAÇÃO:
     # render(request, 'add_book.html'): Acontece quando:
@@ -720,7 +752,12 @@ def book_update(request,id):
         
 def book_search(request):
     if request.user.is_authenticated:
-        search_term = request.GET.get('search')        
+        search_term = request.GET.get('search')     
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+   
         if search_term:
             books = Book.objects.filter(title__icontains = search_term) # Filtra os livros pelo título         
         else:
@@ -730,7 +767,7 @@ def book_search(request):
         # books = [] # quando o usuário não está autenticado (else: books = []) vai garantir que nenhum livro será mostrado na página de busca.
         return redirect('home')
         
-    return render(request, 'search.html',{'books':books})
+    return render(request, 'search.html',{'books':books,'friend_requests':friend_requests,})
 
 
 
@@ -740,6 +777,11 @@ def book_search(request):
 def tag_search(request):
     if request.user.is_authenticated:
         search_term = request.GET.get('search')
+
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
         
         if search_term:
             books = Book.objects.filter(tags__name__icontains=search_term) # Filtra as tags pelo nome         
@@ -752,26 +794,50 @@ def tag_search(request):
         # books = [] # quando o usuário não está autenticado (else: books = []) vai garantir que nenhum livro será mostrado na página de busca.
         return redirect('home')
         
-    return render(request, 'search.html',{'books':books})
+    return render(request, 'search.html',{'books':books,'friend_requests':friend_requests,})
 
 
 
 # Apenas carrega as informações na pagina de checkout
 def page_checkout(request):
-    # profile = get_object_or_404(UserProfile, user=request.user)  # Cria um objeto do modelo do usuario  
-    user_logged = get_object_or_404(UserProfile, user=request.user)  # Usuário logado
-    checkoutForm = CheckoutForm(instance=user_logged)
-    date = timezone.now()
-    prazo_entrega = date + timedelta(days=15)
-    checkout_url = reverse('page_checkout')  # Ou a URL que você usa
-    return render(request,'checkout.html', {'checkoutForm': checkoutForm,'prazo_entrega':prazo_entrega, 'checkout_url': checkout_url, 'user_logged': user_logged})
+    if request.user.is_authenticated:
+        # profile = get_object_or_404(UserProfile, user=request.user)  # Cria um objeto do modelo do usuario  
+        user_logged = get_object_or_404(UserProfile, user=request.user)  # Usuário logado
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+        checkoutForm = CheckoutForm(instance=user_logged)
+        date = timezone.now()
+        prazo_entrega = date + timedelta(days=15)
+        checkout_url = reverse('page_checkout')  # Ou a URL que você usa
+        return render(request,'checkout.html', {'checkoutForm': checkoutForm,
+                                                'prazo_entrega':prazo_entrega, 
+                                                'checkout_url': checkout_url, 
+                                                'friend_requests':friend_requests,
+                                                'user_logged': user_logged})
 
 def pix_payment(request):
-    return render(request,"pix_payment")
+    if request.user.is_authenticated:
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+        return render(request,"pix_payment", {'friend_requests':friend_requests,})
 def boleto_payment(request):
-    return render(request,"boleto_payment")
+    if request.user.is_authenticated:
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+        return render(request,"boleto_payment", {'friend_requests':friend_requests,})
 def card_payment(request):
-    return render(request,"card_payment")
+    if request.user.is_authenticated:
+        user_logged = request.user
+
+        # Buscar solicitações de amizade
+        friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
+        return render(request,"card_payment", {'friend_requests':friend_requests,})
 
 # Essa função redireciona o usuario que esta na pagina de checkout para a pagina de meio de pagamento 
 def finish_purchase(request):

@@ -101,12 +101,14 @@
                         </form>  
                     {% endif %}   
                     
-                {% else %}
+                {% endif %}
+                
+                {% comment %} {% else %}
                     {% if friend_requests %}    
                         <div>Solicitações de amizade:</div>
                         {% for request in friend_requests %}                            
                             <div class="d-flex justify-content-center align-items-center gap-3 btn btn-primary mx-auto mb-2"style="width:60%">
-                                {% comment %} <img src="{{ request.from_user.profile.user_image.url }}" width="50" height="50"> {% endcomment %}
+                                
                                 <a href="{% url 'profile_view' request.from_user.id %}">
                                     <img src="{{ request.from_user_image.url }}" width="50" height="50" style="border-radius:50%;">
                                 </a>                                
@@ -123,7 +125,13 @@
                         {% endfor %}
                     {% endif %}  
                                 
-                {% endif %}
+                {% endif %} {% endcomment %}
+
+
+
+
+
+                {% comment %} <img src="{{ request.from_user.profile.user_image.url }}" width="50" height="50"> {% endcomment %}
 
 
 
