@@ -195,15 +195,15 @@ class AddBookForm(forms.ModelForm):
     ]
     
     current_year = datetime.datetime.now().year # Pega o ano atual a partir da biblioteca datetime
-    year_choices = [('','Escolha o ano')]
+    year_choices = [('','Escolha o ano ou deixe em branco para buscar automaticamente')]
     for year in range(current_year,1799, -1): # -1 é o passo negativo que faz com que a sequencia seja gerada de forma decrescente
         year_choices.append((year,year))       
     
     title = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Título Livro","class":"form-control"}), label = "")
-    description = forms.CharField(required=False, widget = forms.widgets.Textarea(attrs={"placeholder":"Descrição Livro ( Deixe esse campo em branco para gerar a descrição automaticamente )","class":"form-control"}), label = "")
+    description = forms.CharField(required=False, widget = forms.widgets.Textarea(attrs={"placeholder":"Descrição Livro ( Deixe em branco para gerar a descrição automaticamente )","class":"form-control"}), label = "")
     # year = forms.ChoiceField(choices=year_choices,required=True, widget = forms.widgets.Select(attrs={"placeholder":"Ano Livro","class":"form-control", "id":"field_year"}), label = "")
 
-    year = forms.ChoiceField(choices=year_choices,required=False, widget=forms.widgets.Select(attrs={"placeholder": "Ano Livro", "class": "form-control js-example-tokenizer", "id": "field_year"}), label = "")
+    year = forms.ChoiceField(choices=year_choices,required=False, widget=forms.widgets.Select(attrs={"placeholder": "Ano Livro (Deixe em Branco para Buscar o Ano Automaticamente)", "class": "form-control js-example-tokenizer", "id": "field_year"}), label = "")
     
     # genre = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
 
