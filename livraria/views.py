@@ -802,12 +802,28 @@ def tag_search(request):
 def page_checkout(request):
     if request.user.is_authenticated:
         # profile = get_object_or_404(UserProfile, user=request.user)  # Cria um objeto do modelo do usuario  
-        user_logged = get_object_or_404(UserProfile, user=request.user)  # Usuário logado
+        # user_logged = get_object_or_404(UserProfile, user=request.user)  # Usuário logado
         user_logged = request.user
+
+        # user = request.user
+        # profile = get_object_or_404(UserProfile, user = user)
+        profile = get_object_or_404(UserProfile, user=user_logged)
+
+        # Preenche os dados do formulario de compra 
+        initial_data = {
+            'state': profile.state,
+            'city': profile.city,
+            'district': profile.district,
+            'house_number': profile.house_number,
+            'street': profile.street,
+            'cep': profile.cep,
+        }
+
+        # form = CheckoutForm(initial=initial_data)
 
         # Buscar solicitações de amizade
         friend_requests =  FriendRequest.objects.filter(to_user=user_logged, accepted=False, rejected=False)
-        checkoutForm = CheckoutForm(instance=user_logged)
+        checkoutForm = CheckoutForm(initial=initial_data)
         date = timezone.now()
         prazo_entrega = date + timedelta(days=15)
         checkout_url = reverse('page_checkout')  # Ou a URL que você usa
