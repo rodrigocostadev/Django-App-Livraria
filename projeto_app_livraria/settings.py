@@ -1,6 +1,8 @@
 
 from pathlib import Path
 from django.contrib.messages import constants as messages
+import os
+import environ
 
 MESSAGE_TAGS = {
     messages.ERROR:'danger',
@@ -8,6 +10,14 @@ MESSAGE_TAGS = {
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Cria uma instância do environ
+env = environ.Env()
+
+# Lê o arquivo .env
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 
 # Quick-start development settings - unsuitable for production
@@ -119,13 +129,15 @@ STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 
-MEDIA_URL = 'media/'
-
-MEDIA_ROOT = BASE_DIR / 'media'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TAGGIT_CASE_INSENSITIVE= True
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'MEDIA')
+MEDIA_URL = '/media/'
+
+# MEDIA_URL = 'media/'
+# MEDIA_ROOT = BASE_DIR / 'media'

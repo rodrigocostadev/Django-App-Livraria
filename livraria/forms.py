@@ -203,7 +203,7 @@ class AddBookForm(forms.ModelForm):
     description = forms.CharField(required=False, widget = forms.widgets.Textarea(attrs={"placeholder":"Descrição Livro ( Deixe esse campo em branco para gerar a descrição automaticamente )","class":"form-control"}), label = "")
     # year = forms.ChoiceField(choices=year_choices,required=True, widget = forms.widgets.Select(attrs={"placeholder":"Ano Livro","class":"form-control", "id":"field_year"}), label = "")
 
-    year = forms.ChoiceField(choices=year_choices,required=True, widget=forms.widgets.Select(attrs={"placeholder": "Ano Livro", "class": "form-control js-example-tokenizer", "id": "field_year"}), label = "")
+    year = forms.ChoiceField(choices=year_choices,required=False, widget=forms.widgets.Select(attrs={"placeholder": "Ano Livro", "class": "form-control js-example-tokenizer", "id": "field_year"}), label = "")
     
     # genre = forms.CharField(required=True, widget = forms.widgets.TextInput(attrs={"placeholder":"Gênero Livro","class":"form-control"}), label = "")
 
@@ -218,6 +218,13 @@ class AddBookForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ('title', 'description', 'year', 'genre', 'value','stock','image')
+
+    # Converte vazio em None caso não for passado o valor do ano do livro
+    def clean_year(self):
+        year = self.cleaned_data.get('year')
+        if year == '':
+            return None  # importante: converte string vazia para None
+        return int(year) 
         
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)

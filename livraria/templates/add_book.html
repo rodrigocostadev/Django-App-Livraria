@@ -43,68 +43,6 @@
 {% block scripts%}
 
     {% comment %} Script do select 2 para autocomplete {% endcomment %}
-    {% comment %} <script>
-        
-
-        $("#field_year").select2({
-            tags: true,
-            tokenSeparators: [',', ' ']
-        })
-
-
-        //const apiKey = "sk-proj-VFIEPjeE08pO_GZM..."
-
-        // externa
-        const apiKey = "sk-proj-TF13..."
-
-        document.querySelector('[name="title"]').addEventListener('blur', async function(){
-            console.log("Teste de evento")
-            console.log(this.value)
-
-            let description = document.querySelector('[name="description"]')         
-            
-            fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: 'gpt-4',
-                messages: [
-                { role: 'user', content: 'Olá, tudo bem?' }
-                ],
-                temperature: 0.7
-            })
-            })
-            .then(response => response.json())
-            .then(data => {
-            console.log('Resposta do GPT:', data.choices[0].message.content);
-            })
-            .catch(error => {
-            console.error('Erro na requisição:', error);
-            });
-
-        })
-        
-
-        function getCookie(name){
-            let cookieValue = null
-            if (document.cookie && document.cookie !== ""){
-                const cookies = document.cookie.split(';')
-                for (let i = 0; i < cookies.length; i++){
-                    const cookie = cookies[i].trim()
-
-                    if(cookie.substring(0, name.length + 1) === (name + '=')){
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
-                        break
-                    }
-                }
-            }
-            return cookieValue
-        }
-
-    </script> {% endcomment %}
     
 {% endblock %}
 
