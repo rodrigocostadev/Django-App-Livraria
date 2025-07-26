@@ -831,7 +831,7 @@ def page_checkout(request):
                                                 'prazo_entrega':prazo_entrega, 
                                                 'checkout_url': checkout_url, 
                                                 'friend_requests':friend_requests,
-                                                'user_logged': user_logged})
+                                                'profile': profile})
 
 def pix_payment(request):
     if request.user.is_authenticated:
@@ -859,6 +859,7 @@ def card_payment(request):
 def finish_purchase(request):
     user_logged = get_object_or_404(UserProfile, user=request.user)  # Usuário logado
     checkoutForm = CheckoutForm(instance=user_logged)
+    print("checkoutForm: ", checkoutForm)
     
     payment_method = request.POST.get("payment") # valor pego pelo name da tag (name="payment")
     total_value = request.POST.get("total-value") # valor pego pelo name da tag (name="total-value")
@@ -874,10 +875,12 @@ def finish_purchase(request):
         print("TESTE",payment_method)
         print("TESTE VALOR TOTAL",total_value)
         print("TESTE request.POST:", request.POST) # Verifica o que esta sendo enviado na requisição  
+        print("order_number: ", order_number)
         
         if order_number:
             try:
                 response = requests.get(f'http://localhost:8080/api/v1/order/total-price/{order_number}/')
+                print("response: ", response)
                 if response.status_code == 200:
                     api_data = response.json()
                     total_price = api_data.get('total_price')

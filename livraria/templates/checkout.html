@@ -52,18 +52,18 @@
                 </div>      
                 
                 {% comment %} Usuário: {% endcomment %}
-                <input type="hidden" id="user_id" value="{{ user_logged.user.id }}">
-                <input type="hidden" id="username" value="{{ user_logged.user }}">
-                <input type="hidden" id="first_name" value="{{ user_logged.user.first_name }}">
-                <input type="hidden" id="last_name" value="{{ user_logged.user.last_name }}">
-                <input type="hidden" id="email" value="{{user_logged.user.email}}">
+                <input type="hidden" id="user_id" value="{{ profile.user.id }}">
+                <input type="hidden" id="username" value="{{ profile.user }}">
+                <input type="hidden" id="first_name" value="{{ profile.user.first_name }}">
+                <input type="hidden" id="last_name" value="{{ profile.user.last_name }}">
+                <input type="hidden" id="email" value="{{profile.user.email}}">
                 {% comment %} Endereço {% endcomment %}
-                <input type="hidden" id="state"  value="{{user_logged.user.userprofile.state}}">
-                <input type="hidden" id="city" value="{{user_logged.user.userprofile.city}}">
-                <input type="hidden" id="district" value="{{user_logged.user.userprofile.district}}">
-                <input type="hidden" id="street" value="{{user_logged.user.userprofile.street}}">
-                <input type="hidden" id="house_number" value="{{user_logged.user.userprofile.house_number}}">                        
-                <input type="hidden" id="cep" value="{{user_logged.user.userprofile.cep}}">  
+                <input type="hidden" id="state"  value="{{profile.user.userprofile.state}}">
+                <input type="hidden" id="city" value="{{profile.user.userprofile.city}}">
+                <input type="hidden" id="district" value="{{profile.user.userprofile.district}}">
+                <input type="hidden" id="street" value="{{profile.user.userprofile.street}}">
+                <input type="hidden" id="house_number" value="{{profile.user.userprofile.house_number}}">                        
+                <input type="hidden" id="cep" value="{{profile.user.userprofile.cep}}">  
 
                 {% comment %} Pega o número do pedido criado pela função numberRandomOrder para passar para a view {% endcomment %}
                 <input type="hidden" id="hiddenOrderNumber" name="hidden_order_number">
@@ -287,8 +287,9 @@
             console.log("Teste de click botão");
             let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
 
-            const API_URL = "http://localhost:8080/api/v1/orders/" 
+            const API_URL = "http://127.0.0.1:8080/api/v1/orders/"
             // "http://127.0.0.1:8080/api/v1/orders/"
+            // "http://localhost:8080/api/v1/orders/" 
     
             if (loadSaveCart && loadSaveCart.length > 0) {
                 let cartData = loadSaveCart.map(item => ({
@@ -299,6 +300,28 @@
                     totalValue: promoValue? item.totalValue - (item.totalValue * promoValue) : item.totalValue
 
                 }));          
+
+
+                console.log("order_number:", numberRandom);
+                console.log("user_id:", userId.value);
+                console.log("user_name:", userName.value);
+                console.log("first_name:", firstName.value);
+                console.log("last_name:", lastName.value);
+                console.log("cart:", cartData);
+                console.log("state:", state.value);
+                console.log("city:", city.value);
+                console.log("district:", district.value);
+                console.log("street:", street.value);
+                console.log("house_number:", parseInt(houseNumber.value));
+                console.log("cep:", parseInt(cep.value));
+                console.log("payment_method:", paymentMethod);
+                console.log("payment:", "wait");
+                console.log("card_name:", cardName.value ? cardName.value : null);
+                console.log("card_number:", cardNumber.value ? cardNumber.value : null);
+                console.log("card_security_code:", cardSecurityCode.value ? cardSecurityCode.value : null);
+                console.log("card_validity_month:", cardValidityMonth.value ? cardValidityMonth.value : null);
+                console.log("card_validity_year:", cardValidityYear.value ? cardValidityYear.value : null);
+                console.log("promo_code:", promoCode ? promoCode : null);
 
     
                 // Enviar os dados via Fetch API para o servidor
@@ -334,7 +357,7 @@
                 })
                 .then(response => {
                     console.log(response); 
-                    //return response.json()
+                    return response.json()
                 })
                 .then(data => {
                     console.log('Dados enviados com sucesso:', data);
