@@ -29,7 +29,7 @@ Próximas implementações:
 - ( OK ) Implementar cards em vez de tabela na home para USUARIOS para apresentar os livros (Ocultar: genero, data disp venda, ultima atualização, estoque) 
 - ( OK ) também ocultar para o usuario para o item da navbar CADASTRO DE LIVRO. Para ADM ainda será tabela sem nehuma informação ocultada
 
-- Implementar na pagina de adição de livro a integração com o ChatGPT, para adicionar a DESCRIÇÃO e ANO
+- ( OK ) Implementar na pagina de adição de livro a integração com o ChatGPT, para adicionar a DESCRIÇÃO e ANO
 
 - Implementar confirmação de pagamento, e alterando a propriedade do pedido "payment" que é wait por padrão e mudando para pago
 - Implementar se o pagamento for concluido, descontar o estoque do livro que foi comprado pela quantidade do mesmo livro do pedido
