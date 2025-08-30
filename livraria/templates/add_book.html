@@ -36,6 +36,62 @@
 
 </div>
 
+{% comment %} <script>
+
+    let inputBookDescription = document.getElementById("id_description")
+    let inputBookTitle = document.getElementById("id_title")
+    let inputBookYear = document.getElementById("field_year")
+
+    inputBookTitle.addEventListener("blur", async function () {
+        const inputValue = this.value;
+
+        if(inputValue != ""){
+
+            try {
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " // <====== adicionar a API após o Bearer para funcionar
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [
+                            //{ role: "system", content: `Faça a descrição de venda para o livro ${inputValue} em apenas 500 caracteres contendo um breve resumo sobre ele e o nome do autor` },
+                            //{ role: "user", content: inputValue }
+                            { role: "system", content: `Responda apenas em JSON: {"descricao": "...", "ano": "..."}.`},
+                            { role: "user", content: `Faça a descrição de venda para o livro ${inputValue} em apenas 500 caracteres contendo um breve resumo sobre ele e o nome do autor` }
+                        ]
+                    })
+                });
+
+                //const data = await response.json();
+                const json = await response.json();
+                const output = JSON.parse(json.choices[0].message.content)
+
+                // Insere a resposta no campo de descrição
+                //inputBookDescription.value = data.choices[0].message.content;
+
+                inputBookDescription.value = output.descricao || "";
+                inputBookYear.value = output.ano || "";
+
+            } catch (error) {
+                console.error("Erro ao buscar resposta do ChatGPT:", error);
+                //inputBookDescription.value = "Erro ao gerar descrição automaticamente.";
+
+                //inputBookDescription.value = "Erro ao gerar descrição.";
+                inputBookDescription.value = "";
+                inputBookYear.value = "";
+            }
+
+        }
+
+        
+    });
+    
+</script> {% endcomment %}
+
+
 {% endblock %}
 
 
@@ -45,17 +101,6 @@
     {% comment %} Script do select 2 para autocomplete {% endcomment %}
     
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
 
 
 
